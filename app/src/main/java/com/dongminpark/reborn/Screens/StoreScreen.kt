@@ -51,6 +51,7 @@ fun StoreScreen(navController: NavController) {
             Spacer(modifier = Modifier.weight(1f))
             ShoppingCart()
         }
+        Divider(color = Color.Black, thickness = 1.dp)
 
         LazyRow(
             modifier = Modifier
@@ -127,8 +128,6 @@ fun StoreScreen(navController: NavController) {
 
              */
         }
-
-
     }
 }
 @OptIn(ExperimentalComposeUiApi::class)
