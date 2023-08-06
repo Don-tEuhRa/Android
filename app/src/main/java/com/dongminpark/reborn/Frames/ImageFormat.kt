@@ -17,11 +17,11 @@ import coil.request.ImageRequest
 import com.dongminpark.reborn.R
 
 @Composable
-fun ImageFormat(url: String){
+fun ImageFormat(url: String, size: Int = 0){
     Box (
-        contentAlignment = Alignment.Center,
+        //contentAlignment = Alignment.Center,
         modifier = Modifier
-            .fillMaxWidth()
+            //.fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
     ){
         val painter = // 이미지 로드 중 및 실패 시 표시할 이미지 리소스를 설정할 수 있습니다.
@@ -36,10 +36,16 @@ fun ImageFormat(url: String){
             contentScale = ContentScale.FillBounds,
             painter = painter,
             contentDescription = "Image",
-            modifier = Modifier
-                .aspectRatio(1f)
-                .fillMaxSize()//Width()
-                .clip(RoundedCornerShape(12.dp))
+            modifier = if (size == 0) {
+                Modifier
+                    .aspectRatio(1f)
+                    .fillMaxSize()//Width()
+                    .clip(RoundedCornerShape(12.dp))
+            } else {
+                Modifier
+                    .size(size.dp)
+                    .clip(RoundedCornerShape(12.dp))
+            }
         )
     }
 }
