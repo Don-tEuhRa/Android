@@ -91,4 +91,10 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth-ktx:22.0.0'
     implementation 'com.google.firebase:firebase-database-ktx:20.0.4'
 
+    // coil
+    implementation("io.coil-kt:coil-compose:2.3.0")
+
+    // pager
+    implementation "com.google.accompanist:accompanist-pager:0.20.1"
+    implementation "com.google.accompanist:accompanist-pager-indicators:0.20.1"
 }
