@@ -10,17 +10,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import com.dongminpark.reborn.Frames.TextFormat
 
 @Composable
-fun TextButtonFormat(text: String, onClick: () -> Unit) {
+fun TextButtonFormat(
+    modifier: Modifier = Modifier,
+    text: String,
+    shape: Shape = CircleShape,
+    heightSize: Int = 40,
+    widthSize: Int = 100,
+    onClick: () -> Unit
+) {
     TextButton(
-        modifier = Modifier
-            .size(100.dp, 40.dp)
-            .clip(CircleShape)
-            .background(Color.Red, CircleShape)
-            .border(1.dp, Color.Black, CircleShape),
+        modifier = modifier
+            .size(width = widthSize.dp, height = heightSize.dp)
+            .clip(shape)
+            .background(Color.Red, shape = shape)
+            .border(1.dp, Color.Black, shape = shape),
         onClick = { onClick() }
     ) {
         TextFormat(text = text, size = 12)

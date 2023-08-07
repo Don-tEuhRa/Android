@@ -5,17 +5,21 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import com.dongminpark.reborn.R
 import com.dongminpark.reborn.Utils.Constants.TAG
 
 // 좋아요 버튼
 @Composable
 fun FavoriteButton() {
-    var isFavorite by remember { mutableStateOf(false) }
-    var icon = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.Favorite
-    ButtonFormat(icon = icon) {
-        Log.e(TAG, "Favorite: 버튼 눌림~", )
+    var isFavorite by rememberSaveable { mutableStateOf(false) }
+    val icon = if (isFavorite) R.drawable.heart_filled else R.drawable.heart_outline
+
+    ButtonFormat(
+        icon = icon
+    ) {
         isFavorite = !isFavorite
+        Log.e(TAG, "Favorite: 버튼 눌림~ -> ${isFavorite}", )
         // api 호출
     }
 }
