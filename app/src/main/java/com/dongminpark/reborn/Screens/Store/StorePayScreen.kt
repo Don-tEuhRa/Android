@@ -21,6 +21,8 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.dongminpark.reborn.Buttons.CheckBoxButton
 import com.dongminpark.reborn.Buttons.ClearTextButton
+import com.dongminpark.reborn.Buttons.LongTextButtonFormat
+import com.dongminpark.reborn.Buttons.TextButtonFormat
 import com.dongminpark.reborn.Frames.*
 
 @Composable
@@ -38,7 +40,12 @@ fun StorePayScreen(navController: NavController) {
         }
 
         item {
-            ItemInfoFrame(itemList = itemList)
+            // 상품 정보
+            TextFormat(text = "상품 정보")
+
+            itemList.forEach{item ->
+                ItemInfoFrame(item = item.toString())
+            }
         }
 
         item {
@@ -67,38 +74,11 @@ fun StorePayScreen(navController: NavController) {
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 // 카드
-                TextButton(
-                    modifier = Modifier
-                        .size(100.dp, 40.dp)
-                        .clip(CircleShape)
-                        .background(Color.Red, CircleShape)
-                        .border(1.dp, Color.Black, CircleShape),
-                    onClick = { /*TODO*/ }
-                ) {
-                    TextFormat(text = "카드", size = 12)
-                }
+                TextButtonFormat(text = "카드", onClick = { /*TODO*/ })
                 // 카카오페이
-                TextButton(
-                    modifier = Modifier
-                        .size(100.dp, 40.dp)
-                        .clip(CircleShape)
-                        .background(Color.Red, CircleShape)
-                        .border(1.dp, Color.Black, CircleShape),
-                    onClick = { /*TODO*/ }
-                ) {
-                    TextFormat(text = "카카오 페이", size = 12)
-                }
+                TextButtonFormat(text = "카카오 페이", onClick = { /*TODO*/ })
                 // 네이버페이
-                TextButton(
-                    modifier = Modifier
-                        .size(100.dp, 40.dp)
-                        .clip(CircleShape)
-                        .background(Color.Red, CircleShape)
-                        .border(1.dp, Color.Black, CircleShape),
-                    onClick = { /*TODO*/ }
-                ) {
-                    TextFormat(text = "네이버 페이", size = 12)
-                }
+                TextButtonFormat(text = "네이버 페이", onClick = { /*TODO*/ })
             }
         }
 
@@ -107,18 +87,11 @@ fun StorePayScreen(navController: NavController) {
         }
 
         item {
-            // 결제하기 버튼
-            TextButton(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .clip(CircleShape)
-                    .background(Color.Red, CircleShape)
-                    .border(1.dp, Color.Black, CircleShape)
-                    .fillMaxWidth(),
+            LongTextButtonFormat(
+                count = 3,
+                price = "119700",
                 onClick = { /*TODO*/ }
-            ) {
-                TextFormat(text = "119700원 결제하기", size = 16)
-            }
+            )
         }
     }
 }

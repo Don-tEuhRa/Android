@@ -29,11 +29,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.dongminpark.reborn.Buttons.CheckBoxButton
-import com.dongminpark.reborn.Buttons.ClearTextButton
-import com.dongminpark.reborn.Buttons.ReBorn
-import com.dongminpark.reborn.Buttons.ShoppingCart
+import com.dongminpark.reborn.Buttons.*
 import com.dongminpark.reborn.Frames.ImageFormat
+import com.dongminpark.reborn.Frames.ItemInfoFrame
 import com.dongminpark.reborn.Frames.TextFormat
 import com.dongminpark.reborn.Frames.productFrame
 
@@ -57,7 +55,7 @@ fun StoreShoppingCartScreen(navController: NavController) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.BottomCenter
-        ){
+        ) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -81,7 +79,7 @@ fun StoreShoppingCartScreen(navController: NavController) {
                         TextFormat(text = "선택삭제", size = 16)
                     }
                 }
-                items(itemList){ item ->
+                items(itemList) { item ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -93,6 +91,9 @@ fun StoreShoppingCartScreen(navController: NavController) {
                             // item 체크버튼
                             CheckBoxButton(onClick = { /*TODO*/ })
 
+                            ItemInfoFrame(item = item.toString())
+
+                            /*
                             // item 이미지
                             ImageFormat(url = "testurl", size = 120)
 
@@ -101,6 +102,8 @@ fun StoreShoppingCartScreen(navController: NavController) {
                                 TextFormat(text = "반팔티셔츠")
                                 TextFormat(text = "10000원")
                             }
+
+                             */
                         }
                         // x버튼
                         ClearTextButton {
@@ -110,26 +113,11 @@ fun StoreShoppingCartScreen(navController: NavController) {
                 }
             }
 
-            // 모양 둥글게 수정, 글자 중앙에 오게 배치
-            TextButton(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .clip(CircleShape)
-                    .background(Color.Red, CircleShape)
-                    .border(1.dp, Color.Black, CircleShape)
-                    .fillMaxWidth(),
+            LongTextButtonFormat(
+                count = 3,
+                price = "119700",
                 onClick = { /*TODO*/ }
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    TextFormat(text = "총 3개 ", size = 16)
-                    
-                    TextFormat(text = "119700원 결제하기", size = 16)
-                }
-            }
+            )
         }
     }
 }
