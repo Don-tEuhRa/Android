@@ -6,22 +6,19 @@ import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.outlined.CheckCircle
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun CheckBoxButton(onClick: () -> Unit){
-    Icon(
-        //Icons.Filled.CheckCircle,
-        Icons.Outlined.CheckCircle,
-        contentDescription = "check box",
-        modifier = Modifier
-            .clickable {
-                onClick()
-            }
-            .padding(12.dp)
-    )
+    var isChecked by remember { mutableStateOf(false) }
+    var icon = if (isChecked) Icons.Filled.CheckCircle else Icons.Outlined.CheckCircle
+
+    ButtonFormat(modifier = Modifier.padding(12.dp), icon = icon){
+        isChecked = !isChecked
+        onClick()
+    }
 }
 
 // Icons.Outlined.CheckCircle - 빈 체크박스
