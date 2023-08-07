@@ -13,10 +13,8 @@ import androidx.compose.ui.unit.dp
 fun ItemInfoFrame(item: String) {
     Row(
         modifier = Modifier
-            .fillMaxWidth()
             .padding(horizontal = 0.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
-        //horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         // item 이미지
         ImageFormat(modifier = Modifier.padding(12.dp), url = "testurl", size = 80) // item.url

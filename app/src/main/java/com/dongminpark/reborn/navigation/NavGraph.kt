@@ -114,7 +114,8 @@ fun MainScreenView(startDestination: String) {
 
                 // Store
                 composable(StoreNavigationScreens.Store.route) {
-                    StoreScreen(navController = navController)
+                    StoreShoppingCartScreen(navController = navController)
+                    //StoreScreen(navController = navController)
                 }
 
                 // My
