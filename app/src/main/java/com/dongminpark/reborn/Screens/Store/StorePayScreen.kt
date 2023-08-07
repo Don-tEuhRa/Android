@@ -21,8 +21,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.dongminpark.reborn.Buttons.CheckBoxButton
 import com.dongminpark.reborn.Buttons.ClearTextButton
-import com.dongminpark.reborn.Frames.ImageFormat
-import com.dongminpark.reborn.Frames.TextFormat
+import com.dongminpark.reborn.Frames.*
 
 @Composable
 fun StorePayScreen(navController: NavController) {
@@ -35,51 +34,18 @@ fun StorePayScreen(navController: NavController) {
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
         item {
-            // 주문자 정보
-            TextFormat(text = "주문자 정보")
-            // 주문자 세부 정보(이름 / 전화번호) + 주소
-            Row() {
-                TextFormat(text = "박동민", size = 12)
-                TextFormat(text = "010-1234-5678", size = 12)
-            }
-            TextFormat(text = "경기도 수원시 장안구 연무동 123-456", size = 12)
+            UserInfoFrame(name = "박동민", phone = "010-2245-3683", address = "수원시 장안구 연무동 123-456")
         }
 
         item {
-            // 상품 정보
-            TextFormat(text = "상품 정보")
-
-            itemList.forEach { item ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 0.dp, vertical = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    //horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    // item 이미지
-                    ImageFormat(modifier = Modifier.padding(12.dp), url = "testurl", size = 80)
-
-                    // item 이름, 가격
-                    Column(modifier = Modifier.padding(8.dp)) {
-                        TextFormat(text = "반팔티셔츠", size = 12)
-                        TextFormat(text = "10000원", size = 16)
-                    }
-                }
-            }
+            ItemInfoFrame(itemList = itemList)
         }
 
         item {
             // 포인트 사용
             TextFormat(text = "포인트 사용")
             // 보유 포인트  -  숫자
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                TextFormat(text = "보유 포인트", size = 12)
-                TextFormat(text = "1200", size = 12)
-            }
+            RowSpaceBetweenFrame(first = "보유 포인트", second = "1200")
             // 사용 포인트  -  숫자 입력 -> textfield쓸때 숫자 키패드 출력 및 특수기호 무시 처리 -> 인하대 결과물 코드 참고
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -95,7 +61,9 @@ fun StorePayScreen(navController: NavController) {
             TextFormat(text = "결제 정보")
 
             Row(
-                modifier = Modifier.fillMaxWidth().padding(12.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 // 카드
@@ -135,32 +103,7 @@ fun StorePayScreen(navController: NavController) {
         }
 
         item {
-            // 최종 결제 금액
-            TextFormat(text = "최종 결제 금액")
-            // 상품 금액
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                TextFormat(text = "상품 금액", size = 12)
-                TextFormat(text = "12000", size = 12)
-            }
-            // 사용 포인트
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                TextFormat(text = "사용 포인트", size = 12)
-                TextFormat(text = "1200", size = 12)
-            }
-            // 총 금액
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                TextFormat(text = "총 금액", size = 12)
-                TextFormat(text = "10800", size = 12)
-            }
+            FinalPayPriceFrame(12000, 1200)
         }
 
         item {
