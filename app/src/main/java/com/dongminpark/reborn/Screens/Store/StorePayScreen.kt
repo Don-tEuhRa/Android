@@ -7,10 +7,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,103 +19,105 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.dongminpark.reborn.Buttons.CheckBoxButton
 import com.dongminpark.reborn.Buttons.ClearTextButton
+import com.dongminpark.reborn.Buttons.LongTextButtonFormat
+import com.dongminpark.reborn.Buttons.TextButtonFormat
 import com.dongminpark.reborn.Frames.*
 
 @Composable
 fun StorePayScreen(navController: NavController) {
-    val itemList by remember { mutableStateOf(mutableListOf(1, 2, 3)) }
+    val itemList by rememberSaveable { mutableStateOf(mutableListOf(1, 2, 3)) }
+    var selectedPayment by rememberSaveable { mutableStateOf("none") }
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(12.dp),
-        verticalArrangement = Arrangement.SpaceEvenly
-    ) {
-        item {
-            UserInfoFrame(name = "박동민", phone = "010-2245-3683", address = "수원시 장안구 연무동 123-456")
-        }
+    Column() {
+        SingleTitleTopAppBarFormat("장바구니")
 
-        item {
-            ItemInfoFrame(itemList = itemList)
-        }
-
-        item {
-            // 포인트 사용
-            TextFormat(text = "포인트 사용")
-            // 보유 포인트  -  숫자
-            RowSpaceBetweenFrame(first = "보유 포인트", second = "1200")
-            // 사용 포인트  -  숫자 입력 -> textfield쓸때 숫자 키패드 출력 및 특수기호 무시 처리 -> 인하대 결과물 코드 참고
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                TextFormat(text = "사용 포인트", size = 12)
-                TextFormat(text = "1200", size = 12) // textField로 변경
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 12.dp, vertical = 0.dp),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            item {
+                UserInfoFrame(name = "박동민", phone = "010-2245-3683", address = "수원시 장안구 연무동 123-456")
             }
-        }
 
-        item {
-            // 결제 정보
-            TextFormat(text = "결제 정보")
+            item {
+                // 상품 정보
+                TextFormat(text = "상품 정보")
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(12.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                // 카드
-                TextButton(
-                    modifier = Modifier
-                        .size(100.dp, 40.dp)
-                        .clip(CircleShape)
-                        .background(Color.Red, CircleShape)
-                        .border(1.dp, Color.Black, CircleShape),
-                    onClick = { /*TODO*/ }
-                ) {
-                    TextFormat(text = "카드", size = 12)
-                }
-                // 카카오페이
-                TextButton(
-                    modifier = Modifier
-                        .size(100.dp, 40.dp)
-                        .clip(CircleShape)
-                        .background(Color.Red, CircleShape)
-                        .border(1.dp, Color.Black, CircleShape),
-                    onClick = { /*TODO*/ }
-                ) {
-                    TextFormat(text = "카카오 페이", size = 12)
-                }
-                // 네이버페이
-                TextButton(
-                    modifier = Modifier
-                        .size(100.dp, 40.dp)
-                        .clip(CircleShape)
-                        .background(Color.Red, CircleShape)
-                        .border(1.dp, Color.Black, CircleShape),
-                    onClick = { /*TODO*/ }
-                ) {
-                    TextFormat(text = "네이버 페이", size = 12)
+                itemList.forEach{item ->
+                    ItemInfoFrame(item = item.toString())
                 }
             }
-        }
 
-        item {
-            FinalPayPriceFrame(12000, 1200)
-        }
+            item {
+                // 포인트 사용
+                TextFormat(text = "포인트 사용")
+                // 보유 포인트  -  숫자
+                RowSpaceBetweenFrame(first = "보유 포인트", second = "1200")
+                // 사용 포인트  -  숫자 입력 -> textfield쓸때 숫자 키패드 출력 및 특수기호 무시 처리 -> 인하대 결과물 코드 참고
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    TextFormat(text = "사용 포인트", size = 12)
+                    TextFormat(text = "1200", size = 12) // textField로 변경
+                }
+            }
 
-        item {
-            // 결제하기 버튼
-            TextButton(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .clip(CircleShape)
-                    .background(Color.Red, CircleShape)
-                    .border(1.dp, Color.Black, CircleShape)
-                    .fillMaxWidth(),
-                onClick = { /*TODO*/ }
-            ) {
-                TextFormat(text = "119700원 결제하기", size = 16)
+            item {
+                // 결제 정보
+                TextFormat(text = "결제 정보")
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    // 카드
+                    TextButtonFormat(
+                        text = "카드",
+                        backgroundColor = if (selectedPayment == "Card") Color.Red else Color.White,
+                        borderColor = if (selectedPayment == "Card") Color.White else Color.Black,
+                        textColor = if (selectedPayment == "Card") Color.White else Color.Black,
+                        onClick = {
+                            selectedPayment = "Card"
+                        }
+                    )
+                    // 카카오페이
+                    TextButtonFormat(
+                        text = "카카오 페이",
+                        backgroundColor = if (selectedPayment == "KakaoPay") Color.Red else Color.White,
+                        borderColor = if (selectedPayment == "KakaoPay") Color.White else Color.Black,
+                        textColor = if (selectedPayment == "KakaoPay") Color.White else Color.Black,
+                        onClick = {
+                            selectedPayment = "KakaoPay"
+                        }
+                    )
+                    // 네이버페이
+                    TextButtonFormat(
+                        text = "네이버 페이",
+                        backgroundColor = if (selectedPayment == "NaverPay") Color.Red else Color.White,
+                        borderColor = if (selectedPayment == "NaverPay") Color.White else Color.Black,
+                        textColor = if (selectedPayment == "NaverPay") Color.White else Color.Black,
+                        onClick = {
+                            selectedPayment = "NaverPay"
+                        }
+                    )
+                }
+            }
+
+            item {
+                FinalPayPriceFrame(12000, 1200)
+            }
+
+            item {
+                LongTextButtonFormat(
+                    count = 3,
+                    price = "119700",
+                    onClick = { /*TODO*/ }
+                )
             }
         }
     }

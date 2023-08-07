@@ -20,6 +20,7 @@ import com.dongminpark.foodmarketandroid.navigation.Screen
 import com.dongminpark.reborn.Screens.*
 import com.dongminpark.reborn.navigation.*
 import com.dongminpark.reborn.Screens.LoginScreen
+import com.dongminpark.reborn.Screens.Store.StorePayScreen
 import com.dongminpark.reborn.Screens.Store.StoreShoppingCartScreen
 import java.lang.Exception
 
@@ -113,7 +114,8 @@ fun MainScreenView(startDestination: String) {
 
                 // Store
                 composable(StoreNavigationScreens.Store.route) {
-                    StoreDetailScreen(navController = navController)
+                    StoreShoppingCartScreen(navController = navController)
+                    //StoreScreen(navController = navController)
                 }
 
                 // My

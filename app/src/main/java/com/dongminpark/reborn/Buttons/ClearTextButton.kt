@@ -10,14 +10,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ClearTextButton(onClick: () -> Unit){
-    Icon(
-        Icons.Default.Clear,
-        contentDescription = "clear text",
-        modifier = Modifier
-            .clickable {
-                onClick()
-            }
-            .padding(vertical = 15.dp, horizontal = 10.dp)
-    )
+fun ClearTextButton(onClick: () -> Unit) {
+    ButtonFormat(
+        modifier = Modifier.padding(vertical = 15.dp, horizontal = 10.dp),
+        icon = Icons.Default.Clear
+    ) {
+        onClick()
+    }
 }

@@ -25,10 +25,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
-import com.dongminpark.reborn.Buttons.FavoriteButton
-import com.dongminpark.reborn.Buttons.FavoriteListButton
-import com.dongminpark.reborn.Buttons.ReBorn
-import com.dongminpark.reborn.Buttons.ShoppingCart
+import com.dongminpark.reborn.Buttons.*
 import com.dongminpark.reborn.Frames.TextFormat
 import com.dongminpark.reborn.R
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -38,7 +35,7 @@ import com.google.accompanist.pager.rememberPagerState
 @SuppressLint("MutableCollectionMutableState")
 @Composable
 fun StoreDetailScreen(navController: NavController) {
-    val itemList by remember { mutableStateOf(mutableListOf(1, 2, 3,4)) }
+    val itemList by remember { mutableStateOf(mutableListOf(1, 2, 3, 4)) }
     val name = "반팔티셔츠"
     val price = 10000
     LazyColumn(
@@ -52,7 +49,7 @@ fun StoreDetailScreen(navController: NavController) {
             ) {
                 ReBorn()
                 Spacer(modifier = Modifier.weight(1f))
-                Box(contentAlignment = Alignment.CenterEnd){
+                Box(contentAlignment = Alignment.CenterEnd) {
                     Row {
                         FavoriteListButton()
                         Spacer(modifier = Modifier.size(10.dp))
@@ -70,31 +67,30 @@ fun StoreDetailScreen(navController: NavController) {
 
         item {
             // 상품 이름, 가격, 버튼 3개 Row
-            Row(modifier = Modifier.fillMaxWidth()) {
+            Row(modifier = Modifier.fillMaxWidth().padding(4.dp), horizontalArrangement = Arrangement.SpaceBetween) {
                 Column(
                     modifier = Modifier.fillMaxHeight(),
-                    verticalArrangement = Arrangement.SpaceEvenly
-                ){
-                    TextFormat(text = name)
-                    Spacer(modifier = Modifier.size(10.dp))
-                    TextFormat(text = price.toString())
+                ) {
+                    TextFormat(text = name, size = 36)
+                    Spacer(modifier = Modifier.size(16.dp))
+                    TextFormat(text = "${price}원", size = 24)
                 }
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.CenterEnd
-                ){
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        TextButton(onClick = { /*TODO*/ }) {
-                            Text(text = "장바구니 담기")
-                        }
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            FavoriteButton()
-                            TextButton(onClick = { /*TODO*/ }) {
-                                Text(text = "구매하기")
-                            }
+
+                Column(
+                    modifier = Modifier.fillMaxHeight(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    TextButtonFormat(modifier = Modifier.padding(8.dp),heightSize = 40, widthSize = 132, shape = RoundedCornerShape(12.dp), text = "장바구니 담기") {
+                        // api 어쩌구~
+                    }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        FavoriteButton()
+                        TextButtonFormat(modifier = Modifier.padding(8.dp), heightSize = 40, widthSize = 100, shape = RoundedCornerShape(12.dp), text = "구매하기") {
+                            // api 어쩌구~
                         }
                     }
                 }
+
             }
             Divider(color = Color.Black, thickness = 1.dp)
         }
@@ -102,11 +98,13 @@ fun StoreDetailScreen(navController: NavController) {
         item {
             val painter =
                 rememberAsyncImagePainter(
-                    ImageRequest.Builder(LocalContext.current).data(data = R.drawable.detail_contents).apply(block = fun ImageRequest.Builder.() {
-                        // 이미지 로드 중 및 실패 시 표시할 이미지 리소스를 설정할 수 있습니다.
-                        placeholder(R.drawable.placeholder)
-                        error(R.drawable.placeholder)
-                    }).build()
+                    ImageRequest.Builder(LocalContext.current)
+                        .data(data = R.drawable.detail_contents)
+                        .apply(block = fun ImageRequest.Builder.() {
+                            // 이미지 로드 중 및 실패 시 표시할 이미지 리소스를 설정할 수 있습니다.
+                            placeholder(R.drawable.placeholder)
+                            error(R.drawable.placeholder)
+                        }).build()
                 )
             Image(
                 contentScale = ContentScale.FillBounds,
@@ -127,7 +125,7 @@ fun PostUi(images: MutableList<Int>) {
     // 사진 갯수따라 동적인 변화 필요
     var indexIcons: List<Painter> = listOf()
 
-    repeat(images.size){
+    repeat(images.size) {
         indexIcons = indexIcons.plus(circle)
     }
 
@@ -168,7 +166,7 @@ fun PostUi(images: MutableList<Int>) {
 
 @Preview
 @Composable
-fun StoreDetailScreenPreview(){
+fun StoreDetailScreenPreview() {
     val navController = rememberNavController()
     StoreDetailScreen(navController)
 }
