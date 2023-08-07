@@ -17,10 +17,10 @@ import coil.request.ImageRequest
 import com.dongminpark.reborn.R
 
 @Composable
-fun ImageFormat(url: String, size: Int = 0){
+fun ImageFormat(modifier: Modifier = Modifier, url: String, size: Int = 0){
     Box (
         //contentAlignment = Alignment.Center,
-        modifier = Modifier
+        modifier = modifier
             //.fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
     ){
