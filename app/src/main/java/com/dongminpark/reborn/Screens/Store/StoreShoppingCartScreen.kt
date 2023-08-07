@@ -30,27 +30,14 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.dongminpark.reborn.Buttons.*
-import com.dongminpark.reborn.Frames.ImageFormat
-import com.dongminpark.reborn.Frames.ItemInfoFrame
-import com.dongminpark.reborn.Frames.TextFormat
-import com.dongminpark.reborn.Frames.productFrame
+import com.dongminpark.reborn.Frames.*
 
 @Composable
 fun StoreShoppingCartScreen(navController: NavController) {
     val itemList by remember { mutableStateOf(mutableListOf(1, 2, 3)) }
 
     Column() {
-        TopAppBar(
-            backgroundColor = Color.White,
-            contentPadding = PaddingValues(8.dp)
-        ) {
-            ReBorn()
-            Spacer(modifier = Modifier.weight(1f))
-            TextFormat(text = "찜목록")
-            Spacer(modifier = Modifier.weight(1f))
-            ShoppingCart()
-        }
-        Divider(color = Color.Black, thickness = 1.dp)
+        SingleTitleTopAppBarFormat("장바구니")
 
         Box(
             modifier = Modifier.fillMaxSize(),
