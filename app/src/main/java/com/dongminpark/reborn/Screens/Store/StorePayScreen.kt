@@ -7,10 +7,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,7 +25,8 @@ import com.dongminpark.reborn.Frames.*
 
 @Composable
 fun StorePayScreen(navController: NavController) {
-    val itemList by remember { mutableStateOf(mutableListOf(1, 2, 3)) }
+    val itemList by rememberSaveable { mutableStateOf(mutableListOf(1, 2, 3)) }
+    var selectedPayment by rememberSaveable { mutableStateOf("none") }
 
     Column() {
         SingleTitleTopAppBarFormat("장바구니")
@@ -35,8 +34,8 @@ fun StorePayScreen(navController: NavController) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(12.dp),
-            verticalArrangement = Arrangement.SpaceEvenly
+                .padding(horizontal = 12.dp, vertical = 0.dp),
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
             item {
                 UserInfoFrame(name = "박동민", phone = "010-2245-3683", address = "수원시 장안구 연무동 123-456")
@@ -77,11 +76,35 @@ fun StorePayScreen(navController: NavController) {
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     // 카드
-                    TextButtonFormat(text = "카드", onClick = { /*TODO*/ })
+                    TextButtonFormat(
+                        text = "카드",
+                        backgroundColor = if (selectedPayment == "Card") Color.Red else Color.White,
+                        borderColor = if (selectedPayment == "Card") Color.White else Color.Black,
+                        textColor = if (selectedPayment == "Card") Color.White else Color.Black,
+                        onClick = {
+                            selectedPayment = "Card"
+                        }
+                    )
                     // 카카오페이
-                    TextButtonFormat(text = "카카오 페이", onClick = { /*TODO*/ })
+                    TextButtonFormat(
+                        text = "카카오 페이",
+                        backgroundColor = if (selectedPayment == "KakaoPay") Color.Red else Color.White,
+                        borderColor = if (selectedPayment == "KakaoPay") Color.White else Color.Black,
+                        textColor = if (selectedPayment == "KakaoPay") Color.White else Color.Black,
+                        onClick = {
+                            selectedPayment = "KakaoPay"
+                        }
+                    )
                     // 네이버페이
-                    TextButtonFormat(text = "네이버 페이", onClick = { /*TODO*/ })
+                    TextButtonFormat(
+                        text = "네이버 페이",
+                        backgroundColor = if (selectedPayment == "NaverPay") Color.Red else Color.White,
+                        borderColor = if (selectedPayment == "NaverPay") Color.White else Color.Black,
+                        textColor = if (selectedPayment == "NaverPay") Color.White else Color.Black,
+                        onClick = {
+                            selectedPayment = "NaverPay"
+                        }
+                    )
                 }
             }
 

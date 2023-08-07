@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,17 +22,20 @@ fun TextButtonFormat(
     shape: Shape = CircleShape,
     heightSize: Int = 40,
     widthSize: Int = 100,
+    backgroundColor: Color = Color.Red,
+    borderColor: Color = Color.Black,
+    textColor: Color = Color.Black,
     onClick: () -> Unit
 ) {
     TextButton(
         modifier = modifier
             .size(width = widthSize.dp, height = heightSize.dp)
             .clip(shape)
-            .background(Color.Red, shape = shape)
-            .border(1.dp, Color.Black, shape = shape),
+            .background(backgroundColor, shape = shape)
+            .border(1.dp, borderColor, shape = shape),
         onClick = { onClick() }
     ) {
-        TextFormat(text = text, size = 12)
+        TextFormat(text = text, size = 12, color = textColor)
     }
 }
 
