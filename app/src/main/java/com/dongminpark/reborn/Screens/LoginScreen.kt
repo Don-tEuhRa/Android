@@ -35,11 +35,10 @@ import com.google.firebase.auth.GoogleAuthProvider
 
 @Composable
 fun LoginScreen(navController: NavHostController) {
+    navController.enableOnBackPressed(false)
     var isLoginLoading by remember {
         mutableStateOf(false)
     }
-
-    //navController.popBackStack()
 
     if (isLoginLoading){
         Column(

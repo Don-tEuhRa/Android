@@ -93,6 +93,7 @@ fun StoreDetailScreen(navController: NavController) {
                         FavoriteButton()
                         TextButtonFormat(modifier = Modifier.padding(8.dp), heightSize = 40, widthSize = 100, shape = RoundedCornerShape(12.dp), text = "구매하기") {
                             // api 어쩌구~
+                            navController.navigate("storePay")
                         }
                     }
                 }
