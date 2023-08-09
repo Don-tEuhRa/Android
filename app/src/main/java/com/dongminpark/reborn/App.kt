@@ -13,7 +13,7 @@ class App: Application() {
 
     override fun onCreate() {
         super.onCreate()
-        App.Companion.instance = this
+        instance = this
     }
 }
 
