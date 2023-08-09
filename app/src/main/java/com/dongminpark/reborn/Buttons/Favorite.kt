@@ -26,9 +26,9 @@ fun FavoriteButton() {
 
 // 좋아요 목록 이동
 @Composable
-fun FavoriteListButton(){
+fun FavoriteListButton(onClick: () -> Unit){
     ButtonFormat(icon = R.drawable.heart_outline) {
         Log.e(TAG, "FavoriteList: 버튼 눌림~", )
-        // nav 이동
+        onClick()
     }
 }

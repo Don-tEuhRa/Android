@@ -23,9 +23,11 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.dongminpark.reborn.Buttons.FavoriteListButton
 import com.dongminpark.reborn.Buttons.ReBorn
 import com.dongminpark.reborn.Buttons.ShoppingCart
@@ -34,7 +36,7 @@ import com.dongminpark.reborn.Frames.productFrame
 @Composable
 fun StoreScreen(navController: NavController) {
     val ItemList by remember { mutableStateOf(mutableListOf(1, 2, 3,4,5,6,7,8,9,10)) }
-    var buttons by remember { mutableStateOf(mutableListOf("상의", "하의", "잡화")) }
+    var buttons by remember { mutableStateOf(mutableListOf("전체", "상의", "하의", "잡화")) }
     var selectedButtonIndex by rememberSaveable { mutableStateOf(0) }
 
 
@@ -47,9 +49,9 @@ fun StoreScreen(navController: NavController) {
             Spacer(modifier = Modifier.weight(1f))
             SearchBar{}
             Spacer(modifier = Modifier.weight(1f))
-            FavoriteListButton()
+            FavoriteListButton(){navController.navigate("storeLikeList")}
             Spacer(modifier = Modifier.weight(1f))
-            ShoppingCart()
+            ShoppingCart(){navController.navigate("storeShoppingCart")}
         }
         Divider(color = Color.Black, thickness = 1.dp)
 
@@ -67,6 +69,7 @@ fun StoreScreen(navController: NavController) {
                             height = 35.dp
                         ),
                         onClick = {
+                            selectedButtonIndex = index
                             /*
                             loadPost = false
                             postList.clear()
@@ -104,29 +107,10 @@ fun StoreScreen(navController: NavController) {
                 .padding(horizontal = 10.dp)
                 .padding(top = 5.dp),
             columns = GridCells.Fixed(2),
-            //state = scrollState
         ) {
             items(ItemList) { post ->
-                productFrame(post, navController, "community", true, true, true)
+                productFrame(post, navController, "store", true, true, true)
             }
-
-
-            // 무한 스크롤
-            /*
-            if (scrollState.isScrollInProgress && (scrollState.layoutInfo.visibleItemsInfo.lastOrNull()?.index == postList.size - 1) && loadPost && postList.size == display) {
-                loadPost = false
-                if (!searchState){
-
-                }else {
-                    if (label == buttons[0]) {
-                        postpopular(start, display, postList)
-                    } else postfilter(label, start, display, postList)
-                }
-                start += 20
-                display += 20
-            }
-
-             */
         }
     }
 }
@@ -189,4 +173,11 @@ fun search(
     }
     focusManager.clearFocus()
     keyboardController?.hide()
+}
+
+
+@Preview
+@Composable
+fun StoreScreenPreview() {
+    StoreScreen(navController = rememberNavController())
 }

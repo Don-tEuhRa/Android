@@ -32,6 +32,11 @@ sealed class DonateNavigationScreens(val route: String) {
 
 sealed class StoreNavigationScreens(val route: String) {
     object Store : StoreNavigationScreens("store")
+    object StoreDetail : StoreNavigationScreens("storeDetail")
+    object StoreLikeList : StoreNavigationScreens("storeLikeList")
+    object StoreShoppingCart : StoreNavigationScreens("storeShoppingCart")
+    object StorePay : StoreNavigationScreens("storePay")
+    object StorePayAfter : StoreNavigationScreens("storePayAfter")
 }
 
 sealed class MyNavigationScreens(val route: String = "my") {

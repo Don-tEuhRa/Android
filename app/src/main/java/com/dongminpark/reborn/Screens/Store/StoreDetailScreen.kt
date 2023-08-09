@@ -51,9 +51,9 @@ fun StoreDetailScreen(navController: NavController) {
                 Spacer(modifier = Modifier.weight(1f))
                 Box(contentAlignment = Alignment.CenterEnd) {
                     Row {
-                        FavoriteListButton()
-                        Spacer(modifier = Modifier.size(10.dp))
-                        ShoppingCart()
+                        FavoriteListButton{navController.navigate("storeLikeList")}
+                        Spacer(modifier = Modifier.weight(1f))
+                        ShoppingCart{navController.navigate("storeShoppingCart")}
                     }
                 }
             }

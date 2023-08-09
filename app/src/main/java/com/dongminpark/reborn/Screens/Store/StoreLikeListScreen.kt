@@ -47,7 +47,7 @@ fun StoreLikeListScreen(navController: NavController) {
             Spacer(modifier = Modifier.weight(1f))
             TextFormat(text = "좋아요")
             Spacer(modifier = Modifier.weight(1f))
-            ShoppingCart()
+            ShoppingCart(){navController.navigate("storeShoppingCart")}
         }
         Divider(color = Color.Black, thickness = 1.dp)
         LazyVerticalGrid(

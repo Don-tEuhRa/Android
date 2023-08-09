@@ -116,7 +116,9 @@ fun StorePayScreen(navController: NavController) {
                 LongTextButtonFormat(
                     count = 3,
                     price = "119700",
-                    onClick = { /*TODO*/ }
+                    onClick = {
+                        navController.navigate("storePayAfter")
+                    }
                 )
             }
         }

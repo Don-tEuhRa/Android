@@ -24,14 +24,15 @@ fun productFrame(
     name: String = "반팔티셔츠",
     price: Int = 10000,
 ) {
-    Column() {
+    Column(
+        modifier = Modifier.clickable {
+            navController.navigate(route + "Detail")
+        }
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .border(0.dp, Color.Transparent)
-                .clickable {
-                    //navController.navigate(route + "_detail_screen/${post.postNum}")
-                }
                 .padding(2.dp),
             contentAlignment = Alignment.BottomEnd
         ) {

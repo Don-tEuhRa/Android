@@ -94,6 +94,7 @@ fun StoreShoppingCartScreen(navController: NavController) {
                 price = "119700",
                 onClick = {
                     // 페이지 이동
+                    navController.navigate("storePay")
                 }
             )
         }
