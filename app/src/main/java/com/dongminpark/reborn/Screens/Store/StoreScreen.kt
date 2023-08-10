@@ -1,5 +1,8 @@
 package com.dongminpark.reborn.Screens
 
+import android.app.Activity
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -8,6 +11,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -18,25 +22,31 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.dongminpark.reborn.Buttons.FavoriteListButton
 import com.dongminpark.reborn.Buttons.ReBorn
 import com.dongminpark.reborn.Buttons.ShoppingCart
 import com.dongminpark.reborn.Frames.productFrame
+import com.dongminpark.reborn.Utils.BackOnPressed
 
 @Composable
 fun StoreScreen(navController: NavController) {
     val ItemList by remember { mutableStateOf(mutableListOf(1, 2, 3,4,5,6,7,8,9,10)) }
-    var buttons by remember { mutableStateOf(mutableListOf("상의", "하의", "잡화")) }
+    var buttons by remember { mutableStateOf(mutableListOf("전체", "상의", "하의", "잡화")) }
     var selectedButtonIndex by rememberSaveable { mutableStateOf(0) }
 
+    BackOnPressed()
 
     Column() {
         TopAppBar(
@@ -47,9 +57,9 @@ fun StoreScreen(navController: NavController) {
             Spacer(modifier = Modifier.weight(1f))
             SearchBar{}
             Spacer(modifier = Modifier.weight(1f))
-            FavoriteListButton()
+            FavoriteListButton(){navController.navigate("storeLikeList")}
             Spacer(modifier = Modifier.weight(1f))
-            ShoppingCart()
+            ShoppingCart(){navController.navigate("storeShoppingCart")}
         }
         Divider(color = Color.Black, thickness = 1.dp)
 
@@ -67,6 +77,7 @@ fun StoreScreen(navController: NavController) {
                             height = 35.dp
                         ),
                         onClick = {
+                            selectedButtonIndex = index
                             /*
                             loadPost = false
                             postList.clear()
@@ -104,29 +115,10 @@ fun StoreScreen(navController: NavController) {
                 .padding(horizontal = 10.dp)
                 .padding(top = 5.dp),
             columns = GridCells.Fixed(2),
-            //state = scrollState
         ) {
             items(ItemList) { post ->
-                productFrame(post, navController, "community", true, true, true)
+                productFrame(post, navController, "store")
             }
-
-
-            // 무한 스크롤
-            /*
-            if (scrollState.isScrollInProgress && (scrollState.layoutInfo.visibleItemsInfo.lastOrNull()?.index == postList.size - 1) && loadPost && postList.size == display) {
-                loadPost = false
-                if (!searchState){
-
-                }else {
-                    if (label == buttons[0]) {
-                        postpopular(start, display, postList)
-                    } else postfilter(label, start, display, postList)
-                }
-                start += 20
-                display += 20
-            }
-
-             */
         }
     }
 }
@@ -138,6 +130,7 @@ fun SearchBar(onSearch: (String) -> Unit) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
     TextFieldFormat(
+        modifier = Modifier.size(width = 200.dp, height = 60.dp),
         text = searchText,
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
         keyboardActions = KeyboardActions(onSearch = {
@@ -157,18 +150,18 @@ fun TextFieldFormat(modifier: Modifier = Modifier, keyboardOptions: KeyboardOpti
         unfocusedIndicatorColor = Color.Transparent,
         disabledIndicatorColor = Color.Transparent
     )
-
     TextField(
         value = text,
         onValueChange = {
             onValueChange(it)
         },
         modifier = modifier
+            .fillMaxSize()
             .border(
                 BorderStroke(1.dp, Color.Gray),
                 shape = RoundedCornerShape(12.dp)
-            )
-            .fillMaxWidth(0.8f),
+            ),
+
         maxLines = if (isSingle) 1 else 100,
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,
@@ -189,4 +182,30 @@ fun search(
     }
     focusManager.clearFocus()
     keyboardController?.hide()
+}
+
+
+@Preview
+@Composable
+fun StoreScreenPreview() {
+    StoreScreen(navController = rememberNavController())
+}
+
+@Preview
+@Composable
+fun SearchBarPreview() {
+    val text = "안녕하세요"
+
+    BasicTextField(
+        modifier = Modifier
+            .size(width = 120.dp, height = 40.dp)
+            .border(
+                BorderStroke(1.dp, Color.Gray),
+                shape = RoundedCornerShape(12.dp)
+            ),
+        value = text,
+        onValueChange = {
+
+        },
+    )
 }

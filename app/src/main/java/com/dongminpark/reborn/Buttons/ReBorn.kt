@@ -8,5 +8,5 @@ import com.dongminpark.reborn.Frames.TextFormat
 
 @Composable
 fun ReBorn() {
-    TextFormat(text = "Re:Born", fontWeight = FontWeight.Bold)
+    TextFormat(text = "Re:Born", size = 30,fontWeight = FontWeight.Bold)
 }

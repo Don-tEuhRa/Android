@@ -1,6 +1,7 @@
 package com.dongminpark.reborn.Screens
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -25,6 +26,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
+import com.dongminpark.reborn.App
 import com.dongminpark.reborn.Buttons.*
 import com.dongminpark.reborn.Frames.TextFormat
 import com.dongminpark.reborn.R
@@ -50,10 +52,10 @@ fun StoreDetailScreen(navController: NavController) {
                 ReBorn()
                 Spacer(modifier = Modifier.weight(1f))
                 Box(contentAlignment = Alignment.CenterEnd) {
-                    Row {
-                        FavoriteListButton()
-                        Spacer(modifier = Modifier.size(10.dp))
-                        ShoppingCart()
+                    Row{
+                        FavoriteListButton{navController.navigate("storeLikeList")}
+                        Spacer(modifier = Modifier.width(12.dp))
+                        ShoppingCart{navController.navigate("storeShoppingCart")}
                     }
                 }
             }
@@ -82,11 +84,17 @@ fun StoreDetailScreen(navController: NavController) {
                 ) {
                     TextButtonFormat(modifier = Modifier.padding(8.dp),heightSize = 40, widthSize = 132, shape = RoundedCornerShape(12.dp), text = "장바구니 담기") {
                         // api 어쩌구~
+                        Toast.makeText(
+                            App.instance,
+                            "장바구니에 담겼습니다.",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        FavoriteButton()
+                        FavoriteButton(true)
                         TextButtonFormat(modifier = Modifier.padding(8.dp), heightSize = 40, widthSize = 100, shape = RoundedCornerShape(12.dp), text = "구매하기") {
                             // api 어쩌구~
+                            navController.navigate("storePay")
                         }
                     }
                 }
