@@ -19,7 +19,7 @@ import com.dongminpark.reborn.Utils.Constants.TAG
 @Composable
 fun StoreShoppingCartScreen(navController: NavController) {
     val itemList by remember { mutableStateOf(mutableListOf(1, 2, 3)) }
-    var selectedItems by remember { mutableStateOf(List(itemList.size) { false }) }
+    var selectedItems by remember { mutableStateOf(List(itemList.size) { true }) }
     var allSelected by remember {
         mutableStateOf(selectedItems.count { it } == selectedItems.size)
     }

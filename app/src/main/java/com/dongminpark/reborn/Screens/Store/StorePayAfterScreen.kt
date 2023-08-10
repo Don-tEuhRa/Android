@@ -6,6 +6,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -14,6 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.dongminpark.reborn.Buttons.TextButtonFormat
 import com.dongminpark.reborn.Frames.*
 import com.dongminpark.reborn.Utils.SpacerHeight
 
@@ -77,6 +79,16 @@ fun StorePayAfterScreen(navController: NavController) {
 
             item {
                 // 스토어로 돌아가는 버튼
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center){
+                    TextButtonFormat(text = "스토어로 돌아가기", widthSize = 120, shape = RoundedCornerShape(8.dp)) {
+                        navController.navigate("store")
+                    }
+                }
+
+            }
+            
+            item {
+                SpacerHeight()
             }
         }
     }
