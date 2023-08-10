@@ -2,11 +2,13 @@ package com.dongminpark.reborn.Screens.Store
 
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -47,7 +49,7 @@ fun StoreShoppingCartScreen(navController: NavController) {
                             // 체크버튼
                             CheckBoxButton(allSelected, onClick = {
                                 allSelected = !allSelected
-                                
+
                                 selectedItems.forEachIndexed { index, _ ->
                                     selectedItems = selectedItems.toMutableList()
                                         .also { it[index] = allSelected }
@@ -55,11 +57,18 @@ fun StoreShoppingCartScreen(navController: NavController) {
 
                             })
                             // 전체선택
-                            TextFormat(text = "전체선택", size = 16)
+                            TextFormat(text = "전체선택", size = 16, fontWeight = FontWeight.ExtraBold)
                         }
 
-                        // 오른쪽 끝 선택 삭제
-                        TextFormat(text = "선택삭제", size = 16)
+                        // 선택 삭제
+                        TextFormat(
+                            modifier = Modifier.clickable { // 체크된 리스트 삭제 api 호출
+
+                            },
+                            text = "선택삭제",
+                            size = 16,
+                            fontWeight = FontWeight.ExtraBold
+                        )
                     }
                 }
 
@@ -74,7 +83,8 @@ fun StoreShoppingCartScreen(navController: NavController) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             // item 체크버튼
                             CheckBoxButton(selectedItems[item], onClick = {
-                                selectedItems = selectedItems.toMutableList().also { it[item] = !selectedItems[item] }
+                                selectedItems = selectedItems.toMutableList()
+                                    .also { it[item] = !selectedItems[item] }
                                 allSelected = selectedItems.count { it } == selectedItems.size
                             })
 

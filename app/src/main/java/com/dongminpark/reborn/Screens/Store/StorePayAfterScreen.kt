@@ -40,8 +40,8 @@ fun StorePayAfterScreen(navController: NavController) {
 
             item {
                 Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
-                    TextFormat(text = "주문해 주셔서 감사합니다.", size = 28)
-                    TextFormat(modifier = Modifier.padding(8.dp), text = "Re:Born과 함께 나눔에 동참해주셔서 감사합니다.", size = 16)
+                    TextFormat(text = "주문이 완료되었습니다", size = 28)
+                    TextFormat(modifier = Modifier.padding(8.dp), text = "Re:Born과 함께 나눔에 동참해주셔서 감사합니다", size = 16)
                 }
             }
 
@@ -70,7 +70,7 @@ fun StorePayAfterScreen(navController: NavController) {
             }
 
             item {
-                FinalPayPriceFrame(12000, 1200)
+                FinalPayPriceFrame(price = 12000, point = 1200)
             }
 
             item {
@@ -86,7 +86,7 @@ fun StorePayAfterScreen(navController: NavController) {
                 }
 
             }
-            
+
             item {
                 SpacerHeight()
             }
@@ -96,9 +96,7 @@ fun StorePayAfterScreen(navController: NavController) {
 
 @Composable
 fun BackToStore(navController: NavController) {
-    var backPressedState by remember { mutableStateOf(true) }
-
-    BackHandler(enabled = backPressedState) {
+    BackHandler(enabled = true) {
         navController.navigate("store")
     }
 }

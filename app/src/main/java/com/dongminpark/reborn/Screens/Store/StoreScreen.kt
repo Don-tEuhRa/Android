@@ -38,6 +38,7 @@ import com.dongminpark.reborn.Buttons.FavoriteListButton
 import com.dongminpark.reborn.Buttons.ReBorn
 import com.dongminpark.reborn.Buttons.ShoppingCart
 import com.dongminpark.reborn.Frames.productFrame
+import com.dongminpark.reborn.Utils.BackOnPressed
 
 @Composable
 fun StoreScreen(navController: NavController) {
@@ -45,6 +46,7 @@ fun StoreScreen(navController: NavController) {
     var buttons by remember { mutableStateOf(mutableListOf("전체", "상의", "하의", "잡화")) }
     var selectedButtonIndex by rememberSaveable { mutableStateOf(0) }
 
+    BackOnPressed()
 
     Column() {
         TopAppBar(

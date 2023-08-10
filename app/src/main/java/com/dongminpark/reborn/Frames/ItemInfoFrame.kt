@@ -1,5 +1,6 @@
 package com.dongminpark.reborn.Frames
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +14,9 @@ import androidx.compose.ui.unit.dp
 fun ItemInfoFrame(item: String) {
     Row(
         modifier = Modifier
+            .clickable {
+
+            }
             .padding(horizontal = 0.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
