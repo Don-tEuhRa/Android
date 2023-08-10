@@ -1,14 +1,15 @@
 package com.dongminpark.reborn.Screens.Store
 
+import android.app.Activity
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -19,6 +20,8 @@ import com.dongminpark.reborn.Utils.SpacerHeight
 @Composable
 fun StorePayAfterScreen(navController: NavController) {
     val itemList by remember { mutableStateOf(mutableListOf(1, 2, 3)) }
+
+    BackToStore(navController)
 
     Column() {
         SingleTitleTopAppBarFormat("장바구니")
@@ -78,6 +81,16 @@ fun StorePayAfterScreen(navController: NavController) {
         }
     }
 }
+
+@Composable
+fun BackToStore(navController: NavController) {
+    var backPressedState by remember { mutableStateOf(true) }
+
+    BackHandler(enabled = backPressedState) {
+        navController.navigate("store")
+    }
+}
+
 
 @Preview
 @Composable

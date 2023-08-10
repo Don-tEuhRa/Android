@@ -52,8 +52,9 @@ fun StoreDetailScreen(navController: NavController) {
                 ReBorn()
                 Spacer(modifier = Modifier.weight(1f))
                 Box(contentAlignment = Alignment.CenterEnd) {
-                    Row {
+                    Row{
                         FavoriteListButton{navController.navigate("storeLikeList")}
+                        Spacer(modifier = Modifier.width(12.dp))
                         ShoppingCart{navController.navigate("storeShoppingCart")}
                     }
                 }

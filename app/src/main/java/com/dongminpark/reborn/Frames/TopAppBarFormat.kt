@@ -18,7 +18,7 @@ fun SingleTitleTopAppBarFormat(title: String) {
         contentPadding = PaddingValues(8.dp)
     ) {
         ReBorn()
-        Spacer(modifier = Modifier.fillMaxWidth(0.25f))
+        Spacer(modifier = Modifier.fillMaxWidth(0.2f))
         TextFormat(text = title)
     }
     Divider(color = Color.Black, thickness = 1.dp)
