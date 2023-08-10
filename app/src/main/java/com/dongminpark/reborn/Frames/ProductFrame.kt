@@ -11,16 +11,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.dongminpark.reborn.Buttons.FavoriteButton
-//import com.dongminpark.projectgd.Model.Post
 
 @Composable
 fun productFrame(
     item: Int,
     navController: NavController,
     route: String,
-    bookmark: Boolean,
-    isMe: Boolean,
-    userIsMe: Boolean,
     name: String = "반팔티셔츠",
     price: Int = 10000,
 ) {
@@ -37,10 +33,8 @@ fun productFrame(
             contentAlignment = Alignment.BottomEnd
         ) {
             ImageFormat(url = "")
-            if (userIsMe && isMe) {
-                Box(modifier = Modifier.padding(8.dp)) {
-                    FavoriteButton()
-                }
+            Box(modifier = Modifier.padding(8.dp)) {
+                FavoriteButton(true)
             }
         }
         Text(

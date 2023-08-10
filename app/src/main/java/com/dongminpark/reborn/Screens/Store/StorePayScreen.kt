@@ -1,32 +1,24 @@
 package com.dongminpark.reborn.Screens.Store
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.dongminpark.reborn.Buttons.CheckBoxButton
-import com.dongminpark.reborn.Buttons.ClearTextButton
 import com.dongminpark.reborn.Buttons.LongTextButtonFormat
 import com.dongminpark.reborn.Buttons.TextButtonFormat
 import com.dongminpark.reborn.Frames.*
+import com.dongminpark.reborn.Utils.SpacerHeight
 
 @Composable
 fun StorePayScreen(navController: NavController) {
     val itemList by rememberSaveable { mutableStateOf(mutableListOf(1, 2, 3)) }
-    var selectedPayment by rememberSaveable { mutableStateOf("none") }
+    var selectedPayment by rememberSaveable { mutableStateOf("Card") }
 
     Column() {
         SingleTitleTopAppBarFormat("장바구니")
@@ -35,10 +27,18 @@ fun StorePayScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 12.dp, vertical = 0.dp),
-            verticalArrangement = Arrangement.SpaceBetween
+            verticalArrangement = Arrangement.SpaceAround
         ) {
             item {
+                SpacerHeight()
+            }
+
+            item {
                 UserInfoFrame(name = "박동민", phone = "010-2245-3683", address = "수원시 장안구 연무동 123-456")
+            }
+
+            item{
+                SpacerHeight()
             }
 
             item {
@@ -48,6 +48,10 @@ fun StorePayScreen(navController: NavController) {
                 itemList.forEach{item ->
                     ItemInfoFrame(item = item.toString())
                 }
+            }
+
+            item{
+                SpacerHeight()
             }
 
             item {
@@ -63,6 +67,10 @@ fun StorePayScreen(navController: NavController) {
                     TextFormat(text = "사용 포인트", size = 12)
                     TextFormat(text = "1200", size = 12) // textField로 변경
                 }
+            }
+
+            item{
+                SpacerHeight()
             }
 
             item {
@@ -108,8 +116,16 @@ fun StorePayScreen(navController: NavController) {
                 }
             }
 
+            item{
+                SpacerHeight()
+            }
+
             item {
                 FinalPayPriceFrame(12000, 1200)
+            }
+
+            item{
+                SpacerHeight()
             }
 
             item {

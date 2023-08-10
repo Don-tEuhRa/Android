@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.dongminpark.reborn.Frames.*
+import com.dongminpark.reborn.Utils.SpacerHeight
 
 @Composable
 fun StorePayAfterScreen(navController: NavController) {
@@ -25,22 +26,31 @@ fun StorePayAfterScreen(navController: NavController) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(12.dp),
+                .padding(horizontal = 12.dp, vertical = 0.dp),
             verticalArrangement = Arrangement.SpaceAround
         ){
             item {
+                SpacerHeight()
+            }
+
+            item {
                 Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
                     TextFormat(text = "주문해 주셔서 감사합니다.", size = 28)
-                    TextFormat(text = "구매금액의 5%는 환경보호를 위해 기부됩니다", size = 16)
-                    TextFormat(text = "리본과 함께 나눔에 동참해주셔서 감사합니다.", size = 16)
+                    TextFormat(modifier = Modifier.padding(8.dp), text = "Re:Born과 함께 나눔에 동참해주셔서 감사합니다.", size = 16)
                 }
+            }
+
+            item {
+                SpacerHeight()
             }
 
             item{
                 UserInfoFrame(name = "박동민", phone = "010-2245-3683", address = "수원시 장안구 연무동 123-456")
             }
 
-
+            item {
+                SpacerHeight()
+            }
 
             item {
                 TextFormat(text = "상품 정보")
@@ -51,7 +61,19 @@ fun StorePayAfterScreen(navController: NavController) {
             }
 
             item {
+                SpacerHeight()
+            }
+
+            item {
                 FinalPayPriceFrame(12000, 1200)
+            }
+
+            item {
+                SpacerHeight()
+            }
+
+            item {
+                // 스토어로 돌아가는 버튼
             }
         }
     }

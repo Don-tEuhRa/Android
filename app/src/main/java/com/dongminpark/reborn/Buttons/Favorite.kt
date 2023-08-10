@@ -11,8 +11,8 @@ import com.dongminpark.reborn.Utils.Constants.TAG
 
 // 좋아요 버튼
 @Composable
-fun FavoriteButton() {
-    var isFavorite by rememberSaveable { mutableStateOf(false) }
+fun FavoriteButton(isFavorite: Boolean) {
+    var isFavorite by rememberSaveable { mutableStateOf(isFavorite) }
     val icon = if (isFavorite) R.drawable.heart_filled else R.drawable.heart_outline
 
     ButtonFormat(

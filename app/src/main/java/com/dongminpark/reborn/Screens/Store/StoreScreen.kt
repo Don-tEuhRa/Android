@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -21,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
@@ -109,7 +111,7 @@ fun StoreScreen(navController: NavController) {
             columns = GridCells.Fixed(2),
         ) {
             items(ItemList) { post ->
-                productFrame(post, navController, "store", true, true, true)
+                productFrame(post, navController, "store")
             }
         }
     }
@@ -122,6 +124,7 @@ fun SearchBar(onSearch: (String) -> Unit) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
     TextFieldFormat(
+        modifier = Modifier.size(width = 200.dp, height = 60.dp),
         text = searchText,
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
         keyboardActions = KeyboardActions(onSearch = {
@@ -141,18 +144,18 @@ fun TextFieldFormat(modifier: Modifier = Modifier, keyboardOptions: KeyboardOpti
         unfocusedIndicatorColor = Color.Transparent,
         disabledIndicatorColor = Color.Transparent
     )
-
     TextField(
         value = text,
         onValueChange = {
             onValueChange(it)
         },
         modifier = modifier
+            .fillMaxSize()
             .border(
                 BorderStroke(1.dp, Color.Gray),
                 shape = RoundedCornerShape(12.dp)
-            )
-            .fillMaxWidth(0.8f),
+            ),
+
         maxLines = if (isSingle) 1 else 100,
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,
@@ -180,4 +183,23 @@ fun search(
 @Composable
 fun StoreScreenPreview() {
     StoreScreen(navController = rememberNavController())
+}
+
+@Preview
+@Composable
+fun SearchBarPreview() {
+    val text = "안녕하세요"
+
+    BasicTextField(
+        modifier = Modifier
+            .size(width = 120.dp, height = 40.dp)
+            .border(
+                BorderStroke(1.dp, Color.Gray),
+                shape = RoundedCornerShape(12.dp)
+            ),
+        value = text,
+        onValueChange = {
+
+        },
+    )
 }

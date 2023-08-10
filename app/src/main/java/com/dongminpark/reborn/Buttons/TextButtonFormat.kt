@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -40,7 +39,11 @@ fun TextButtonFormat(
 }
 
 @Composable
-fun LongTextButtonFormat(count: Int, price: String, onClick: () -> Unit) { // 매개변수 text값, onClick매서드
+fun LongTextButtonFormat(
+    count: Int,
+    price: String,
+    onClick: () -> Unit
+) { // 매개변수 text값, onClick매서드
     TextButton(
         modifier = Modifier
             .padding(8.dp)

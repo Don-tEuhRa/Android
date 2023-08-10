@@ -61,7 +61,7 @@ fun StoreLikeListScreen(navController: NavController) {
 
 
             items(itemList) { post ->
-                productFrame(post, navController, "community", true, true, true)
+                productFrame(post, navController, "community")
             }
         }
     }
