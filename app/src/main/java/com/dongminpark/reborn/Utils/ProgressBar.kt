@@ -36,59 +36,60 @@ fun ProgressBar(name: String, count: Int, progress: String) {
         }
         "수거중" -> {
             state = "여행하는 중"
-            firtStep = ProgressStep("수거 완료", Point, R.drawable.shopping_outline, Color.White)
-            progressPercent = 75
+            firtStep = ProgressStep("수거 중", Point, R.drawable.shopping_outline, Color.White)
+            progressPercent = 100
         }
         "검수중" -> {
             state = "꿈을 찾는 중"
             firtStep = ProgressStep("수거 완료", Point)
-            secondStep = ProgressStep("검수 완료", Point, R.drawable.shopping_outline, Color.White)
-            progressPercent = 140
+            secondStep = ProgressStep("검수 중", Point, R.drawable.shopping_outline, Color.White)
+            progressPercent = 160
         }
         "리폼중" -> {
             state = "꽃단장 하는 중"
             firtStep = ProgressStep("수거 완료", Point)
             secondStep = ProgressStep("검수 완료", Point)
-            thirdStep = ProgressStep("리폼 완료", Point, R.drawable.shopping_outline, Color.White)
-            progressPercent = 210
+            thirdStep = ProgressStep("리폼 중", Point, R.drawable.shopping_outline, Color.White)
+            progressPercent = 230
         }
         "판매중" -> {
             state = "새로운 주인을 기다리는 중"
             firtStep = ProgressStep("수거 완료", Point)
             secondStep = ProgressStep("검수 완료", Point)
             thirdStep = ProgressStep("리폼 완료", Point)
-            fourthStep = ProgressStep("판매 완료", Point, R.drawable.shopping_outline, Color.White)
-            progressPercent = 265
+            fourthStep = ProgressStep("판매 중", Point, R.drawable.shopping_outline, Color.White)
+            progressPercent = 300
         }
         "기부완료" -> {
-            state = "${name}님의 따뜻한 마음을 전달했어요"
-            progressPercent = 280
+            state = "리본과 함께 따뜻한 마음을 전달했어요"
+            progressPercent = 320
         }
     }
 
     Box(
         modifier = Modifier
-            .size(height = 160.dp, width = 320.dp)
+            .size(height = 160.dp, width = 360.dp)
             .border(1.dp, color = Color.Black, shape = RoundedCornerShape(12.dp))
-            .background(ProgressBGColor, shape = RoundedCornerShape(12.dp)),
+            .background(ProgressBGColor, shape = RoundedCornerShape(12.dp))
+            .padding(0.dp),
         contentAlignment = Alignment.TopCenter
     ) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().padding(16.dp),
             verticalArrangement = Arrangement.SpaceEvenly,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(
-                modifier = Modifier
-                .size(height = 36.dp, width = 280.dp),
+                modifier = Modifier.fillMaxWidth(),
+                //.size(height = 36.dp, width = 280.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                TextFormat(text = "${name}님이 ${count}번째 기부하신 물건이\n${state} ~!!", size = 12)
-                Icon(modifier = Modifier.size(32.dp), painter = painterResource(id = R.drawable.heart_filled), contentDescription = "heart_filled")
+                TextFormat(text = "${name}님이 ${count}번째 기부하신 물건이\n${state} ~!!", size = 16)
+                Icon(modifier = Modifier.size(48.dp), painter = painterResource(id = R.drawable.heart_filled), contentDescription = "heart_filled")
             }
 
             val size = 30
-            Row(modifier = Modifier.size(height = 32.dp, width = 300.dp), horizontalArrangement = Arrangement.SpaceAround) {
+            Row(modifier = Modifier.size(height = 32.dp, width = 320.dp), horizontalArrangement = Arrangement.SpaceAround) {
                 Spacer(modifier = Modifier.size(size.dp))
                 //Icon(modifier = Modifier.size(size.dp), painter = painterResource(id = R.drawable.shopping_outline), contentDescription = "test", tint = ProgressBGColor)
                 Icon(modifier = Modifier.size(size.dp), painter = painterResource(id = firtStep.iconPainter), contentDescription = "test", tint = firtStep.iconColor)
@@ -101,7 +102,7 @@ fun ProgressBar(name: String, count: Int, progress: String) {
                 Column() {
                     Box(
                         modifier = Modifier
-                            .size(height = 12.dp, width = 280.dp)
+                            .size(height = 12.dp, width = 320.dp)
                             .background(Color.White, shape = CircleShape)
                     ) {
                         Row(
@@ -136,7 +137,7 @@ fun ProgressBar(name: String, count: Int, progress: String) {
                         )
                     }
                     Row(
-                        modifier = Modifier.size(height = 12.dp, width = 280.dp),
+                        modifier = Modifier.size(height = 12.dp, width = 320.dp),
                         horizontalArrangement = Arrangement.SpaceAround,
                     ) {
                         TextFormat(text = firtStep.state, size = 8)
