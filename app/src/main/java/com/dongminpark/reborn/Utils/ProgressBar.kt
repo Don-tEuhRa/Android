@@ -1,17 +1,20 @@
 package com.dongminpark.reborn.Utils
 
 import android.graphics.drawable.Icon
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -20,6 +23,9 @@ import com.dongminpark.reborn.Frames.TextFormat
 import com.dongminpark.reborn.R
 import com.dongminpark.reborn.ui.theme.Point
 import com.dongminpark.reborn.ui.theme.ProgressBGColor
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.rememberPagerState
 
 @Composable
 fun ProgressBar(name: String, count: Int, progress: String) {
@@ -70,8 +76,7 @@ fun ProgressBar(name: String, count: Int, progress: String) {
         modifier = Modifier
             .size(height = 160.dp, width = 360.dp)
             .border(1.dp, color = Color.Black, shape = RoundedCornerShape(12.dp))
-            .background(ProgressBGColor, shape = RoundedCornerShape(12.dp))
-            .padding(0.dp),
+            .background(ProgressBGColor, shape = RoundedCornerShape(12.dp)),
         contentAlignment = Alignment.TopCenter
     ) {
         Column(
@@ -148,6 +153,45 @@ fun ProgressBar(name: String, count: Int, progress: String) {
                 }
             }
         }
+    }
+}
+
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+fun ProgressBarPager(info: MutableList<ProgressStep>) {
+    val nowImageIndex = rememberPagerState(0)
+    val circle = painterResource(id = R.drawable.circle)
+    // 사진 갯수따라 동적인 변화 필요
+    var indexIcons: List<Painter> = listOf()
+
+    repeat(info.size) {
+        indexIcons = indexIcons.plus(circle)
+    }
+
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.BottomCenter
+    ) {
+        HorizontalPager(
+            count = info.size,
+            state = nowImageIndex
+        ) { page ->
+            ProgressBar("박동민", 2, "리폼중")
+        }
+        Row(modifier = Modifier.padding(3.dp)) {
+            indexIcons.forEachIndexed { index, icon ->
+                Icon(
+                    modifier = Modifier
+                        .size(15.dp)
+                        .padding(2.dp),
+                    painter = icon,
+                    contentDescription = "Index Icon",
+                    tint = if (index == nowImageIndex.currentPage) MaterialTheme.colors.primaryVariant
+                    else MaterialTheme.colors.secondary
+                )
+            }
+        }
+
     }
 }
 
