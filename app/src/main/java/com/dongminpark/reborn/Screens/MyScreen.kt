@@ -29,6 +29,7 @@ import androidx.navigation.compose.rememberNavController
 import com.dongminpark.reborn.R
 import com.dongminpark.reborn.Utils.IntroductionDetail
 import com.dongminpark.reborn.Utils.MainContents
+import com.dongminpark.reborn.Utils.customerServiceCenter
 
 //화면전환(기부,주문내역), 회원정보수정
 //사용자이름, 기부금액, 마일리지금액,기부현황진행사항 갯수, 진행현황 임시텍스트로 대체해둠
@@ -204,6 +205,8 @@ fun myView(introduction: List<IntroductionDetail>){
             myDonateOrder()
             Spacer(modifier = Modifier.height(140.dp))
             myInquiry()
+            Spacer(modifier = Modifier.height(8.dp))
+            rebornAppBarDetailBottom(customerServiceCenter = MainContents.customerServiceCenter)
         }
     }
 }
@@ -318,6 +321,32 @@ fun myInquiry(){
             Spacer(modifier = Modifier.width(16.dp))
             Column() {
                 Text(text = "Re:Born 문의하기")
+            }
+        }
+    }
+}
+
+@Composable
+fun rebornAppBarDetailBottom(customerServiceCenter: List<customerServiceCenter>){
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
+        customerServiceCenter.forEach { serviceContent ->
+            Row(verticalAlignment = Alignment.Top) {
+                Spacer(modifier = Modifier.width(16.dp))
+                Image(painter = painterResource(id = R.drawable.baseline_call_24),
+                    contentDescription = null)
+                Spacer(modifier = Modifier.width(16.dp))
+                Column() {
+                    Text(text = serviceContent.title,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(text = serviceContent.date)
+                    Text(text = serviceContent.time)
+                }
             }
         }
     }
