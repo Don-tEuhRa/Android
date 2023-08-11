@@ -177,7 +177,7 @@ fun introductionViewDetail(introduction: List<IntroductionDetail>){
         Spacer(modifier = Modifier.height(40.dp))
         checklist()
         Spacer(modifier = Modifier.height(60.dp))
-        rebornAppBarDetailBottom(customerServiceCenter = MainContents.customerServiceCenter)
+
     }
 }
 
@@ -473,42 +473,6 @@ fun checklist(){
         }
     }
 }
-
-@Composable
-fun rebornAppBarDetailBottom(customerServiceCenter: List<customerServiceCenter>){
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxSize()
-            .background(Color.White)
-    ) {
-        customerServiceCenter.forEach { serviceContent ->
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Spacer(modifier = Modifier.width(16.dp))
-                Image(painter = painterResource(id = R.drawable.baseline_call_24),
-                    contentDescription = null)
-                Spacer(modifier = Modifier.width(16.dp))
-                Column() {
-                    Text(text = serviceContent.title,
-                        fontWeight = FontWeight.Bold,
-                        style = TextStyle(
-                            color = Color.Gray
-                        )
-                    )
-                    Text(text = serviceContent.date,
-                        style = TextStyle(
-                            color = Color.Gray
-                        ))
-                    Text(text = serviceContent.time,
-                        style = TextStyle(
-                            color = Color.Gray
-                        ))
-                }
-            }
-        }
-    }
-}
-
 
 @Preview(showBackground = true)
 @Composable
