@@ -1,6 +1,9 @@
 package com.dongminpark.reborn.Screens
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -11,9 +14,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,68 +55,68 @@ fun rebornAppBar(){
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun MainScreen(navController: NavController) {
+fun MainScreen(
+    modifier: Modifier = Modifier,
+    introductions: List<Introduction>,
+    navController: NavController
+) {
     Surface(color = Color.White) {
         Scaffold(backgroundColor = Color.White,
             topBar = { rebornAppBar() }
         ) {
-            val introductionState = remember { mutableStateListOf(*MainContents.introMain.toTypedArray()) }
-            introductionView(introduction = introductionState, navController = navController as NavHostController)
+            Column(
+                modifier = modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            ) {
+                Spacer(modifier = Modifier.height(12.dp))
+                ProgressBarPager(mutableListOf(ProgressStep(state = "리폼중"),ProgressStep(state = "리폼중"),ProgressStep(state = "리폼중")))
+                Spacer(modifier = Modifier.height(24.dp))
+                introductions.forEach { introduction ->
+                    introductionView(aIntro = introduction, navController = navController as NavHostController)
+                }
+            }
         }
     }
 }
 
 @Composable
-fun introductionView(introduction: List<Introduction>, navController: NavHostController){
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 0.dp, vertical = 0.dp),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
+fun introductionView(aIntro: Introduction, navController: NavHostController){
+    var expanded by remember { mutableStateOf(false) }
+
+    val extraPadding by animateDpAsState(
+        if (expanded) 15.dp else 0.dp,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        ),
+    )
+
+    Surface(
+        color = aIntro.color,
+        shape = RoundedCornerShape(8.dp),
+        modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
     ) {
-        item {
-            Spacer(modifier = Modifier.height(12.dp))
-            //ProgressBar("박동민", 2, "기부완료")
-            ProgressBarPager(mutableListOf(ProgressStep(state = "리폼중"),ProgressStep(state = "리폼중"),ProgressStep(state = "리폼중")))
-        }
-        items(introduction){ aIntro->
-            Button(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp),
-                contentPadding = PaddingValues(bottom = 50.dp),
-                colors= ButtonDefaults.buttonColors(
-                    backgroundColor = aIntro.color,
-                    contentColor = Color.White
-                ),
-                onClick = {
-                    aIntro.isSubtitleDisplayed = !aIntro.isSubtitleDisplayed
-                    navController.navigate("mainScreenDetail")
-                }) {
-                Column(
-                    modifier = Modifier.padding(20.dp)
-                ) {
-                    Text(text = aIntro.title,
-                        modifier = Modifier.fillMaxWidth(),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp
-                    )
-                    if (aIntro.isSubtitleDisplayed) {
-                        Text(
-                            text = aIntro.subtitle,
-                            modifier = Modifier.fillMaxWidth(),
-                            lineHeight = 20.sp
-                        )
-                    } else {
-                        Text(
-                            text = aIntro.content,
-                            modifier = Modifier.fillMaxWidth(),
-                            lineHeight = 20.sp
-                        )
-                    }
+        Row(modifier = Modifier.padding(24.dp)) {
+            Column(modifier = Modifier
+                .weight(1f)
+                .padding(bottom = extraPadding.coerceAtLeast(0.dp))
+            ) {
+                Text(text = aIntro.title)
+                Text(text = aIntro.subtitle)
+                if (expanded) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(text = aIntro.content)
                 }
+            }
+            Button(
+                onClick = { expanded = !expanded },
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = Color.White,
+                    contentColor = Color.Black
+                )
+            ) {
+                Text(if (expanded) "close" else "click")
             }
         }
     }
@@ -514,16 +515,8 @@ fun rebornAppBarDetailBottom(customerServiceCenter: List<customerServiceCenter>)
 fun MainScreenPreview() {
     ReBornTheme {
         val navController = rememberNavController()
-        MainScreen(navController)
+        MainScreen(modifier = Modifier, introductions = MainContents.introMain,navController)
 
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun mainScreenDetailPreview() {
-    ReBornTheme {
-        val navController = rememberNavController()
-        mainScreenDetail(navController = navController)
-    }
-}

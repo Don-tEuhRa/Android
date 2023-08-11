@@ -24,6 +24,7 @@ import com.dongminpark.reborn.Screens.Store.StoreLikeListScreen
 import com.dongminpark.reborn.Screens.Store.StorePayAfterScreen
 import com.dongminpark.reborn.Screens.Store.StorePayScreen
 import com.dongminpark.reborn.Screens.Store.StoreShoppingCartScreen
+import com.dongminpark.reborn.Utils.MainContents
 import java.lang.Exception
 
 
@@ -106,7 +107,7 @@ fun MainScreenView(startDestination: String) {
             ) {
                 // Main
                 composable(MainNavigationScreens.Main.route) {
-                    MainScreen(navController = navController)
+                    MainScreen(modifier = Modifier, introductions = MainContents.introMain,navController = navController)
                 }
 
                 // Donate

@@ -34,14 +34,16 @@ data class customerServiceCenter(
 
 object MainContents {
     val introMain= listOf(
-        Introduction("Reborn! 이용가이드 :", "어떻게 진행되나요?"
-            ,"수거신청하고, 문앞에 두면 끝", color = Color(0xff78C1F3)),
-        Introduction("기부 안내:", "어디에 기부되나요?"
-            ,"안녕하십니까",color = Color(0xff374259)),
-        Introduction("이용방법 3", "어떻게 이용할 수 있나요?"
-            ,"잘지내시나요",color = Color(0xff45CFDD)),
-        Introduction("이용방법 4", "어떻게 이용할 수 있나요?"
-            ,"반갑습니다",color = Color(0xff9BABB8))
+        Introduction("Re:Born", "어떤 앱인가요?"
+            ,"어쩌고저쩌고어쩌고저쩌고어쩌고저쩌고어쩌고저쩌고어쩌고저쩌고어쩌고저쩌고어쩌고저쩌고" +
+                    "어쩌고저쩌고어쩌고저쩌고어쩌고저쩌고어쩌고저쩌고어쩌고저쩌고어쩌고저쩌고어쩌고저쩌고",
+                    color = Color(0xff78C1F3)),
+        Introduction("신청방법 : ", "이용가이드"
+            ,"신청방법내용 전달",color = Color(0xff374259)),
+        Introduction("기부", "어떤식으로 진행되나요?"
+            ,"옷 받아서 뭘 가공하고 어떻게 하고 어떻게 기부하는지",color = Color(0xff45CFDD)),
+        Introduction("수익금", "어떻게 사용되나요?"
+            ,"기부한다",color = Color(0xff9BABB8))
     )
 
     val introMainDetail= listOf(
