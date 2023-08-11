@@ -33,10 +33,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.dongminpark.reborn.R
-import com.dongminpark.reborn.Utils.Introduction
-import com.dongminpark.reborn.Utils.IntroductionDetail
-import com.dongminpark.reborn.Utils.MainContents
-import com.dongminpark.reborn.Utils.customerServiceCenter
+import com.dongminpark.reborn.Utils.*
 import com.dongminpark.reborn.ui.theme.ReBornTheme
 
 //main에서 detail 화면전환
@@ -77,6 +74,11 @@ fun introductionView(introduction: List<Introduction>, navController: NavHostCon
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        item {
+            Spacer(modifier = Modifier.height(12.dp))
+            //ProgressBar("박동민", 2, "기부완료")
+            ProgressBarPager(mutableListOf(ProgressStep(state = "리폼중"),ProgressStep(state = "리폼중"),ProgressStep(state = "리폼중")))
+        }
         items(introduction){ aIntro->
             Button(
                 modifier = Modifier
