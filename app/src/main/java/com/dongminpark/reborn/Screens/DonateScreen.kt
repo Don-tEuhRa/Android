@@ -134,7 +134,7 @@ fun donateInput(
                 backgroundColor = Color.White,
                 focusedIndicatorColor = Color.LightGray,
                 unfocusedIndicatorColor = Color.LightGray,
-                cursorColor = Color(0xff78C1F3)
+                cursorColor = if (showDialog.value) Color.Transparent else Color(0xff78C1F3)
             )
         )
         Spacer(modifier = Modifier.height(20.dp))
@@ -215,7 +215,7 @@ fun donateInput(
                 backgroundColor = Color.White,
                 focusedIndicatorColor = Color.LightGray,
                 unfocusedIndicatorColor = Color.LightGray,
-                cursorColor = Color(0xff78C1F3)
+                cursorColor = if (showDialog.value) Color.Transparent else Color(0xff78C1F3)
             )
         )
         Spacer(modifier = Modifier.height(20.dp))
@@ -232,7 +232,7 @@ fun donateInput(
                 backgroundColor = Color.White,
                 focusedIndicatorColor = Color.LightGray,
                 unfocusedIndicatorColor = Color.LightGray,
-                cursorColor = Color(0xff78C1F3)
+                cursorColor = if (showDialog.value) Color.Transparent else Color(0xff78C1F3)
             )
         )
         Spacer(modifier = Modifier.height(20.dp))
@@ -250,7 +250,7 @@ fun donateInput(
                 backgroundColor = Color.White,
                 focusedIndicatorColor = Color.LightGray,
                 unfocusedIndicatorColor = Color.LightGray,
-                cursorColor = Color(0xff78C1F3)
+                cursorColor = if (showDialog.value) Color.Transparent else Color(0xff78C1F3)
             )
         )
         Spacer(modifier = Modifier.weight(1f))
