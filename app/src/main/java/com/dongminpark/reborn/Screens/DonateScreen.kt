@@ -29,7 +29,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 //구현안된기능
-//입력안됐을때 경고띄우는 기능, 팝업창 잘 안보여서 잘 보이게 하고싶은데 색을 못정함, TextField누를때마다 거기로 화면 자동 스크롤되게하고싶은데 뭔지모르겠움
+//입력안됐을때 경고띄우는 기능(유효성검사),현관비밀번호 유무
 
 @Composable
 fun rebornAppBarDonate(){
@@ -72,7 +72,6 @@ fun DonateScreen(navController: NavController) {
                     Spacer(modifier = Modifier.height(20.dp))
                     donateInput(
                         placeInput = placeInput,
-                        dateInput = dateInput,
                         houseNumInput = houseNumInput,
                         userInput = userInput,
                         phoneInput = phoneInput,
@@ -81,7 +80,6 @@ fun DonateScreen(navController: NavController) {
                             showDialog.value = true
 
                             placeInput.value = TextFieldValue()
-                            dateInput.value= TextFieldValue()
                             houseNumInput.value = TextFieldValue()
                             userInput.value = TextFieldValue()
                             phoneInput.value = TextFieldValue()
@@ -97,7 +95,6 @@ fun DonateScreen(navController: NavController) {
 @Composable
 fun donateInput(
     placeInput: MutableState<TextFieldValue>,
-    dateInput: MutableState<TextFieldValue>,
     houseNumInput: MutableState<TextFieldValue>,
     userInput: MutableState<TextFieldValue>,
     phoneInput: MutableState<TextFieldValue>,
@@ -287,7 +284,8 @@ fun donateInput(
                 ) {
                     Text("확인")
                 }
-            }
+            },
+            modifier = Modifier.border(2.dp, Color.LightGray.copy(alpha = 0.7f), RoundedCornerShape(8.dp))
         )
     }
 }
