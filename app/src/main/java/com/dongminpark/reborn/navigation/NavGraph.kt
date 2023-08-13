@@ -139,6 +139,12 @@ fun MainScreenView(startDestination: String) {
                 composable(MyNavigationScreens.My.route) {
                     MyScreen(navController = navController)
                 }
+                composable(MyNavigationScreens.MyOrder.route) {
+                    myOrderPage()
+                }
+                composable(MyNavigationScreens.MyDonate.route) {
+                    myDonatePage()
+                }
             }
         }
     }

@@ -10,7 +10,7 @@ import com.google.firebase.auth.FirebaseAuth
 
 class OAuthData {
     companion object {
-        val ID = "457162263965-72ocfb6ba7u6p43jgeqles1hn9np3u45.apps.googleusercontent.com"
+        val ID = "375241323724-9gdibtcgnr90rr6iqekm6ku2srbfph6a.apps.googleusercontent.com"
         lateinit var GoogleSignResultLauncher: ActivityResultLauncher<Intent>
         var auth : FirebaseAuth? = null
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
