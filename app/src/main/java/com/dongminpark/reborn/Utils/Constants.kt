@@ -10,7 +10,7 @@ enum class RESPONSE_STATE {
 
 object USER{
     // 임시로 여기 적어둠. 나중에 보안을 위해서 local로 옮기거나 바꿔야함
-    var ACCESS_TOKEN: String = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0b2tlbiIsInVpZCI6IjRyOUpYam1zVHRZVjBONGl4UlRTU0NrM0pJSDIiLCJyb2xlIjoiVVNFUiIsInByb3ZpZGVyIjoiR09PR0xFIiwicHJvZmlsZUltZ1VybCI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FBY0hUdGRrVTRNMkFrSTliOVh0ZnVRcHVuam9XSFRHMlhiR2ZxZHdaZlo0ZkhuWVlSaz1zOTYtYyIsIm5hbWUiOiJbMSA6IOuwleuPmeuvvF0iLCJ1c2VySWQiOiIxIiwiaWF0IjoxNjg5MzQzMzcxLCJleHAiOjE2ODk0Mjk3NzF9.9N-TQTDuDcoaKuRdxvtaiLA8uvx9C8YK--ZoBlTIBPY"
+    var ACCESS_TOKEN: String = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0b2tlbiIsInJvbGUiOiJBRE1JTiIsInByb3ZpZGVyIjoiR09PR0xFIiwibmFtZSI6IlsyIDog67Cc656E7ZWc64u56re8ODIxNV0iLCJ1c2VySWQiOiIyIiwiZW1haWwiOiJ5ZW9uZ2hhazk5MDVAZ21haWwuY29tIiwiaWF0IjoxNjkxOTA4NzExLCJleHAiOjE2OTE5OTUxMTF9.qg6FXeKlLW0OctMrxxv8ddIuBenPLwDRz4z_PvSQV0I"
     var USERID: Int = 1
     // 프사 추가
     var NAME: String = ""
@@ -21,7 +21,7 @@ object USER{
 }
 
 object API{
-    const val BASE_URL = "http://43.201.252.6:8080" // 변경 예정
+    const val BASE_URL = "http://118.67.142.179:8080" // 변경 예정
 
     // Board
     const val BOARD_CREATE = "/board/create"

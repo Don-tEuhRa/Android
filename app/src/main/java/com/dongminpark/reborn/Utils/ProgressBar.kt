@@ -21,8 +21,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dongminpark.reborn.Frames.TextFormat
 import com.dongminpark.reborn.R
+import com.dongminpark.reborn.ui.theme.MyIconPack
 import com.dongminpark.reborn.ui.theme.Point
 import com.dongminpark.reborn.ui.theme.ProgressBGColor
+import com.dongminpark.reborn.ui.theme.myiconpack.Ribbon
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -36,51 +38,65 @@ fun ProgressBar(name: String, count: Int, progress: String) {
     var state: String = "에러"
     var progressPercent = 0
 
+    @Composable
+    fun circleIcon(){
+        Icon(
+            modifier = Modifier.size(12.dp),
+            painter = painterResource(id = R.drawable.circle),
+            contentDescription = "circle",
+            tint = Color.Gray
+        )
+    }
+
+    val MainColor = Point
+
     when (progress) {
         "접수완료" -> {
             state = "리본을 기다리는 중"
         }
         "수거중" -> {
             state = "여행하는 중"
-            firtStep = ProgressStep("수거 중", Point, R.drawable.shopping_outline, Color.White)
+            firtStep = ProgressStep("수거 중", Point, R.drawable.truck_filled, MainColor)
             progressPercent = 100
         }
         "검수중" -> {
             state = "꿈을 찾는 중"
             firtStep = ProgressStep("수거 완료", Point)
-            secondStep = ProgressStep("검수 중", Point, R.drawable.shopping_outline, Color.White)
-            progressPercent = 160
+            secondStep = ProgressStep("검수 중", Point, R.drawable.search, MainColor)
+            progressPercent = 190
         }
         "리폼중" -> {
             state = "꽃단장 하는 중"
             firtStep = ProgressStep("수거 완료", Point)
             secondStep = ProgressStep("검수 완료", Point)
-            thirdStep = ProgressStep("리폼 중", Point, R.drawable.shopping_outline, Color.White)
-            progressPercent = 230
+            thirdStep = ProgressStep("리폼 중", Point, R.drawable.needle, MainColor)
+            progressPercent = 250
         }
         "판매중" -> {
             state = "새로운 주인을 기다리는 중"
             firtStep = ProgressStep("수거 완료", Point)
             secondStep = ProgressStep("검수 완료", Point)
             thirdStep = ProgressStep("리폼 완료", Point)
-            fourthStep = ProgressStep("판매 중", Point, R.drawable.shopping_outline, Color.White)
-            progressPercent = 300
+            fourthStep = ProgressStep("판매 중", Point, R.drawable.gift_solid, MainColor)
+            progressPercent = 320
         }
         "기부완료" -> {
             state = "리본과 함께 따뜻한 마음을 전달했어요"
-            progressPercent = 320
+            progressPercent = 380
         }
     }
 
     Box(
         modifier = Modifier
-            .size(height = 160.dp, width = 360.dp)
-            .border(1.dp, color = Color.Black, shape = RoundedCornerShape(12.dp))
+            .size(height = 200.dp, width = 380.dp)
+            //.border(1.dp, color = Color.Black, shape = RoundedCornerShape(12.dp))
             .background(ProgressBGColor, shape = RoundedCornerShape(12.dp)),
         contentAlignment = Alignment.TopCenter
     ) {
         Column(
-            modifier = Modifier.fillMaxSize().padding(16.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
             verticalArrangement = Arrangement.SpaceEvenly,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -90,50 +106,61 @@ fun ProgressBar(name: String, count: Int, progress: String) {
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 TextFormat(text = "${name}님이 ${count}번째 기부하신 물건이\n${state} ~!!", size = 16)
-                Icon(modifier = Modifier.size(48.dp), painter = painterResource(id = R.drawable.heart_filled), contentDescription = "heart_filled")
+                Icon(
+                    modifier = Modifier.size(48.dp),
+                    imageVector = MyIconPack.Ribbon,
+                    contentDescription = "ribbon"
+                )
             }
 
-            val size = 30
-            Row(modifier = Modifier.size(height = 32.dp, width = 320.dp), horizontalArrangement = Arrangement.SpaceAround) {
+            val size = 44
+            Row(
+                modifier = Modifier.fillMaxWidth(),//.size(height = size.dp, width = 320.dp),
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
                 Spacer(modifier = Modifier.size(size.dp))
                 //Icon(modifier = Modifier.size(size.dp), painter = painterResource(id = R.drawable.shopping_outline), contentDescription = "test", tint = ProgressBGColor)
-                Icon(modifier = Modifier.size(size.dp), painter = painterResource(id = firtStep.iconPainter), contentDescription = "test", tint = firtStep.iconColor)
-                Icon(modifier = Modifier.size(size.dp), painter = painterResource(id = secondStep.iconPainter), contentDescription = "test", tint = secondStep.iconColor)
-                Icon(modifier = Modifier.size(size.dp), painter = painterResource(id = thirdStep.iconPainter), contentDescription = "test", tint = thirdStep.iconColor)
-                Icon(modifier = Modifier.size(size.dp), painter = painterResource(id = fourthStep.iconPainter), contentDescription = "test", tint = fourthStep.iconColor)
+                Icon(
+                    modifier = Modifier.size(size.dp),
+                    painter = painterResource(id = firtStep.iconPainter),
+                    contentDescription = "test",
+                    tint = firtStep.iconColor
+                )
+                Icon(
+                    modifier = Modifier.size(size.dp),
+                    painter = painterResource(id = secondStep.iconPainter),
+                    contentDescription = "test",
+                    tint = secondStep.iconColor
+                )
+                Icon(
+                    modifier = Modifier.size(size.dp),
+                    painter = painterResource(id = thirdStep.iconPainter),
+                    contentDescription = "test",
+                    tint = thirdStep.iconColor
+                )
+                Icon(
+                    modifier = Modifier.size(size.dp),
+                    painter = painterResource(id = fourthStep.iconPainter),
+                    contentDescription = "test",
+                    tint = fourthStep.iconColor
+                )
             }
 
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 Column() {
                     Box(
                         modifier = Modifier
-                            .size(height = 12.dp, width = 320.dp)
+                            .fillMaxWidth()
                             .background(Color.White, shape = CircleShape)
                     ) {
                         Row(
                             horizontalArrangement = Arrangement.SpaceAround,
-                            modifier = Modifier.fillMaxSize()
+                            modifier = Modifier.fillMaxWidth()
                         ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.circle),
-                                contentDescription = "circle",
-                                tint = Color.Gray
-                            )
-                            Icon(
-                                painter = painterResource(id = R.drawable.circle),
-                                contentDescription = "circle",
-                                tint = Color.Gray
-                            )
-                            Icon(
-                                painter = painterResource(id = R.drawable.circle),
-                                contentDescription = "circle",
-                                tint = Color.Gray
-                            )
-                            Icon(
-                                painter = painterResource(id = R.drawable.circle),
-                                contentDescription = "circle",
-                                tint = Color.Gray
-                            )
+                            circleIcon()
+                            circleIcon()
+                            circleIcon()
+                            circleIcon()
                         }
                         Box(
                             modifier = Modifier
@@ -142,7 +169,7 @@ fun ProgressBar(name: String, count: Int, progress: String) {
                         )
                     }
                     Row(
-                        modifier = Modifier.size(height = 12.dp, width = 320.dp),
+                        modifier = Modifier.fillMaxWidth(),//.size(height = 12.dp, width = 320.dp),
                         horizontalArrangement = Arrangement.SpaceAround,
                     ) {
                         TextFormat(text = firtStep.state, size = 8)
@@ -176,7 +203,7 @@ fun ProgressBarPager(info: MutableList<ProgressStep>) {
             count = info.size,
             state = nowImageIndex
         ) { page ->
-            ProgressBar("박동민", 2, "리폼중")
+            ProgressBar("박동민", 2, info[page].state)
         }
         Row(modifier = Modifier.padding(3.dp)) {
             indexIcons.forEachIndexed { index, icon ->
@@ -186,8 +213,8 @@ fun ProgressBarPager(info: MutableList<ProgressStep>) {
                         .padding(2.dp),
                     painter = icon,
                     contentDescription = "Index Icon",
-                    tint = if (index == nowImageIndex.currentPage) MaterialTheme.colors.primaryVariant
-                    else MaterialTheme.colors.secondary
+                    tint = if (index == nowImageIndex.currentPage) Point
+                    else Color.LightGray
                 )
             }
         }

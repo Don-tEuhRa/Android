@@ -183,7 +183,7 @@ fun MyScreen(navController: NavController) {
                 Column {
                     myAppBar()
                     Spacer(modifier = Modifier.height(8.dp))
-                    myView(introduction = MainContents.introMainDetail)
+                    myView(introduction = MainContents.introMainDetail, navController)
                 }
             }
         )
@@ -191,7 +191,7 @@ fun MyScreen(navController: NavController) {
 }
 
 @Composable
-fun myView(introduction: List<IntroductionDetail>){
+fun myView(introduction: List<IntroductionDetail>, navController: NavController){
     LazyColumn(
         modifier = Modifier
             .padding(16.dp)
@@ -202,7 +202,7 @@ fun myView(introduction: List<IntroductionDetail>){
         items(introduction){ aIntroDetail->
             myDonate()
             Spacer(modifier = Modifier.height(40.dp))
-            myDonateOrder()
+            myDonateOrder(navController)
             Spacer(modifier = Modifier.height(140.dp))
             myInquiry()
             Spacer(modifier = Modifier.height(8.dp))
@@ -267,7 +267,7 @@ fun myDonate() {
 }
 
 @Composable
-fun myDonateOrder() {
+fun myDonateOrder(navController: NavController) {
     Row(
         modifier = Modifier
             .fillMaxWidth(),
@@ -284,6 +284,7 @@ fun myDonateOrder() {
             ),
             onClick = {
                 //navController.navigate("donation_status")
+                navController.navigate("myDonate")
                 Log.d("TAG", "기부현황클릭")
             }
         ) {
@@ -300,6 +301,7 @@ fun myDonateOrder() {
             ),
             onClick = {
                 //navController.navigate("donation_status")
+                navController.navigate("myOrder")
                 Log.d("TAG", "주문현황클릭")
             }
         ) {

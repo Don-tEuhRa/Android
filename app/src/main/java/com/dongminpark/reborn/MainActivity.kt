@@ -13,12 +13,14 @@ import com.dongminpark.reborn.ui.theme.ReBornTheme
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.tasks.Task
+import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //OAuthData.auth = FirebaseAuth.getInstance() // 파이어베이스 연동 후 사용 가능
+        FirebaseApp.initializeApp(this)
+        OAuthData.auth = FirebaseAuth.getInstance() // 파이어베이스 연동 후 사용 가능
         OAuthData.GoogleSignResultLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
