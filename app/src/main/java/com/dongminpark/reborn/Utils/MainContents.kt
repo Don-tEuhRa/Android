@@ -1,13 +1,30 @@
 package com.dongminpark.reborn.Utils
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 
 data class Introduction(
     val title:String,
     val subtitle:String,
-    val content:String,
+    val content: @Composable (Modifier) -> Unit,
     val color: Color,
+    val fontColor: Color,
     var isSubtitleDisplayed: Boolean = true
 )
 
@@ -35,15 +52,14 @@ data class customerServiceCenter(
 object MainContents {
     val introMain= listOf(
         Introduction("Re:Born", "어떤 앱인가요?"
-            ,"어쩌고저쩌고어쩌고저쩌고어쩌고저쩌고어쩌고저쩌고어쩌고저쩌고어쩌고저쩌고어쩌고저쩌고" +
-                    "어쩌고저쩌고어쩌고저쩌고어쩌고저쩌고어쩌고저쩌고어쩌고저쩌고어쩌고저쩌고어쩌고저쩌고",
-                    color = Color(0xff78C1F3)),
+            ,content={ appExplain() },
+                    color = Color(0xff78C1F3),Color.Black),
         Introduction("신청방법 : ", "이용가이드"
-            ,"신청방법내용 전달",color = Color(0xff374259)),
+            ,content={ application() } ,color = Color(0xff374259),Color.White),
         Introduction("기부", "어떤식으로 진행되나요?"
-            ,"옷 받아서 뭘 가공하고 어떻게 하고 어떻게 기부하는지",color = Color(0xff45CFDD)),
+            ,content={ donateExplain() },color = Color(0xff45CFDD),Color.Black),
         Introduction("수익금", "어떻게 사용되나요?"
-            ,"기부한다",color = Color(0xff9BABB8))
+            ,content={ fundsExplain() },color = Color(0xff9BABB8),Color.Black)
     )
 
     val introMainDetail= listOf(
@@ -68,4 +84,148 @@ object MainContents {
             "AM 8:00 ~ PM 7:00",
         )
     )
+}
+
+@Composable
+fun appExplain(){
+    Text(text = "리본의 대한 설명")
+}
+
+@Composable
+fun application() {
+    Spacer(modifier = Modifier.height(8.dp))
+    Column() {
+        // 1번 원
+        Row() {
+            Box(
+                modifier = Modifier
+                    .size(30.dp)
+                    .background(Color(0xff78C1F3), shape = CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "1",
+                    color = Color.White,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            Spacer(modifier = Modifier.width(10.dp))
+            Text(text = buildAnnotatedString {
+                append("회원가입 후 ")
+                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                    append("로그인")
+                }
+            })
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // 2번 원
+        Row() {
+            Box(
+                modifier = Modifier
+                    .size(30.dp)
+                    .background(Color(0xff78C1F3), shape = CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "2",
+                    color = Color.White,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            Spacer(modifier = Modifier.width(10.dp))
+            Text(text = buildAnnotatedString {
+                Text(text = buildAnnotatedString {
+                    append("하단의 ")
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append("선물상자")
+                    }
+                    append(" 버튼을 click!")
+                })
+            })
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // 3번 원
+        Row() {
+            Box(
+                modifier = Modifier
+                    .size(30.dp)
+                    .background(Color(0xff78C1F3), shape = CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "3",
+                    color = Color.White,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            Spacer(modifier = Modifier.width(10.dp))
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = buildAnnotatedString {
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append("주소, 수거 날짜, 휴대번호, ")
+                    }
+                })
+                Text(text = buildAnnotatedString {
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append("현관 정보 입력")
+                    }
+                    append("후 신청")
+                })
+            }
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // 4번 원
+        Row() {
+            Box(
+                modifier = Modifier
+                    .size(30.dp)
+                    .background(Color(0xff78C1F3), shape = CircleShape)
+                    .clip(RoundedCornerShape(20.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "4",
+                    color = Color.White,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            Spacer(modifier = Modifier.width(10.dp))
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = buildAnnotatedString {
+                    append("마이페이지를 통해 ")
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append("[기부 현황]")
+                    }
+                    append(" 및 ")
+                })
+                Text(text = buildAnnotatedString {
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append("[주문 현황]")
+                    }
+                    append(" 을 확인할 수 있어요")
+                })
+            }
+        }
+    }
+}
+
+@Composable
+fun donateExplain(){
+    Text(text = "기부가 어떤식으로 진행되고 어디에 기부되는지")
+}
+
+@Composable
+fun fundsExplain(){
+    Text("수익금이 어떤식으로 사용되는지, 어디에 기부되는지")
 }
