@@ -30,13 +30,14 @@ import com.dongminpark.reborn.R
 import com.dongminpark.reborn.Utils.IntroductionDetail
 import com.dongminpark.reborn.Utils.MainContents
 import com.dongminpark.reborn.Utils.customerServiceCenter
+import kotlinx.coroutines.launch
 
 //화면전환(기부,주문내역), 회원정보수정
 //사용자이름, 기부금액, 마일리지금액,기부현황진행사항 갯수, 진행현황 임시텍스트로 대체해둠
 
 @Composable
 fun myAppBar() {
-    var isModalOpen by remember { mutableStateOf(false) }
+    var showProfile by remember { mutableStateOf(false) }
 
     TopAppBar(
         elevation = 10.dp,
@@ -68,7 +69,7 @@ fun myAppBar() {
                         lineHeight = 20.sp,
                         color = Color(0xFFE7E7E7),
                         modifier = Modifier.clickable {
-                            isModalOpen = true
+                            showProfile = true
                         }
                     )
                 }
@@ -93,85 +94,112 @@ fun myAppBar() {
         }
     }
 
-    if (isModalOpen) {
+    if (showProfile) {
         myProfile(
-            onCloseRequest = { isModalOpen = false }
+            name = "최수인",
+            phoneNumber = "010-1234-1234",
+            address = "경기도 수원시 영통구 광교산로",
+            onCloseRequest = { showProfile = false }
         )
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+
 @Composable
 fun myProfile(
+    name: String,
+    phoneNumber: String,
+    address: String,
     onCloseRequest: () -> Unit
 ) {
-    var name by remember { mutableStateOf("") }
-    var phoneNumber by remember { mutableStateOf("") }
-    var address by remember { mutableStateOf("") }
+    var WriteShowDialog by remember { mutableStateOf(true) }
+    var newName by remember { mutableStateOf(name) }
+    var newPhoneNumber by remember { mutableStateOf(phoneNumber) }
+    var newAddress by remember { mutableStateOf(address) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
 
-    BottomSheetScaffold(
-        sheetContent = {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Text(
-                    text = stringResource(id = R.string.app_name),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                    color = Color.Black
-                )
-
-                TextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    label = { Text("이름") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                TextField(
-                    value = phoneNumber,
-                    onValueChange = { phoneNumber = it },
-                    label = { Text("연락처") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                TextField(
-                    value = address,
-                    onValueChange = { address = it },
-                    label = { Text("주소") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
+    if (WriteShowDialog) {
+        AlertDialog(
+            modifier = Modifier.fillMaxHeight(0.9f),
+            shape = RoundedCornerShape(24.dp),
+            onDismissRequest = {  WriteShowDialog = true },
+            title = { Text("회원정보수정") },
+            text = {
+                LazyColumn(modifier = Modifier.padding(vertical = 12.dp)){
+                    item {
+                        Text(text = "이름")
+                        OutlinedTextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = newName,
+                            onValueChange = { newValue -> newName = newValue },
+                        )
+                        Spacer(modifier = Modifier.padding(8.dp))
+                    }
+                    item {
+                        Text(text = "연락처")
+                        OutlinedTextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = newPhoneNumber,
+                            onValueChange = { newValue -> newPhoneNumber = newValue }
+                        )
+                        Spacer(modifier = Modifier.padding(8.dp))
+                    }
+                    item {
+                        Text(text = "주소")
+                        OutlinedTextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = newAddress,
+                            onValueChange = { newValue -> newAddress = newValue }
+                        )
+                        Spacer(modifier = Modifier.padding(8.dp))
+                    }
+                }
+            },
+            confirmButton = {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
+                    horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Button(
                         onClick = {
-                            onCloseRequest()
-                        }
-                    ) {
-                        Text(text = "확인")
-                    }
+                            if (newName.isNotEmpty() && newPhoneNumber.isNotEmpty() && newAddress.isNotEmpty()) {
+                                coroutineScope.launch {
+                                    coroutineScope.launch {
+                                        val result = snackbarHostState.showSnackbar(
+                                            "회원정보가 수정되었습니다.",
+                                            "확인",
+                                            SnackbarDuration.Short
+                                        )
 
-                    Button(
-                        onClick = {
-                            onCloseRequest()
-                        }
+                                        when(result){
+                                            SnackbarResult.Dismissed->{
+                                                Log.d("TAG","스낵바 닫아짐")
+                                            }
+                                            SnackbarResult.ActionPerformed->{
+                                                Log.d("TAG","스낵바 확인버튼을 누름")
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(0.4f)
                     ) {
-                        Text(text = "취소")
+                        Text("등록")
+                    }
+                    Button(
+                        onClick = { WriteShowDialog = false },
+                        modifier = Modifier.fillMaxWidth(0.7f),
+                    ) {
+                        Text("취소")
                     }
                 }
+                SnackbarHost(hostState = snackbarHostState, modifier = Modifier.offset(y = (-20).dp))
             }
-        },
-        sheetPeekHeight = 0.dp
-    ) {
-
+        )
     }
+
 }
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
