@@ -70,7 +70,7 @@ fun MainScreen(
                     .verticalScroll(rememberScrollState())
             ) {
                 Spacer(modifier = Modifier.height(12.dp))
-                ProgressBarPager(mutableListOf(ProgressStep(state = "리폼중"),ProgressStep(state = "리폼중"),ProgressStep(state = "리폼중")))
+                ProgressBarPager(mutableListOf(ProgressStep(state = "검수중"),ProgressStep(state = "리폼중"),ProgressStep(state = "판매중")))
                 Spacer(modifier = Modifier.height(24.dp))
                 introductions.forEach { introduction ->
                     introductionView(aIntro = introduction, navController = navController as NavHostController)
