@@ -31,13 +31,15 @@ import com.dongminpark.reborn.Utils.BackOnPressed
 import com.dongminpark.reborn.Utils.IntroductionDetail
 import com.dongminpark.reborn.Utils.MainContents
 import com.dongminpark.reborn.Utils.customerServiceCenter
+import kotlinx.coroutines.launch
 
 //화면전환(기부,주문내역), 회원정보수정
 //사용자이름, 기부금액, 마일리지금액,기부현황진행사항 갯수, 진행현황 임시텍스트로 대체해둠
 
 @Composable
 fun myAppBar() {
-    var isModalOpen by remember { mutableStateOf(false) }
+    var showProfile by remember { mutableStateOf(false) }
+    var showSnackBar by remember { mutableStateOf(false) }
 
     TopAppBar(
         elevation = 10.dp,
@@ -69,7 +71,7 @@ fun myAppBar() {
                         lineHeight = 20.sp,
                         color = Color(0xFFE7E7E7),
                         modifier = Modifier.clickable {
-                            isModalOpen = true
+                            showProfile = true
                         }
                     )
                 }
@@ -94,85 +96,161 @@ fun myAppBar() {
         }
     }
 
-    if (isModalOpen) {
+    if (showProfile) {
         myProfile(
-            onCloseRequest = { isModalOpen = false }
+            name = "최수인",
+            phoneNumber = "010-1234-1234",
+            address = "경기도 수원시 장안구 연무동 62-6",
+            detialAddress = "202호",
+            zipcode = "12345",
+            onCloseRequest = { showProfile = false }
         )
+    }
+
+    if (showSnackBar){
+
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+
 @Composable
 fun myProfile(
+    name: String,
+    phoneNumber: String,
+    address: String,
+    detialAddress: String,
+    zipcode: String,
     onCloseRequest: () -> Unit
 ) {
-    var name by remember { mutableStateOf("") }
-    var phoneNumber by remember { mutableStateOf("") }
-    var address by remember { mutableStateOf("") }
+    var newName by remember { mutableStateOf("") }
+    var newPhoneNumber by remember { mutableStateOf("") }
+    var newAddress by remember { mutableStateOf("") }
+    var newDetailAddress by remember { mutableStateOf("") }
+    var newZipcode by remember { mutableStateOf("") }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
 
-    BottomSheetScaffold(
-        sheetContent = {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Text(
-                    text = stringResource(id = R.string.app_name),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                    color = Color.Black
-                )
-
-                TextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    label = { Text("이름") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                TextField(
-                    value = phoneNumber,
-                    onValueChange = { phoneNumber = it },
-                    label = { Text("연락처") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                TextField(
-                    value = address,
-                    onValueChange = { address = it },
-                    label = { Text("주소") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    Button(
-                        onClick = {
-                            onCloseRequest()
-                        }
-                    ) {
-                        Text(text = "확인")
-                    }
-
-                    Button(
-                        onClick = {
-                            onCloseRequest()
-                        }
-                    ) {
-                        Text(text = "취소")
-                    }
+    AlertDialog(
+        //modifier = Modifier.fillMaxHeight(0.9f),
+        shape = RoundedCornerShape(24.dp),
+        onDismissRequest = { onCloseRequest() },
+        title = { Text("회원정보수정") },
+        text = {
+            LazyColumn(modifier = Modifier.padding(vertical = 12.dp)) {
+                item {
+                    Text(text = "이름")
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = { Text(text = name) },
+                        value = newName,
+                        singleLine = true,
+                        onValueChange = { newValue -> newName = newValue },
+                    )
+                    Spacer(modifier = Modifier.padding(8.dp))
+                }
+                item {
+                    Text(text = "연락처")
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = { Text(text = phoneNumber) },
+                        value = newPhoneNumber,
+                        singleLine = true,
+                        onValueChange = { newValue -> newPhoneNumber = newValue }
+                    )
+                    Spacer(modifier = Modifier.padding(8.dp))
+                }
+                item {
+                    Text(text = "주소")
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = { Text(text = address) },
+                        value = newAddress,
+                        onValueChange = { newValue -> newAddress = newValue }
+                    )
+                    Spacer(modifier = Modifier.padding(8.dp))
+                }
+                item {
+                    Text(text = "상세주소")
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = { Text(text = detialAddress) },
+                        value = newAddress,
+                        onValueChange = { newValue -> newDetailAddress = newValue }
+                    )
+                    Spacer(modifier = Modifier.padding(8.dp))
+                }
+                item { // 숫자만 입력가능하게.
+                    Text(text = "우편번호")
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = { Text(text = zipcode) },
+                        value = newAddress,
+                        onValueChange = { newValue -> newZipcode = newValue }
+                    )
+                    Spacer(modifier = Modifier.padding(8.dp))
+                }
+                item { // 맞춰서 수정해주ㅏㅓ요
+                    Text(text = "현관 비밀번호")
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = { Text(text = zipcode) },
+                        value = newAddress,
+                        onValueChange = { newValue -> newZipcode = newValue }
+                    )
+                    Spacer(modifier = Modifier.padding(8.dp))
                 }
             }
         },
-        sheetPeekHeight = 0.dp
-    ) {
+        confirmButton = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Button(
+                    onClick = {
+                        onCloseRequest()
+                        // api 호출
+                        val nameAPI = if (newName.isEmpty()) name else newName
+                        val phoneNumberAPI = if (newPhoneNumber.isEmpty()) phoneNumber else newPhoneNumber
+                        val addressAPI = if (newAddress.isEmpty()) address else newAddress
 
-    }
+                        /*
+                        if (newName.isNotEmpty() && newPhoneNumber.isNotEmpty() && newAddress.isNotEmpty()) {
+                            coroutineScope.launch {
+                                coroutineScope.launch {
+                                    val result = snackbarHostState.showSnackbar(
+                                        "회원정보가 수정되었습니다.",
+                                        "확인",
+                                        SnackbarDuration.Short
+                                    )
+
+                                    when (result) {
+                                        SnackbarResult.Dismissed -> {
+                                            Log.d("TAG", "스낵바 닫아짐")
+                                        }
+                                        SnackbarResult.ActionPerformed -> {
+                                            Log.d("TAG", "스낵바 확인버튼을 누름")
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                         */
+                    },
+                    modifier = Modifier.fillMaxWidth(0.4f)
+                ) {
+                    Text("등록")
+                }
+                Button(
+                    onClick = { onCloseRequest() },
+                    modifier = Modifier.fillMaxWidth(0.7f),
+                ) {
+                    Text("취소")
+                }
+            }
+            SnackbarHost(hostState = snackbarHostState, modifier = Modifier.offset(y = (-20).dp))
+        }
+    )
 }
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -193,7 +271,7 @@ fun MyScreen(navController: NavController) {
 }
 
 @Composable
-fun myView(introduction: List<IntroductionDetail>, navController: NavController){
+fun myView(introduction: List<IntroductionDetail>, navController: NavController) {
     LazyColumn(
         modifier = Modifier
             .padding(12.dp)
@@ -285,7 +363,7 @@ fun myDonateOrder(navController: NavController) {
         // 기부현황 버튼
         Button(
             shape = RoundedCornerShape(8.dp),
-            contentPadding = PaddingValues(top = 35.dp, bottom = 35.dp, start = 55.dp, end = 55.dp ),
+            contentPadding = PaddingValues(top = 35.dp, bottom = 35.dp, start = 55.dp, end = 55.dp),
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = Color(0xFFE7E7E7),
                 contentColor = Color.Black
@@ -302,7 +380,7 @@ fun myDonateOrder(navController: NavController) {
         // 주문현황 버튼
         Button(
             shape = RoundedCornerShape(8.dp),
-            contentPadding = PaddingValues(top = 35.dp, bottom = 35.dp, start = 55.dp, end = 55.dp ),
+            contentPadding = PaddingValues(top = 35.dp, bottom = 35.dp, start = 55.dp, end = 55.dp),
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = Color(0xFFE7E7E7),
                 contentColor = Color.Black
@@ -319,7 +397,7 @@ fun myDonateOrder(navController: NavController) {
 }
 
 @Composable
-fun myInquiry(){
+fun myInquiry() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -337,7 +415,7 @@ fun myInquiry(){
 }
 
 @Composable
-fun rebornAppBarDetailBottom(customerServiceCenter: List<customerServiceCenter>){
+fun rebornAppBarDetailBottom(customerServiceCenter: List<customerServiceCenter>) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -351,7 +429,8 @@ fun rebornAppBarDetailBottom(customerServiceCenter: List<customerServiceCenter>)
                     contentDescription = null)
                 Spacer(modifier = Modifier.width(16.dp))
                 Column() {
-                    Text(text = serviceContent.title,
+                    Text(
+                        text = serviceContent.title,
                         fontWeight = FontWeight.Bold
                     )
                     Text(text = serviceContent.date)
@@ -366,9 +445,12 @@ fun rebornAppBarDetailBottom(customerServiceCenter: List<customerServiceCenter>)
 //기부현황페이지
 @Composable
 fun myDonatePageAppBar() {
-    TopAppBar(elevation = 10.dp,
-        backgroundColor = Color(0xff78C1F3)) {
-        Text(text = stringResource(id = R.string.app_name),
+    TopAppBar(
+        elevation = 10.dp,
+        backgroundColor = Color(0xff78C1F3)
+    ) {
+        Text(
+            text = stringResource(id = R.string.app_name),
             modifier = Modifier
                 .padding(8.dp)
                 .align(Alignment.CenterVertically),
@@ -376,7 +458,8 @@ fun myDonatePageAppBar() {
             fontWeight = FontWeight.Black,
             color = Color.White
         )
-        Text(text = "기부현황",
+        Text(
+            text = "기부현황",
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
             color = Color.White
@@ -403,7 +486,7 @@ fun myDonatePage() {
 }
 
 @Composable
-fun myDonatePageProG(){
+fun myDonatePageProG() {
     Column(
         modifier = Modifier
             .fillMaxWidth(1f)
@@ -507,7 +590,7 @@ fun myDonatePageProG(){
 }
 
 @Composable
-fun myDonatePageList(){
+fun myDonatePageList() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -518,7 +601,8 @@ fun myDonatePageList(){
             modifier = Modifier.padding(16.dp)
         ) {
             //임시텍스트
-            Text(text = "수거중",
+            Text(
+                text = "수거중",
                 fontWeight = FontWeight.Bold
             )
             Row(
@@ -563,9 +647,12 @@ fun myDonatePageList(){
 //주문현황페이지
 @Composable
 fun myOrderPageAppBar() {
-    TopAppBar(elevation = 10.dp,
-        backgroundColor = Color(0xff78C1F3)) {
-        Text(text = stringResource(id = R.string.app_name),
+    TopAppBar(
+        elevation = 10.dp,
+        backgroundColor = Color(0xff78C1F3)
+    ) {
+        Text(
+            text = stringResource(id = R.string.app_name),
             modifier = Modifier
                 .padding(8.dp)
                 .align(Alignment.CenterVertically),
@@ -573,7 +660,8 @@ fun myOrderPageAppBar() {
             fontWeight = FontWeight.Black,
             color = Color.White
         )
-        Text(text = "주문현황",
+        Text(
+            text = "주문현황",
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
             color = Color.White
@@ -600,7 +688,7 @@ fun myOrderPage() {
 }
 
 @Composable
-fun myOrderPageProG(){
+fun myOrderPageProG() {
     Column(
         modifier = Modifier
             .fillMaxWidth(1f)
@@ -681,7 +769,7 @@ fun myOrderPageProG(){
 }
 
 @Composable
-fun myOrderPageList(){
+fun myOrderPageList() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -692,7 +780,8 @@ fun myOrderPageList(){
             modifier = Modifier.padding(8.dp)
         ) {
             //임시텍스트
-            Text(text = "배송완료",
+            Text(
+                text = "배송완료",
                 fontWeight = FontWeight.Bold
             )
             Row(
@@ -732,7 +821,7 @@ fun myOrderPageList(){
                 //환불요청
                 Button(
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
-                    onClick = {  }) {
+                    onClick = { }) {
                     Text(
                         text = "환불요청",
                         color = Color.Black,
@@ -743,7 +832,7 @@ fun myOrderPageList(){
                 //배송조회
                 Button(
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
-                    onClick = {  }) {
+                    onClick = { }) {
                     Text(
                         text = "배송조회",
                         color = Color.Black,
@@ -754,7 +843,7 @@ fun myOrderPageList(){
                 //상담사 문의
                 Button(
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
-                    onClick = {  }) {
+                    onClick = { }) {
                     Text(
                         text = "상담사 문의",
                         color = Color.Black,
@@ -765,7 +854,7 @@ fun myOrderPageList(){
                 //구매확정
                 Button(
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
-                    onClick = {  }) {
+                    onClick = { }) {
                     Text(
                         text = "구매확정",
                         color = Color.Black,

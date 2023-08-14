@@ -90,7 +90,7 @@ fun ProgressBar(name: String, count: Int, progress: String) {
         modifier = Modifier
             .size(height = 200.dp, width = 380.dp)
             //.border(1.dp, color = Color.Black, shape = RoundedCornerShape(12.dp))
-            .background(ProgressBGColor, shape = RoundedCornerShape(12.dp)),
+            .background(ProgressBGColor, shape = RoundedCornerShape(24.dp)),
         contentAlignment = Alignment.TopCenter
     ) {
         Column(
