@@ -61,7 +61,7 @@ fun StorePayAfterScreen(navController: NavController) {
                 TextFormat(text = "상품 정보")
 
                 itemList.forEach{item ->
-                    ItemInfoFrame(item = item.toString())
+                    ItemInfoFrame(item = item.toString(), navController)
                 }
             }
 

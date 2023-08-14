@@ -22,7 +22,7 @@ fun productFrame(
 ) {
     Column(
         modifier = Modifier.clickable {
-            navController.navigate(route + "Detail")
+            navController.navigate("storeDetail")
         }
     ) {
         Box(

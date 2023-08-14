@@ -25,6 +25,6 @@ class OAuthData {
         var nav : NavHostController? = null
 
         // 임시로 amdin token 사용. 추후 변경 예정.
-        var ACCESS_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0b2tlbiIsInVpZCI6IjRyOUpYam1zVHRZVjBONGl4UlRTU0NrM0pJSDIiLCJyb2xlIjoiVVNFUiIsInByb3ZpZGVyIjoiR09PR0xFIiwicHJvZmlsZUltZ1VybCI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FBY0hUdGRrVTRNMkFrSTliOVh0ZnVRcHVuam9XSFRHMlhiR2ZxZHdaZlo0ZkhuWVlSaz1zOTYtYyIsIm5hbWUiOiJbMSA6IOuwleuPmeuvvF0iLCJ1c2VySWQiOiIxIiwiaWF0IjoxNjg5MzQzMzcxLCJleHAiOjE2ODk0Mjk3NzF9.9N-TQTDuDcoaKuRdxvtaiLA8uvx9C8YK--ZoBlTIBPY"
+        var ACCESS_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0b2tlbiIsInJvbGUiOiJVU0VSIiwicHJvdmlkZXIiOiJHT09HTEUiLCJuYW1lIjoiWzMgOiDrsJXrj5nrr7xdIiwidXNlcklkIjoiMyIsImVtYWlsIjoicGRtMDAxMTI1QGdtYWlsLmNvbSIsImlhdCI6MTY5MTkzOTk3NCwiZXhwIjoxNjkyMDI2Mzc0fQ.TqzLoCgJ9saXp1Y7onuUVxCWUfdVe5MPNpOhtUIpxps"
     }
 }

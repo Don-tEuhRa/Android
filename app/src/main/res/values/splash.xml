@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.ReBorn.MySplash" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">#FFFFFF</item>
+        <item name="windowSplashScreenBackground">#78C1F3</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/ribbon</item>
         <item name="postSplashScreenTheme">@style/Theme.ReBorn</item>
     </style>

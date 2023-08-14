@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.dongminpark.reborn.R
+import com.dongminpark.reborn.Utils.BackOnPressed
 import com.dongminpark.reborn.Utils.IntroductionDetail
 import com.dongminpark.reborn.Utils.MainContents
 import com.dongminpark.reborn.Utils.customerServiceCenter
@@ -85,7 +86,7 @@ fun myAppBar() {
                         color = Color.Black
                     )
                     Text(
-                        text = "2,000",
+                        text = "2,000원",
                         lineHeight = 20.sp
                     )
                 }
@@ -177,6 +178,7 @@ fun myProfile(
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun MyScreen(navController: NavController) {
+    BackOnPressed()
     Surface(color = Color.White) {
         Scaffold(backgroundColor = Color.White,
             content = {
@@ -194,34 +196,40 @@ fun MyScreen(navController: NavController) {
 fun myView(introduction: List<IntroductionDetail>, navController: NavController){
     LazyColumn(
         modifier = Modifier
-            .padding(16.dp)
+            .padding(12.dp)
             .fillMaxWidth(),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         items(introduction){ aIntroDetail->
-            myDonate()
-            Spacer(modifier = Modifier.height(40.dp))
+            myDonate(R.drawable.baseline_favorite_24, "금액", "100000원")
+            Spacer(modifier = Modifier.height(20.dp))
+            myDonate(R.drawable.t_shirt, "횟수", "2회")
+            Spacer(modifier = Modifier.height(20.dp))
             myDonateOrder(navController)
-            Spacer(modifier = Modifier.height(140.dp))
+            Spacer(modifier = Modifier.height(80.dp))
             myInquiry()
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             rebornAppBarDetailBottom(customerServiceCenter = MainContents.customerServiceCenter)
         }
     }
 }
 
 @Composable
-fun myDonate() {
-    Box(modifier = Modifier
-        .fillMaxWidth(),
-        contentAlignment = Alignment.CenterStart
-    ) {
-        Text(text = "기부 진행도",
-            fontWeight = FontWeight.Bold
-        )
+fun myDonate(icon: Int, text: String, count: String) {
+    if (text == "금액") {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            Text(
+                text = "기부 진행도",
+                fontWeight = FontWeight.Bold
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
     }
-    Spacer(modifier = Modifier.height(8.dp))
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -235,7 +243,7 @@ fun myDonate() {
         ) {
             // 이미지
             Image(
-                painter = painterResource(R.drawable.baseline_favorite_24),
+                painter = painterResource(icon),
                 contentDescription = "Your Image",
                 modifier = Modifier.size(72.dp) // 이미지 크기 조절
             )
@@ -249,7 +257,7 @@ fun myDonate() {
                 Column(horizontalAlignment = Alignment.End) {
                     // "지금까지 기부하신 금액" 텍스트를 가운데 정렬
                     Text(
-                        text = "지금까지 기부하신 금액",
+                        text = "지금까지 기부하신 $text",
                         style = TextStyle(fontSize = 16.sp),
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center
@@ -257,7 +265,7 @@ fun myDonate() {
 
                     // "100,000원" 추가
                     Text(
-                        text = "100,000원",
+                        text = count,
                         style = TextStyle(fontSize = 16.sp)
                     )
                 }
@@ -317,7 +325,7 @@ fun myInquiry(){
             .fillMaxWidth()
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Spacer(modifier = Modifier.width(16.dp))
+            //Spacer(modifier = Modifier.width(16.dp))
             Image(painter = painterResource(id = R.drawable.baseline_email_24),
                 contentDescription = null)
             Spacer(modifier = Modifier.width(16.dp))
@@ -338,7 +346,7 @@ fun rebornAppBarDetailBottom(customerServiceCenter: List<customerServiceCenter>)
     ) {
         customerServiceCenter.forEach { serviceContent ->
             Row(verticalAlignment = Alignment.Top) {
-                Spacer(modifier = Modifier.width(16.dp))
+                //Spacer(modifier = Modifier.width(16.dp))
                 Image(painter = painterResource(id = R.drawable.baseline_call_24),
                     contentDescription = null)
                 Spacer(modifier = Modifier.width(16.dp))

@@ -65,7 +65,7 @@ object MainContents {
     val customerServiceCenter=listOf(
         customerServiceCenter("고객센터",
             "월요일 ~ 금요일 (주말 및 공휴일 휴무)",
-            "AM 8:00 ~ PM 7:00",
+            "AM 10:00 ~ PM 5:00",
         )
     )
 }

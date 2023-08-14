@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.dongminpark.reborn.R
+import com.dongminpark.reborn.Utils.BackOnPressed
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -55,6 +56,7 @@ fun rebornAppBarDonate(){
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun DonateScreen(navController: NavController) {
+    BackOnPressed()
     val placeInput = remember { mutableStateOf(TextFieldValue()) }
     val dateInput = remember { mutableStateOf(TextFieldValue()) }
     val houseNumInput = remember { mutableStateOf(TextFieldValue()) }

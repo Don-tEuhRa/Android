@@ -10,7 +10,7 @@ enum class RESPONSE_STATE {
 
 object USER{
     // 임시로 여기 적어둠. 나중에 보안을 위해서 local로 옮기거나 바꿔야함
-    var ACCESS_TOKEN: String = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0b2tlbiIsInJvbGUiOiJBRE1JTiIsInByb3ZpZGVyIjoiR09PR0xFIiwibmFtZSI6IlsyIDog67Cc656E7ZWc64u56re8ODIxNV0iLCJ1c2VySWQiOiIyIiwiZW1haWwiOiJ5ZW9uZ2hhazk5MDVAZ21haWwuY29tIiwiaWF0IjoxNjkxOTA4NzExLCJleHAiOjE2OTE5OTUxMTF9.qg6FXeKlLW0OctMrxxv8ddIuBenPLwDRz4z_PvSQV0I"
+    var ACCESS_TOKEN: String = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0b2tlbiIsInJvbGUiOiJVU0VSIiwicHJvdmlkZXIiOiJHT09HTEUiLCJuYW1lIjoiWzMgOiDrsJXrj5nrr7xdIiwidXNlcklkIjoiMyIsImVtYWlsIjoicGRtMDAxMTI1QGdtYWlsLmNvbSIsImlhdCI6MTY5MTkzOTk3NCwiZXhwIjoxNjkyMDI2Mzc0fQ.TqzLoCgJ9saXp1Y7onuUVxCWUfdVe5MPNpOhtUIpxps"
     var USERID: Int = 1
     // 프사 추가
     var NAME: String = ""
@@ -21,7 +21,56 @@ object USER{
 }
 
 object API{
-    const val BASE_URL = "http://118.67.142.179:8080" // 변경 예정
+    const val BASE_URL = "http://10.0.2.2:8080"
+
+    // cart controller
+    const val CART_CREATE = "/cart/create/{productId}"
+    const val CART_DELETE = "/cart/delete/{cartId}"
+    const val CART_DELETE_ALL = "/cart/deleteAll/{cartId}"
+    const val CART_FINDALL = "/cart/findAll"
+
+    // interest controller
+    const val INTEREST_DELETE = "/interest/delete/{productId}"
+    const val INTEREST_LIST = "/interest/list"
+    const val INTEREST_SAVE = "/interest/save/{productId}"
+
+    // mypage controller
+    const val MYPAGE = "/mypage/"
+    const val MYPAGE_ADDRESS_SAVE = "/mypage/address/save"
+    const val MYPAGE_DONATION = "/mypage/donation"
+    const val MYPAGE_INFO = "/mypage/info"
+    const val MYPAGE_ORDER = "/mypage/order"
+
+    // order controller
+    const val ORDER_CREATE = "/order/create/{productId}"
+    const val ORDER_CREATE_CART = "/order/create/cart/{cartId}"
+    const val ORDER_DELETE = "/order/delete/{orderId}"
+    const val ORDER_FINDALL = "/order/findAll"
+
+    // product controller
+    const val PRODUCT_CATEGORY = "/product/{category}"
+    const val PRODUCT_ID = "/product/{id}"
+    const val PRODUCT_DELETE = "/product/{id}/delete"
+    const val PRODUCT_EDIT = "/product/{id}/edit"
+    const val PRODUCT_CREATE_FILE = "/product/create/file"
+    const val PRODUCT_LIST = "/product/list"
+    const val PRODUCT_LIST_PAGE = "/product/list/{page}"
+    const val PRODUCT_SEARCH = "/product/search/{keyword}"
+
+    // progress controller
+    const val PROGRESS_FINDALL = "/progress/findAll"
+
+    // receipt controller
+    const val RECEIPT_CREATE = "/receipt/create"
+    const val RECEIPT_CANCEL = "/receipt/cancel/{receiptId}"
+
+    // user controller
+    const val FIREBASE_CONNECT = "/user/firebase/{uid}"
+    const val USER_INFO = "/user/info"
+
+
+
+    // 과거 작성 파일 -> 추후 삭제 예정
 
     // Board
     const val BOARD_CREATE = "/board/create"
@@ -43,7 +92,7 @@ object API{
     // user-controller
     const val USER_USERID = "/user/{userId}"
     const val USER_DELETE_USERID = "/user/delete/{userId}"
-    const val FIREBASE_CONNECT = "/user/firebase/{uid}"
+
     const val USER_UPDATE = "/user/update"
 }
 
