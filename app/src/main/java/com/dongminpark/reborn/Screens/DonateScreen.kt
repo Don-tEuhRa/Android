@@ -28,21 +28,27 @@ import java.time.format.DateTimeFormatter
 
 
 @Composable
-fun rebornAppBarDonate(){
-    TopAppBar(elevation = 10.dp,
+fun rebornAppBarDonate() {
+    TopAppBar(
+        elevation = 10.dp,
         backgroundColor = Color(0xff78C1F3),
         modifier = Modifier.height(100.dp)
     ) {
-        Column(modifier = Modifier
-            .padding(8.dp)) {
-            Text(text = stringResource(id = R.string.app_name),
+        Column(
+            modifier = Modifier
+                .padding(8.dp)
+        ) {
+            Text(
+                text = stringResource(id = R.string.app_name),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Black,
                 color = Color.White
             )
-            Text(text ="옷 기부 독려멘트",
+            Text(
+                text = "옷 기부 독려멘트",
                 fontWeight = FontWeight.Bold,
-                fontSize = 20.sp)
+                fontSize = 20.sp
+            )
 
         }
     }
@@ -72,7 +78,7 @@ fun DonateScreen(navController: NavController) {
                         userInput = userInput,
                         phoneInput = phoneInput,
                         showDialog = showDialog,
-                        showDialogError=showDialogError,
+                        showDialogError = showDialogError,
                         onDonateClicked = {
                             showDialogError.value = true
                             showDialog.value = true
@@ -112,12 +118,13 @@ fun donateInput(
         }
     }
 
-    Column(
+    // 수거날짜, 이름, 연락처, 주소, 상세주소, 우편번호, 현관비밀번호
+    Column( // LazyColumn으로 수정 -> 방문수거 장소 => 마이페이지에 있는것 처럶 주소, 상세주소, 우편번호
         Modifier
             .padding(16.dp)
             .fillMaxWidth()
     ) {
-        Row(){
+        Row() {
             Text(text = "방문수거 장소")
             if (placeInput.value.text.isEmpty()) {
                 Text(
@@ -146,26 +153,20 @@ fun donateInput(
 
 
         Text(text = "수거날짜")
-        Box(
+        Button(
+            onClick = { expanded = !expanded },
             modifier = Modifier
                 .fillMaxWidth()
-                .border(1.dp,Color.LightGray, RoundedCornerShape(6.dp))
+                .background(Color.White),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = Color.White,
+                contentColor = Color.Black
+            ),
         ) {
-            Button(
-                onClick = { expanded = !expanded },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.White),
-                colors = ButtonDefaults.buttonColors(
-                    backgroundColor = Color.White,
-                    contentColor = Color.Black
-                ),
-            ) {
-                Text(
-                    text = selectedDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-                )
-                Text(text = "▼")
-            }
+            Text(
+                text = selectedDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+            )
+            Text(text = "▼")
         }
 
         DropdownMenu(
@@ -195,11 +196,11 @@ fun donateInput(
         }
         Spacer(modifier = Modifier.height(20.dp))
 
-        var isHouseNumEnabled by remember { mutableStateOf(true) }
+        var isHouseNumEnabled by remember { mutableStateOf(false) }
         Row(
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
-        ){
+        ) {
             Text(text = "현관비밀번호")
             if (isHouseNumEnabled && userInput.value.text.isEmpty()) {
                 Text(
@@ -249,7 +250,7 @@ fun donateInput(
         Spacer(modifier = Modifier.height(20.dp))
 
 
-        Row(){
+        Row() {
             Text(text = "이름")
             if (userInput.value.text.isEmpty()) {
                 Text(
@@ -276,7 +277,7 @@ fun donateInput(
         )
         Spacer(modifier = Modifier.height(20.dp))
 
-        Row(){
+        Row() {
             Text(text = "연락처")
             if (phoneInput.value.text.isEmpty()) {
                 Text(
@@ -294,7 +295,11 @@ fun donateInput(
                 keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Next
             ),
-            onValueChange = { newValue -> phoneInput.value = newValue },
+            onValueChange = { newValue ->
+                if (newValue.text.all { it.isDigit() } && newValue.text.length <= 11) {
+                    phoneInput.value = newValue
+                }
+            },
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = Color.White,
                 focusedIndicatorColor = Color.LightGray,
@@ -310,7 +315,8 @@ fun donateInput(
         ) {
             donateButton(onDonateClicked = {
                 if (placeInput.value.text.isEmpty() || houseNumInput.value.text.isEmpty() ||
-                    userInput.value.text.isEmpty() || phoneInput.value.text.isEmpty()) {
+                    userInput.value.text.isEmpty() || phoneInput.value.text.length != 11
+                ) {
                     showDialogError.value = true
                 } else {
                     onDonateClicked()
@@ -342,7 +348,11 @@ fun donateInput(
                     Text("확인")
                 }
             },
-            modifier = Modifier.border(2.dp, Color.LightGray.copy(alpha = 0.7f), RoundedCornerShape(8.dp))
+            modifier = Modifier.border(
+                2.dp,
+                Color.LightGray.copy(alpha = 0.7f),
+                RoundedCornerShape(8.dp)
+            )
         )
     }
     if (showDialogError.value) {
@@ -379,16 +389,17 @@ fun donateButton(onDonateClicked: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
-        colors= ButtonDefaults.buttonColors(
+        colors = ButtonDefaults.buttonColors(
             backgroundColor = Color(0xff78C1F3),
             contentColor = Color.White
         ),
         onClick = {
-            Log.d("Tag","DonateButton 눌림")
+            Log.d("Tag", "DonateButton 눌림")
             onDonateClicked()
         }) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+            verticalArrangement =  Arrangement.Center,
         ) {
             Text(
                 text = "기부하기",

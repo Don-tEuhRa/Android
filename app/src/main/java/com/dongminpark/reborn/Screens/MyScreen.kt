@@ -38,6 +38,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun myAppBar() {
     var showProfile by remember { mutableStateOf(false) }
+    var showSnackBar by remember { mutableStateOf(false) }
 
     TopAppBar(
         elevation = 10.dp,
@@ -98,9 +99,15 @@ fun myAppBar() {
         myProfile(
             name = "최수인",
             phoneNumber = "010-1234-1234",
-            address = "경기도 수원시 영통구 광교산로",
+            address = "경기도 수원시 장안구 연무동 62-6",
+            detialAddress = "202호",
+            zipcode = "12345",
             onCloseRequest = { showProfile = false }
         )
+    }
+
+    if (showSnackBar){
+
     }
 }
 
@@ -110,96 +117,139 @@ fun myProfile(
     name: String,
     phoneNumber: String,
     address: String,
+    detialAddress: String,
+    zipcode: String,
     onCloseRequest: () -> Unit
 ) {
-    var WriteShowDialog by remember { mutableStateOf(true) }
-    var newName by remember { mutableStateOf(name) }
-    var newPhoneNumber by remember { mutableStateOf(phoneNumber) }
-    var newAddress by remember { mutableStateOf(address) }
+    var newName by remember { mutableStateOf("") }
+    var newPhoneNumber by remember { mutableStateOf("") }
+    var newAddress by remember { mutableStateOf("") }
+    var newDetailAddress by remember { mutableStateOf("") }
+    var newZipcode by remember { mutableStateOf("") }
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
-    if (WriteShowDialog) {
-        AlertDialog(
-            modifier = Modifier.fillMaxHeight(0.9f),
-            shape = RoundedCornerShape(24.dp),
-            onDismissRequest = {  WriteShowDialog = true },
-            title = { Text("회원정보수정") },
-            text = {
-                LazyColumn(modifier = Modifier.padding(vertical = 12.dp)){
-                    item {
-                        Text(text = "이름")
-                        OutlinedTextField(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = newName,
-                            onValueChange = { newValue -> newName = newValue },
-                        )
-                        Spacer(modifier = Modifier.padding(8.dp))
-                    }
-                    item {
-                        Text(text = "연락처")
-                        OutlinedTextField(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = newPhoneNumber,
-                            onValueChange = { newValue -> newPhoneNumber = newValue }
-                        )
-                        Spacer(modifier = Modifier.padding(8.dp))
-                    }
-                    item {
-                        Text(text = "주소")
-                        OutlinedTextField(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = newAddress,
-                            onValueChange = { newValue -> newAddress = newValue }
-                        )
-                        Spacer(modifier = Modifier.padding(8.dp))
-                    }
+    AlertDialog(
+        //modifier = Modifier.fillMaxHeight(0.9f),
+        shape = RoundedCornerShape(24.dp),
+        onDismissRequest = { onCloseRequest() },
+        title = { Text("회원정보수정") },
+        text = {
+            LazyColumn(modifier = Modifier.padding(vertical = 12.dp)) {
+                item {
+                    Text(text = "이름")
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = { Text(text = name) },
+                        value = newName,
+                        singleLine = true,
+                        onValueChange = { newValue -> newName = newValue },
+                    )
+                    Spacer(modifier = Modifier.padding(8.dp))
                 }
-            },
-            confirmButton = {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    Button(
-                        onClick = {
-                            if (newName.isNotEmpty() && newPhoneNumber.isNotEmpty() && newAddress.isNotEmpty()) {
-                                coroutineScope.launch {
-                                    coroutineScope.launch {
-                                        val result = snackbarHostState.showSnackbar(
-                                            "회원정보가 수정되었습니다.",
-                                            "확인",
-                                            SnackbarDuration.Short
-                                        )
+                item {
+                    Text(text = "연락처")
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = { Text(text = phoneNumber) },
+                        value = newPhoneNumber,
+                        singleLine = true,
+                        onValueChange = { newValue -> newPhoneNumber = newValue }
+                    )
+                    Spacer(modifier = Modifier.padding(8.dp))
+                }
+                item {
+                    Text(text = "주소")
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = { Text(text = address) },
+                        value = newAddress,
+                        onValueChange = { newValue -> newAddress = newValue }
+                    )
+                    Spacer(modifier = Modifier.padding(8.dp))
+                }
+                item {
+                    Text(text = "상세주소")
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = { Text(text = detialAddress) },
+                        value = newAddress,
+                        onValueChange = { newValue -> newDetailAddress = newValue }
+                    )
+                    Spacer(modifier = Modifier.padding(8.dp))
+                }
+                item { // 숫자만 입력가능하게.
+                    Text(text = "우편번호")
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = { Text(text = zipcode) },
+                        value = newAddress,
+                        onValueChange = { newValue -> newZipcode = newValue }
+                    )
+                    Spacer(modifier = Modifier.padding(8.dp))
+                }
+                item { // 맞춰서 수정해주ㅏㅓ요
+                    Text(text = "현관 비밀번호")
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = { Text(text = zipcode) },
+                        value = newAddress,
+                        onValueChange = { newValue -> newZipcode = newValue }
+                    )
+                    Spacer(modifier = Modifier.padding(8.dp))
+                }
+            }
+        },
+        confirmButton = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Button(
+                    onClick = {
+                        onCloseRequest()
+                        // api 호출
+                        val nameAPI = if (newName.isEmpty()) name else newName
+                        val phoneNumberAPI = if (newPhoneNumber.isEmpty()) phoneNumber else newPhoneNumber
+                        val addressAPI = if (newAddress.isEmpty()) address else newAddress
 
-                                        when(result){
-                                            SnackbarResult.Dismissed->{
-                                                Log.d("TAG","스낵바 닫아짐")
-                                            }
-                                            SnackbarResult.ActionPerformed->{
-                                                Log.d("TAG","스낵바 확인버튼을 누름")
-                                            }
+                        /*
+                        if (newName.isNotEmpty() && newPhoneNumber.isNotEmpty() && newAddress.isNotEmpty()) {
+                            coroutineScope.launch {
+                                coroutineScope.launch {
+                                    val result = snackbarHostState.showSnackbar(
+                                        "회원정보가 수정되었습니다.",
+                                        "확인",
+                                        SnackbarDuration.Short
+                                    )
+
+                                    when (result) {
+                                        SnackbarResult.Dismissed -> {
+                                            Log.d("TAG", "스낵바 닫아짐")
+                                        }
+                                        SnackbarResult.ActionPerformed -> {
+                                            Log.d("TAG", "스낵바 확인버튼을 누름")
                                         }
                                     }
                                 }
                             }
-                        },
-                        modifier = Modifier.fillMaxWidth(0.4f)
-                    ) {
-                        Text("등록")
-                    }
-                    Button(
-                        onClick = { WriteShowDialog = false },
-                        modifier = Modifier.fillMaxWidth(0.7f),
-                    ) {
-                        Text("취소")
-                    }
+                        }
+                         */
+                    },
+                    modifier = Modifier.fillMaxWidth(0.4f)
+                ) {
+                    Text("등록")
                 }
-                SnackbarHost(hostState = snackbarHostState, modifier = Modifier.offset(y = (-20).dp))
+                Button(
+                    onClick = { onCloseRequest() },
+                    modifier = Modifier.fillMaxWidth(0.7f),
+                ) {
+                    Text("취소")
+                }
             }
-        )
-    }
-
+            SnackbarHost(hostState = snackbarHostState, modifier = Modifier.offset(y = (-20).dp))
+        }
+    )
 }
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -219,7 +269,7 @@ fun MyScreen(navController: NavController) {
 }
 
 @Composable
-fun myView(introduction: List<IntroductionDetail>, navController: NavController){
+fun myView(introduction: List<IntroductionDetail>, navController: NavController) {
     LazyColumn(
         modifier = Modifier
             .padding(16.dp)
@@ -227,7 +277,7 @@ fun myView(introduction: List<IntroductionDetail>, navController: NavController)
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        items(introduction){ aIntroDetail->
+        items(introduction) { aIntroDetail ->
             myDonate()
             Spacer(modifier = Modifier.height(40.dp))
             myDonateOrder(navController)
@@ -241,11 +291,13 @@ fun myView(introduction: List<IntroductionDetail>, navController: NavController)
 
 @Composable
 fun myDonate() {
-    Box(modifier = Modifier
-        .fillMaxWidth(),
+    Box(
+        modifier = Modifier
+            .fillMaxWidth(),
         contentAlignment = Alignment.CenterStart
     ) {
-        Text(text = "기부 진행도",
+        Text(
+            text = "기부 진행도",
             fontWeight = FontWeight.Bold
         )
     }
@@ -305,7 +357,7 @@ fun myDonateOrder(navController: NavController) {
         // 기부현황 버튼
         Button(
             shape = RoundedCornerShape(8.dp),
-            contentPadding = PaddingValues(top = 35.dp, bottom = 35.dp, start = 55.dp, end = 55.dp ),
+            contentPadding = PaddingValues(top = 35.dp, bottom = 35.dp, start = 55.dp, end = 55.dp),
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = Color(0xFFE7E7E7),
                 contentColor = Color.Black
@@ -322,7 +374,7 @@ fun myDonateOrder(navController: NavController) {
         // 주문현황 버튼
         Button(
             shape = RoundedCornerShape(8.dp),
-            contentPadding = PaddingValues(top = 35.dp, bottom = 35.dp, start = 55.dp, end = 55.dp ),
+            contentPadding = PaddingValues(top = 35.dp, bottom = 35.dp, start = 55.dp, end = 55.dp),
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = Color(0xFFE7E7E7),
                 contentColor = Color.Black
@@ -339,15 +391,17 @@ fun myDonateOrder(navController: NavController) {
 }
 
 @Composable
-fun myInquiry(){
+fun myInquiry() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Spacer(modifier = Modifier.width(16.dp))
-            Image(painter = painterResource(id = R.drawable.baseline_email_24),
-                contentDescription = null)
+            Image(
+                painter = painterResource(id = R.drawable.baseline_email_24),
+                contentDescription = null
+            )
             Spacer(modifier = Modifier.width(16.dp))
             Column() {
                 Text(text = "Re:Born 문의하기")
@@ -357,7 +411,7 @@ fun myInquiry(){
 }
 
 @Composable
-fun rebornAppBarDetailBottom(customerServiceCenter: List<customerServiceCenter>){
+fun rebornAppBarDetailBottom(customerServiceCenter: List<customerServiceCenter>) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -367,11 +421,14 @@ fun rebornAppBarDetailBottom(customerServiceCenter: List<customerServiceCenter>)
         customerServiceCenter.forEach { serviceContent ->
             Row(verticalAlignment = Alignment.Top) {
                 Spacer(modifier = Modifier.width(16.dp))
-                Image(painter = painterResource(id = R.drawable.baseline_call_24),
-                    contentDescription = null)
+                Image(
+                    painter = painterResource(id = R.drawable.baseline_call_24),
+                    contentDescription = null
+                )
                 Spacer(modifier = Modifier.width(16.dp))
                 Column() {
-                    Text(text = serviceContent.title,
+                    Text(
+                        text = serviceContent.title,
                         fontWeight = FontWeight.Bold
                     )
                     Text(text = serviceContent.date)
@@ -386,9 +443,12 @@ fun rebornAppBarDetailBottom(customerServiceCenter: List<customerServiceCenter>)
 //기부현황페이지
 @Composable
 fun myDonatePageAppBar() {
-    TopAppBar(elevation = 10.dp,
-        backgroundColor = Color(0xff78C1F3)) {
-        Text(text = stringResource(id = R.string.app_name),
+    TopAppBar(
+        elevation = 10.dp,
+        backgroundColor = Color(0xff78C1F3)
+    ) {
+        Text(
+            text = stringResource(id = R.string.app_name),
             modifier = Modifier
                 .padding(8.dp)
                 .align(Alignment.CenterVertically),
@@ -396,7 +456,8 @@ fun myDonatePageAppBar() {
             fontWeight = FontWeight.Black,
             color = Color.White
         )
-        Text(text = "기부현황",
+        Text(
+            text = "기부현황",
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
             color = Color.White
@@ -423,7 +484,7 @@ fun myDonatePage() {
 }
 
 @Composable
-fun myDonatePageProG(){
+fun myDonatePageProG() {
     Column(
         modifier = Modifier
             .fillMaxWidth(1f)
@@ -527,7 +588,7 @@ fun myDonatePageProG(){
 }
 
 @Composable
-fun myDonatePageList(){
+fun myDonatePageList() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -538,7 +599,8 @@ fun myDonatePageList(){
             modifier = Modifier.padding(16.dp)
         ) {
             //임시텍스트
-            Text(text = "수거중",
+            Text(
+                text = "수거중",
                 fontWeight = FontWeight.Bold
             )
             Row(
@@ -583,9 +645,12 @@ fun myDonatePageList(){
 //주문현황페이지
 @Composable
 fun myOrderPageAppBar() {
-    TopAppBar(elevation = 10.dp,
-        backgroundColor = Color(0xff78C1F3)) {
-        Text(text = stringResource(id = R.string.app_name),
+    TopAppBar(
+        elevation = 10.dp,
+        backgroundColor = Color(0xff78C1F3)
+    ) {
+        Text(
+            text = stringResource(id = R.string.app_name),
             modifier = Modifier
                 .padding(8.dp)
                 .align(Alignment.CenterVertically),
@@ -593,7 +658,8 @@ fun myOrderPageAppBar() {
             fontWeight = FontWeight.Black,
             color = Color.White
         )
-        Text(text = "주문현황",
+        Text(
+            text = "주문현황",
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
             color = Color.White
@@ -620,7 +686,7 @@ fun myOrderPage() {
 }
 
 @Composable
-fun myOrderPageProG(){
+fun myOrderPageProG() {
     Column(
         modifier = Modifier
             .fillMaxWidth(1f)
@@ -701,7 +767,7 @@ fun myOrderPageProG(){
 }
 
 @Composable
-fun myOrderPageList(){
+fun myOrderPageList() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -712,7 +778,8 @@ fun myOrderPageList(){
             modifier = Modifier.padding(8.dp)
         ) {
             //임시텍스트
-            Text(text = "배송완료",
+            Text(
+                text = "배송완료",
                 fontWeight = FontWeight.Bold
             )
             Row(
@@ -752,7 +819,7 @@ fun myOrderPageList(){
                 //환불요청
                 Button(
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
-                    onClick = {  }) {
+                    onClick = { }) {
                     Text(
                         text = "환불요청",
                         color = Color.Black,
@@ -763,7 +830,7 @@ fun myOrderPageList(){
                 //배송조회
                 Button(
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
-                    onClick = {  }) {
+                    onClick = { }) {
                     Text(
                         text = "배송조회",
                         color = Color.Black,
@@ -774,7 +841,7 @@ fun myOrderPageList(){
                 //상담사 문의
                 Button(
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
-                    onClick = {  }) {
+                    onClick = { }) {
                     Text(
                         text = "상담사 문의",
                         color = Color.Black,
@@ -785,7 +852,7 @@ fun myOrderPageList(){
                 //구매확정
                 Button(
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
-                    onClick = {  }) {
+                    onClick = { }) {
                     Text(
                         text = "구매확정",
                         color = Color.Black,

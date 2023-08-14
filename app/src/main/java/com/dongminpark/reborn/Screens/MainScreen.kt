@@ -71,7 +71,7 @@ fun MainScreen(
             ) {
                 Spacer(modifier = Modifier.height(12.dp))
                 ProgressBarPager(mutableListOf(ProgressStep(state = "검수중"),ProgressStep(state = "리폼중"),ProgressStep(state = "판매중")))
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 introductions.forEach { introduction ->
                     introductionView(aIntro = introduction, navController = navController as NavHostController)
                 }
@@ -94,7 +94,7 @@ fun introductionView(aIntro: Introduction, navController: NavHostController){
 
     Button(
         onClick = { expanded = !expanded },
-        shape = RoundedCornerShape(30.dp),
+        shape = RoundedCornerShape(24.dp),
         modifier = Modifier
             .padding(vertical = 4.dp, horizontal = 8.dp),
         colors = ButtonDefaults.buttonColors(
@@ -104,11 +104,22 @@ fun introductionView(aIntro: Introduction, navController: NavHostController){
     ) {
                 Column(
                     modifier = Modifier
-                        .padding(start = 8.dp,bottom = 30.dp,top=15.dp)
+                        .padding(start = 8.dp, bottom = 30.dp, top = 15.dp)
                         .fillMaxWidth()
                 ) {
-                    Text(text = aIntro.title)
-                    Text(text = aIntro.subtitle)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column() {
+                            Text(text = aIntro.title)
+                            Text(text = aIntro.subtitle)
+                        }
+                        Icon(painter = painterResource(id = R.drawable.ribbon), contentDescription = "Icon", Modifier.size(24.dp))
+                    }
+
+
                     if (expanded) {
                         Spacer(modifier = Modifier.height(16.dp))
                         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.high) {
