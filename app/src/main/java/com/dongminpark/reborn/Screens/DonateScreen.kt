@@ -3,7 +3,6 @@ package com.dongminpark.reborn.Screens
 
 import android.annotation.SuppressLint
 import android.util.Log
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -13,7 +12,6 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -28,8 +26,6 @@ import com.dongminpark.reborn.R
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-//구현안된기능
-//입력안됐을때 경고띄우는 기능(유효성검사),현관비밀번호 유무
 
 @Composable
 fun rebornAppBarDonate(){
@@ -56,12 +52,12 @@ fun rebornAppBarDonate(){
 @Composable
 fun DonateScreen(navController: NavController) {
     val placeInput = remember { mutableStateOf(TextFieldValue()) }
-    val dateInput = remember { mutableStateOf(TextFieldValue()) }
     val houseNumInput = remember { mutableStateOf(TextFieldValue()) }
     val userInput = remember { mutableStateOf(TextFieldValue()) }
     val phoneInput = remember { mutableStateOf(TextFieldValue()) }
 
     val showDialog = remember { mutableStateOf(false) }
+    val showDialogError = remember { mutableStateOf(false) }
 
     Surface(color = Color.White) {
         Scaffold(
@@ -76,9 +72,10 @@ fun DonateScreen(navController: NavController) {
                         userInput = userInput,
                         phoneInput = phoneInput,
                         showDialog = showDialog,
+                        showDialogError=showDialogError,
                         onDonateClicked = {
+                            showDialogError.value = true
                             showDialog.value = true
-
                             placeInput.value = TextFieldValue()
                             houseNumInput.value = TextFieldValue()
                             userInput.value = TextFieldValue()
@@ -99,6 +96,7 @@ fun donateInput(
     userInput: MutableState<TextFieldValue>,
     phoneInput: MutableState<TextFieldValue>,
     showDialog: MutableState<Boolean>,
+    showDialogError: MutableState<Boolean>,
     onDonateClicked: () -> Unit
 ) {
     val shouldShowHouseNum = remember { mutableStateOf(false) }
@@ -119,7 +117,17 @@ fun donateInput(
             .padding(16.dp)
             .fillMaxWidth()
     ) {
-        Text(text = "방문수거 장소")
+        Row(){
+            Text(text = "방문수거 장소")
+            if (placeInput.value.text.isEmpty()) {
+                Text(
+                    text = "(장소를 입력해주세요.)",
+                    color = Color.Red,
+                    fontSize = 12.sp,
+                    modifier = Modifier.padding(start = 4.dp)
+                )
+            }
+        }
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
             value = placeInput.value,
@@ -187,10 +195,33 @@ fun donateInput(
         }
         Spacer(modifier = Modifier.height(20.dp))
 
-        Text(text = "현관비밀번호")
+        var isHouseNumEnabled by remember { mutableStateOf(true) }
+        Row(
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically
+        ){
+            Text(text = "현관비밀번호")
+            if (isHouseNumEnabled && userInput.value.text.isEmpty()) {
+                Text(
+                    text = "(비밀번호를 입력해주세요.)",
+                    color = Color.Red,
+                    fontSize = 12.sp,
+                    modifier = Modifier.padding(start = 4.dp)
+                )
+            }
+            Checkbox(
+                checked = !isHouseNumEnabled,
+                onCheckedChange = {
+                    isHouseNumEnabled = !it
+                },
+                modifier = Modifier.align(Alignment.Bottom)
+            )
+            Text(text = "없음")
+        }
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
             value = houseNumInput.value,
+            enabled = isHouseNumEnabled,
             trailingIcon = {
                 IconButton(onClick = {
                     Log.d("TAG", "Housenum:클릭")
@@ -217,13 +248,24 @@ fun donateInput(
         )
         Spacer(modifier = Modifier.height(20.dp))
 
-        Text(text = "이름")
+
+        Row(){
+            Text(text = "이름")
+            if (userInput.value.text.isEmpty()) {
+                Text(
+                    text = "(이름을 입력해주세요.)",
+                    color = Color.Red,
+                    fontSize = 12.sp,
+                    modifier = Modifier.padding(start = 4.dp)
+                )
+            }
+        }
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
             value = userInput.value,
             onValueChange = { newValue -> userInput.value = newValue },
             keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Next // Enter 누르면 다음으로 이동
+                imeAction = ImeAction.Next
             ),
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = Color.White,
@@ -234,7 +276,17 @@ fun donateInput(
         )
         Spacer(modifier = Modifier.height(20.dp))
 
-        Text(text = "연락처")
+        Row(){
+            Text(text = "연락처")
+            if (phoneInput.value.text.isEmpty()) {
+                Text(
+                    text = "(연락처를 입력해주세요.)",
+                    color = Color.Red,
+                    fontSize = 12.sp,
+                    modifier = Modifier.padding(start = 4.dp)
+                )
+            }
+        }
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
             value = phoneInput.value,
@@ -257,7 +309,12 @@ fun donateInput(
             contentAlignment = Alignment.BottomCenter
         ) {
             donateButton(onDonateClicked = {
-                onDonateClicked()
+                if (placeInput.value.text.isEmpty() || houseNumInput.value.text.isEmpty() ||
+                    userInput.value.text.isEmpty() || phoneInput.value.text.isEmpty()) {
+                    showDialogError.value = true
+                } else {
+                    onDonateClicked()
+                }
             })
         }
     }
@@ -286,6 +343,32 @@ fun donateInput(
                 }
             },
             modifier = Modifier.border(2.dp, Color.LightGray.copy(alpha = 0.7f), RoundedCornerShape(8.dp))
+        )
+    }
+    if (showDialogError.value) {
+        AlertDialog(
+            onDismissRequest = {
+                showDialogError.value = false
+            },
+            title = {
+                Text("기부하기 실패")
+            },
+            text = {
+                Text("입력되지않은 칸이 있습니다")
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showDialogError.value = false
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color.LightGray
+                    )
+                ) {
+                    Text("확인")
+                }
+            },
+            modifier = Modifier.border(2.dp, Color.LightGray, RoundedCornerShape(8.dp))
         )
     }
 }
