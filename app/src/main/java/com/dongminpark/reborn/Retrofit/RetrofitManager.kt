@@ -1,6 +1,7 @@
 package com.dongminpark.reborn.Retrofit
 
 import android.util.Log
+import com.dongminpark.reborn.App
 import com.dongminpark.reborn.Utils.OAuthData
 import com.dongminpark.reborn.Utils.API
 import com.dongminpark.reborn.Utils.Constants.TAG
@@ -19,8 +20,6 @@ class RetrofitManager {
     // 레트로핏 인터페이스 가져오기
     private val iRetrofit: IRetrofit? = RetrofitClient.getClient(API.BASE_URL)?.create(IRetrofit::class.java)
 
-    // api 작동부 작성 구역
-
     // firebase와 DB 연결
     fun firebaseConnect(
         uid: String?,
@@ -33,7 +32,7 @@ class RetrofitManager {
         call.enqueue(object : retrofit2.Callback<JsonElement> {
             // 응답 실패시
             override fun onFailure(call: Call<JsonElement>, t: Throwable) {
-                Log.d(TAG, "FirebaseConnect - onFailure() called / t: $t")
+                Log.e(TAG, "FirebaseConnect - onFailure() called / t: $t")
                 completion(RESPONSE_STATE.FAIL)
             }
 
@@ -42,8 +41,7 @@ class RetrofitManager {
                 call: Call<JsonElement>,
                 response: Response<JsonElement>
             ) {
-                Log.d(
-                    TAG,
+                Log.e(TAG,
                     "FirebaseConnect - onResponse() called / respose : ${response.body()}"
                 )
                 when (response.code()) {
@@ -52,15 +50,8 @@ class RetrofitManager {
                             val body = it.asJsonObject
                             val data = body.get("data").asJsonObject
                             val accessToken = data.get("jwt").asString
-                            //val id = data.get("userId").asInt
+                            App.token_prefs.accessToken = accessToken
 
-                            // 일단은 이런식으로 사용. 나중에는 security적용해서
-                            OAuthData.ACCESS_TOKEN = accessToken
-                            USER.ACCESS_TOKEN = accessToken
-                            //USER.USERID = id
-
-                            // 이런방식으로 하면 안되고
-                            Log.e(TAG, "onResponse: ${OAuthData.ACCESS_TOKEN}")
                             completion(RESPONSE_STATE.OKAY)
                         }
                     }
@@ -72,5 +63,42 @@ class RetrofitManager {
         })
     }
 
+
+    // user controller
+    fun userInfo(completion: (RESPONSE_STATE, name: String) -> Unit){
+        val call = iRetrofit?.userInfo() ?: return
+
+        call.enqueue(object : retrofit2.Callback<JsonElement> {
+            // 응답 실패시
+            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
+                Log.d(TAG, "userInfo - onFailure() called / t: $t")
+                completion(RESPONSE_STATE.FAIL, "")
+            }
+
+            // 응답 성공시
+            override fun onResponse(
+                call: Call<JsonElement>,
+                response: Response<JsonElement>
+            ) {
+                Log.d(
+                    TAG,
+                    "userInfo - onResponse() called / respose : ${response.body()}"
+                )
+                when (response.code()) {
+                    200 -> { // 정상 연결
+                        response.body()?.let {
+                            val body = it.asJsonObject
+                            val data = body.get("data").asJsonObject.get("user").asJsonObject
+                            val name = data.get("nickname").asString
+                            completion(RESPONSE_STATE.OKAY, name)
+                        }
+                    }
+                    else -> { // 에러
+                        completion(RESPONSE_STATE.FAIL, "")
+                    }
+                }
+            }
+        })
+    }
 
 }

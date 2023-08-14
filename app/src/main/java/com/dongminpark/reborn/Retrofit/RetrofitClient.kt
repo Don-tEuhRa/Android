@@ -1,6 +1,7 @@
 package com.dongminpark.reborn.Retrofit
 
 import android.util.Log
+import com.dongminpark.reborn.App
 import com.dongminpark.reborn.Utils.Constants.TAG
 import com.dongminpark.reborn.Utils.USER
 import com.dongminpark.reborn.Utils.isJsonArray
@@ -16,10 +17,7 @@ import java.util.concurrent.TimeUnit
 
 // 싱글턴
 object RetrofitClient {
-    // 레트로핏 클라이언트 선언
-
     private var retrofitClient: Retrofit? = null
-    //private lateinit var retrofitClient: Retrofit
 
     fun getClient(baseUrl: String): Retrofit?{
         Log.d(TAG, "RetrofitClient - getClient() called")
@@ -56,7 +54,7 @@ object RetrofitClient {
             override fun intercept(chain: Interceptor.Chain): Response {
                 Log.d(TAG, "RetrofitClient - intercept() called")
 
-                val newRequest = chain.request().newBuilder().addHeader("Authorization", "Bearer ${USER.ACCESS_TOKEN}").build()
+                val newRequest = chain.request().newBuilder().addHeader("Authorization", "Bearer ${App.token_prefs.accessToken}").build()
                 val newResponse = chain.proceed(newRequest)
 
                 return newResponse
