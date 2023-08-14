@@ -5,16 +5,13 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -26,7 +23,6 @@ import com.dongminpark.reborn.App
 import com.dongminpark.reborn.ui.theme.Point
 import com.dongminpark.reborn.R
 import com.dongminpark.reborn.Retrofit.RetrofitManager
-import com.dongminpark.reborn.Utils.Constants.TAG
 import com.dongminpark.reborn.Utils.MESSAGE
 import com.dongminpark.reborn.Utils.OAuthData
 import com.dongminpark.reborn.Utils.RESPONSE_STATE
@@ -47,7 +43,7 @@ fun LoginScreen(navController: NavHostController) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White),
+                .background(Point),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
@@ -64,7 +60,7 @@ fun LoginScreen(navController: NavHostController) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White),
+                .background(Point),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
@@ -95,20 +91,17 @@ fun LoginScreen(navController: NavHostController) {
                     color = Color.Black,
                 )
 
-                Spacer(modifier = Modifier.height(20.dp))
-
                 Icon(
                     painter = painterResource(id = R.drawable.google_kor),
                     contentDescription = "Google Login",
                     modifier = Modifier
-                        .border(1.dp, Color.Black, RoundedCornerShape(12.dp))
                         .clickable {
                             OAuthData.nav?.navigate(Screen.Once.route)
                             //isLoginLoading = true
                             //googleLogin()
                         }
                         .padding(10.dp)
-                        .width(200.dp),
+                        .width(240.dp),
                     tint = Color.Unspecified
                 )
             }
@@ -133,22 +126,19 @@ fun firebaseAuthWithGoogle(account: GoogleSignInAccount?) {
                         responseState ->
                     when (responseState) {
                         RESPONSE_STATE.OKAY -> {
+                            //isLoginLoading = false
                             //OAuthData.nav?.navigate(Screen.Once.route)
-                            Log.d(TAG, "api 호출 성공")
                         }
                         RESPONSE_STATE.FAIL -> {
                             //isLoginLoading = false
                             Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
-                            Log.d(TAG, "api 호출 에러")
                         }
                     }
                 })
             }
             else{
                 //isLoginLoading = false
-                //Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
-                Log.e("에러 : ", "${task.exception}")
-                Log.e("Firebase ERROR", "먼가 먼가 잘못됨")
+                Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
             }
         }
 }
@@ -156,22 +146,8 @@ fun firebaseAuthWithGoogle(account: GoogleSignInAccount?) {
 fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
     try {
         val account = completedTask.getResult(ApiException::class.java)
-        val serviceAccountKey = account.serverAuthCode.toString()
-        val email = account?.email.toString()
-        val name = account?.displayName.toString()
-        val profileImg = account?.photoUrl
-        var userId = account?.id.toString()
-        var accessToken = account?.idToken.toString()
-
-        Log.e("Google account email", email)
-        Log.e("Google account name", name)
-        Log.e("Google account profileImg", "$profileImg")
-        Log.e("Google account userId", userId)
-        Log.e("Google account serviceAccountKey", serviceAccountKey)
-        Log.e("Google account accessId", accessToken)
 
         firebaseAuthWithGoogle(account)
-
     } catch (e: ApiException) {
         //isLoginLoading = false
         Log.e("Google account", "signInResult:failed Code = " + e.statusCode)

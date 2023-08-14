@@ -69,7 +69,7 @@ fun StorePayScreen(navController: NavController) {
                 TextFormat(text = "상품 정보")
 
                 itemList.forEach { item ->
-                    ItemInfoFrame(item = item.toString())
+                    ItemInfoFrame(item = item.toString(), navController)
                 }
             }
 
@@ -79,16 +79,16 @@ fun StorePayScreen(navController: NavController) {
 
             item {
                 // 포인트 사용
-                TextFormat(modifier = Modifier.padding(vertical = 8.dp), text = "포인트 사용")
+                TextFormat(modifier = Modifier.padding(vertical = 8.dp), text = "마일리지 사용")
 
                 // 보유 포인트  -  숫자
-                RowSpaceBetweenFrame(first = "보유 포인트", second = "1200")
+                RowSpaceBetweenFrame(first = "보유 마일리지", second = "1200")
                 // 사용 포인트  -  숫자 입력 -> textfield쓸때 숫자 키패드 출력 및 특수기호 무시 처리 -> 인하대 결과물 코드 참고
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    TextFormat(text = "사용 포인트", size = 12)
+                    TextFormat(text = "사용 마일리지", size = 12)
 
                     BasicTextField(
                         modifier = Modifier
@@ -100,7 +100,7 @@ fun StorePayScreen(navController: NavController) {
                                 if (newText.toInt() > holdingPoint.toInt()) {
                                     Toast.makeText(
                                         App.instance,
-                                        "보유 포인트보다 많이 사용할 수 없습니다.",
+                                        "보유 마일리지보다 많이 사용할 수 없습니다.",
                                         Toast.LENGTH_SHORT
                                     ).show()
                                     point = holdingPoint

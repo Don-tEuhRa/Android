@@ -60,6 +60,7 @@ fun MainScreen(
     introductions: List<Introduction>,
     navController: NavController
 ) {
+    BackOnPressed()
     Surface(color = Color.White) {
         Scaffold(backgroundColor = Color.White,
             topBar = { rebornAppBar() }

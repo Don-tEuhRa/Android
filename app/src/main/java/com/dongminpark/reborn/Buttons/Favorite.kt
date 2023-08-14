@@ -19,7 +19,6 @@ fun FavoriteButton(isFavorite: Boolean) {
         icon = icon
     ) {
         isFavorite = !isFavorite
-        Log.e(TAG, "Favorite: 버튼 눌림~ -> ${isFavorite}", )
         // api 호출
     }
 }

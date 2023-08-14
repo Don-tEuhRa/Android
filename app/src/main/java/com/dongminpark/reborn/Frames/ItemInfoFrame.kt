@@ -9,13 +9,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 
 @Composable
-fun ItemInfoFrame(item: String) {
+fun ItemInfoFrame(item: String, navController: NavController) {
     Row(
         modifier = Modifier
             .clickable {
-
+                navController.navigate("storeDetail")
             }
             .padding(horizontal = 0.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
