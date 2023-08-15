@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -59,10 +60,12 @@ fun rebornAppBarDonate() {
 @Composable
 fun DonateScreen(navController: NavController) {
     BackOnPressed()
-    val placeInput = remember { mutableStateOf(TextFieldValue()) }
-    val houseNumInput = remember { mutableStateOf(TextFieldValue()) }
     val userInput = remember { mutableStateOf(TextFieldValue()) }
     val phoneInput = remember { mutableStateOf(TextFieldValue()) }
+    val placeInput = remember { mutableStateOf(TextFieldValue()) }
+    val placeDetailInput = remember { mutableStateOf(TextFieldValue()) }
+    val postInput = remember { mutableStateOf(TextFieldValue()) }
+    val houseNumInput = remember { mutableStateOf(TextFieldValue()) }
 
     val showDialog = remember { mutableStateOf(false) }
     val showDialogError = remember { mutableStateOf(false) }
@@ -75,19 +78,23 @@ fun DonateScreen(navController: NavController) {
                     rebornAppBarDonate()
                     Spacer(modifier = Modifier.height(20.dp))
                     donateInput(
-                        placeInput = placeInput,
-                        houseNumInput = houseNumInput,
                         userInput = userInput,
                         phoneInput = phoneInput,
+                        placeInput = placeInput,
+                        placeDetailInput = placeDetailInput,
+                        postInput = postInput,
+                        houseNumInput = houseNumInput,
                         showDialog = showDialog,
                         showDialogError = showDialogError,
                         onDonateClicked = {
-                            showDialogError.value = true
+                            showDialogError.value = false
                             showDialog.value = true
-                            placeInput.value = TextFieldValue()
-                            houseNumInput.value = TextFieldValue()
                             userInput.value = TextFieldValue()
                             phoneInput.value = TextFieldValue()
+                            placeInput.value = TextFieldValue()
+                            placeDetailInput.value = TextFieldValue()
+                            postInput.value = TextFieldValue()
+                            houseNumInput.value = TextFieldValue()
                         }
                     )
                 }
@@ -99,10 +106,12 @@ fun DonateScreen(navController: NavController) {
 @SuppressLint("NewApi")
 @Composable
 fun donateInput(
-    placeInput: MutableState<TextFieldValue>,
-    houseNumInput: MutableState<TextFieldValue>,
     userInput: MutableState<TextFieldValue>,
     phoneInput: MutableState<TextFieldValue>,
+    placeInput: MutableState<TextFieldValue>,
+    placeDetailInput: MutableState<TextFieldValue>,
+    postInput: MutableState<TextFieldValue>,
+    houseNumInput: MutableState<TextFieldValue>,
     showDialog: MutableState<Boolean>,
     showDialogError: MutableState<Boolean>,
     onDonateClicked: () -> Unit
@@ -110,7 +119,7 @@ fun donateInput(
     val shouldShowHouseNum = remember { mutableStateOf(false) }
     var expanded by remember { mutableStateOf(false) }
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
-
+    var isHouseNumEnabled by remember { mutableStateOf(true) }
 
     val houseNumResource: (Boolean) -> Int = {
         if (it) {
@@ -121,209 +130,284 @@ fun donateInput(
     }
 
     // 수거날짜, 이름, 연락처, 주소, 상세주소, 우편번호, 현관비밀번호
-    Column( // LazyColumn으로 수정 -> 방문수거 장소 => 마이페이지에 있는것 처럶 주소, 상세주소, 우편번호
+    LazyColumn( // LazyColumn으로 수정 -> 방문수거 장소 => 마이페이지에 있는것 처럶 주소, 상세주소, 우편번호
         Modifier
             .padding(16.dp)
             .fillMaxWidth()
     ) {
-        Row() {
-            Text(text = "방문수거 장소")
-            if (placeInput.value.text.isEmpty()) {
+        item {
+            Text(text = "수거날짜")
+            Button(
+                onClick = { expanded = !expanded },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = Color.White,
+                    contentColor = Color.Black
+                ),
+            ) {
                 Text(
-                    text = "(장소를 입력해주세요.)",
-                    color = Color.Red,
-                    fontSize = 12.sp,
-                    modifier = Modifier.padding(start = 4.dp)
+                    text = selectedDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                 )
+                Text(text = "▼")
             }
-        }
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = placeInput.value,
-            onValueChange = { newValue -> placeInput.value = newValue },
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Next
-            ),
-            colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = Color.White,
-                focusedIndicatorColor = Color.LightGray,
-                unfocusedIndicatorColor = Color.LightGray,
-                cursorColor = if (showDialog.value) Color.Transparent else Color(0xff78C1F3)
-            )
-        )
-        Spacer(modifier = Modifier.height(20.dp))
 
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                val startDate = LocalDate.now()
+                val endDate = LocalDate.now().plusMonths(6).minusDays(1) // 6개월 이후까지의 날짜 표시
 
-        Text(text = "수거날짜")
-        Button(
-            onClick = { expanded = !expanded },
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.White),
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = Color.White,
-                contentColor = Color.Black
-            ),
-        ) {
-            Text(
-                text = selectedDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-            )
-            Text(text = "▼")
-        }
-
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            val startDate = LocalDate.now()
-            val endDate = LocalDate.now().plusMonths(6).minusDays(1) // 6개월 이후까지의 날짜 표시
-
-            var currentDate = startDate
-            while (currentDate.isBefore(endDate) || currentDate.isEqual(endDate)) {
-                val date = currentDate
-                DropdownMenuItem(
-                    onClick = {
-                        selectedDate = date
-                        expanded = false
+                var currentDate = startDate
+                while (currentDate.isBefore(endDate) || currentDate.isEqual(endDate)) {
+                    val date = currentDate
+                    DropdownMenuItem(
+                        onClick = {
+                            selectedDate = date
+                            expanded = false
+                        }
+                    ) {
+                        Text(
+                            text = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                            color = if (date == selectedDate) Color(0xff78C1F3) else Color.Black
+                        )
                     }
-                ) {
+                    currentDate = currentDate.plusDays(1)
+                }
+            }
+            Spacer(modifier = Modifier.height(20.dp))
+        }//수거날짜
+        item {
+            Row() {
+                Text(text = "이름")
+                if (userInput.value.text.isEmpty()) {
                     Text(
-                        text = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-                        color = if (date == selectedDate) Color(0xff78C1F3) else Color.Black
+                        text = "(이름을 입력해주세요.)",
+                        color = Color.Red,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(start = 4.dp)
                     )
                 }
-                currentDate = currentDate.plusDays(1)
             }
-        }
-        Spacer(modifier = Modifier.height(20.dp))
-
-        var isHouseNumEnabled by remember { mutableStateOf(false) }
-        Row(
-            horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(text = "현관비밀번호")
-            if (isHouseNumEnabled && userInput.value.text.isEmpty()) {
-                Text(
-                    text = "(비밀번호를 입력해주세요.)",
-                    color = Color.Red,
-                    fontSize = 12.sp,
-                    modifier = Modifier.padding(start = 4.dp)
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = userInput.value,
+                onValueChange = { newValue -> userInput.value = newValue },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Next
+                ),
+                colors = TextFieldDefaults.textFieldColors(
+                    backgroundColor = Color.White,
+                    focusedIndicatorColor = Color.LightGray,
+                    unfocusedIndicatorColor = Color.LightGray,
+                    cursorColor = if (showDialog.value) Color.Transparent else Color(0xff78C1F3)
                 )
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+
+        }//이름
+        item {
+            Row() {
+                Text(text = "연락처")
+                if (phoneInput.value.text.isEmpty()) {
+                    Text(
+                        text = "( '-' 빼고 입력해주세요. )",
+                        color = Color.Red,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(start = 4.dp)
+                    )
+                }
             }
-            Checkbox(
-                checked = !isHouseNumEnabled,
-                onCheckedChange = {
-                    isHouseNumEnabled = !it
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = phoneInput.value,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Next
+                ),
+                onValueChange = { newValue ->
+                    if (newValue.text.all { it.isDigit() } && newValue.text.length <= 11) {
+                        phoneInput.value = newValue
+                    }
                 },
-                modifier = Modifier.align(Alignment.Bottom)
+                colors = TextFieldDefaults.textFieldColors(
+                    backgroundColor = Color.White,
+                    focusedIndicatorColor = Color.LightGray,
+                    unfocusedIndicatorColor = Color.LightGray,
+                    cursorColor = if (showDialog.value) Color.Transparent else Color(0xff78C1F3)
+                )
             )
-            Text(text = "없음")
-        }
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = houseNumInput.value,
-            enabled = isHouseNumEnabled,
-            trailingIcon = {
-                IconButton(onClick = {
-                    Log.d("TAG", "Housenum:클릭")
-                    shouldShowHouseNum.value = !shouldShowHouseNum.value
-                }) {
-                    Icon(
-                        painter = painterResource(id = houseNumResource(shouldShowHouseNum.value)),
-                        contentDescription = null
+            Spacer(modifier = Modifier.height(20.dp))
+        }//연락처
+        item {
+            Row() {
+                Text(text = "방문수거 장소")
+                if (placeInput.value.text.isEmpty()) {
+                    Text(
+                        text = "(장소를 입력해주세요.)",
+                        color = Color.Red,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(start = 4.dp)
                     )
                 }
-            },
-            visualTransformation = if (shouldShowHouseNum.value) VisualTransformation.None else PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.NumberPassword,
-                imeAction = ImeAction.Next
-            ),
-            onValueChange = { newValue -> houseNumInput.value = newValue },
-            colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = Color.White,
-                focusedIndicatorColor = Color.LightGray,
-                unfocusedIndicatorColor = Color.LightGray,
-                cursorColor = if (showDialog.value) Color.Transparent else Color(0xff78C1F3)
-            )
-        )
-        Spacer(modifier = Modifier.height(20.dp))
-
-
-        Row() {
-            Text(text = "이름")
-            if (userInput.value.text.isEmpty()) {
-                Text(
-                    text = "(이름을 입력해주세요.)",
-                    color = Color.Red,
-                    fontSize = 12.sp,
-                    modifier = Modifier.padding(start = 4.dp)
-                )
             }
-        }
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = userInput.value,
-            onValueChange = { newValue -> userInput.value = newValue },
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Next
-            ),
-            colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = Color.White,
-                focusedIndicatorColor = Color.LightGray,
-                unfocusedIndicatorColor = Color.LightGray,
-                cursorColor = if (showDialog.value) Color.Transparent else Color(0xff78C1F3)
-            )
-        )
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Row() {
-            Text(text = "연락처")
-            if (phoneInput.value.text.isEmpty()) {
-                Text(
-                    text = "(연락처를 입력해주세요.)",
-                    color = Color.Red,
-                    fontSize = 12.sp,
-                    modifier = Modifier.padding(start = 4.dp)
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = placeInput.value,
+                onValueChange = { newValue -> placeInput.value = newValue },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Next
+                ),
+                colors = TextFieldDefaults.textFieldColors(
+                    backgroundColor = Color.White,
+                    focusedIndicatorColor = Color.LightGray,
+                    unfocusedIndicatorColor = Color.LightGray,
+                    cursorColor = if (showDialog.value) Color.Transparent else Color(0xff78C1F3)
                 )
-            }
-        }
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = phoneInput.value,
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Next
-            ),
-            onValueChange = { newValue ->
-                if (newValue.text.all { it.isDigit() } && newValue.text.length <= 11) {
-                    phoneInput.value = newValue
-                }
-            },
-            colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = Color.White,
-                focusedIndicatorColor = Color.LightGray,
-                unfocusedIndicatorColor = Color.LightGray,
-                cursorColor = if (showDialog.value) Color.Transparent else Color(0xff78C1F3)
             )
-        )
-        Spacer(modifier = Modifier.weight(1f))
-
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.BottomCenter
-        ) {
-            donateButton(onDonateClicked = {
-                if (placeInput.value.text.isEmpty() || houseNumInput.value.text.isEmpty() ||
-                    userInput.value.text.isEmpty() || phoneInput.value.text.length != 11
-                ) {
-                    showDialogError.value = true
-                } else {
-                    onDonateClicked()
+            Spacer(modifier = Modifier.height(20.dp))
+        }//방문수거
+        item {
+            Row() {
+                Text(text = "상세 주소")
+                if (placeDetailInput.value.text.isEmpty()) {
+                    Text(
+                        text = "(상세주소를 입력해주세요.)",
+                        color = Color.Red,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(start = 4.dp)
+                    )
                 }
-            })
+            }
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = placeDetailInput.value,
+                onValueChange = { newValue -> placeDetailInput.value = newValue },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Next
+                ),
+                colors = TextFieldDefaults.textFieldColors(
+                    backgroundColor = Color.White,
+                    focusedIndicatorColor = Color.LightGray,
+                    unfocusedIndicatorColor = Color.LightGray,
+                    cursorColor = if (showDialog.value) Color.Transparent else Color(0xff78C1F3)
+                )
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+
+        }//상세주소
+        item {
+            Row() {
+                Text(text = "우편번호")
+                if (postInput.value.text.isEmpty()) {
+                    Text(
+                        text = "(우편번호를 입력해주세요)",
+                        color = Color.Red,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(start = 4.dp)
+                    )
+                }
+            }
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = postInput.value,
+                onValueChange = { newValue -> postInput.value = newValue },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Next
+                ),
+                colors = TextFieldDefaults.textFieldColors(
+                    backgroundColor = Color.White,
+                    focusedIndicatorColor = Color.LightGray,
+                    unfocusedIndicatorColor = Color.LightGray,
+                    cursorColor = if (showDialog.value) Color.Transparent else Color(0xff78C1F3)
+                )
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+        }//우편변호
+
+        item {
+
+            Row(
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = "현관비밀번호")
+                if (!isHouseNumEnabled && houseNumInput.value.text.isEmpty()) {
+                    Text(
+                        text = "(비밀번호를 입력해주세요.)",
+                        color = Color.Red,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(start = 4.dp)
+                    )
+                }
+                Checkbox(
+                    checked = isHouseNumEnabled,
+                    onCheckedChange = {
+                        isHouseNumEnabled = it
+                    },
+                    modifier = Modifier.align(Alignment.Bottom)
+                )
+                Text(text = "없음")
+            }
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = houseNumInput.value,
+                enabled = !isHouseNumEnabled,
+                trailingIcon = {
+                    IconButton(onClick = {
+                        Log.d("TAG", "Housenum:클릭")
+                        shouldShowHouseNum.value = !shouldShowHouseNum.value
+                    }) {
+                        Icon(
+                            painter = painterResource(id = houseNumResource(shouldShowHouseNum.value)),
+                            contentDescription = null
+                        )
+                    }
+                },
+                visualTransformation = if (shouldShowHouseNum.value) VisualTransformation.None else PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.NumberPassword,
+                    imeAction = ImeAction.Next
+                ),
+                onValueChange = { newValue -> houseNumInput.value = newValue },
+                colors = TextFieldDefaults.textFieldColors(
+                    backgroundColor = Color.White,
+                    focusedIndicatorColor = Color.LightGray,
+                    unfocusedIndicatorColor = Color.LightGray,
+                    cursorColor = if (showDialog.value) Color.Transparent else Color(0xff78C1F3)
+                )
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+        }//현관비밀번호
+        item {
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                donateButton(onDonateClicked = {
+                    if(isHouseNumEnabled){
+                        if (placeInput.value.text.isEmpty()|| userInput.value.text.isEmpty()
+                            || phoneInput.value.text.length != 11
+                        ) {
+                            showDialogError.value = true
+                        } else {
+                            onDonateClicked()
+                        }
+                    }else{
+                        if (placeInput.value.text.isEmpty()|| userInput.value.text.isEmpty()
+                            || phoneInput.value.text.length != 11 ||houseNumInput.value.text.isEmpty()
+                        ) {
+                            showDialogError.value = true
+                        } else {
+                            onDonateClicked()
+                        }
+                    }
+
+                })
+            }
         }
     }
 
@@ -385,6 +469,7 @@ fun donateInput(
     }
 }
 
+
 @Composable
 fun donateButton(onDonateClicked: () -> Unit) {
     Button(
@@ -400,7 +485,9 @@ fun donateButton(onDonateClicked: () -> Unit) {
             onDonateClicked()
         }) {
         Column(
-            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
             verticalArrangement =  Arrangement.Center,
         ) {
             Text(
