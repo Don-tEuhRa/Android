@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.dongminpark.reborn.R
+import com.dongminpark.reborn.Utils.BackOnPressed
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -58,7 +59,7 @@ fun rebornAppBarDonate() {
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun DonateScreen(navController: NavController) {
-    // 수거날짜, 이름, 연락처, 주소, 상세주소, 우편번호, 현관비밀번호
+    BackOnPressed()
     val userInput = remember { mutableStateOf(TextFieldValue()) }
     val phoneInput = remember { mutableStateOf(TextFieldValue()) }
     val placeInput = remember { mutableStateOf(TextFieldValue()) }

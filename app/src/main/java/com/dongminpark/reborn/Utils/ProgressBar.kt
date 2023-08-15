@@ -113,7 +113,7 @@ fun ProgressBar(name: String, count: Int, progress: String) {
                 )
             }
 
-            val size = 44
+            val size = 52
             Row(
                 modifier = Modifier.fillMaxWidth(),//.size(height = size.dp, width = 320.dp),
                 horizontalArrangement = Arrangement.SpaceAround
