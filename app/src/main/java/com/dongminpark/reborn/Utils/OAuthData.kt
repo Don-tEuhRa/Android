@@ -23,8 +23,5 @@ class OAuthData {
         var mGoogleSignInClient: GoogleSignInClient? = null
         var account : GoogleSignInAccount? = null
         var nav : NavHostController? = null
-
-        // 임시로 amdin token 사용. 추후 변경 예정.
-        var ACCESS_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0b2tlbiIsInJvbGUiOiJVU0VSIiwicHJvdmlkZXIiOiJHT09HTEUiLCJuYW1lIjoiWzMgOiDrsJXrj5nrr7xdIiwidXNlcklkIjoiMyIsImVtYWlsIjoicGRtMDAxMTI1QGdtYWlsLmNvbSIsImlhdCI6MTY5MTkzOTk3NCwiZXhwIjoxNjkyMDI2Mzc0fQ.TqzLoCgJ9saXp1Y7onuUVxCWUfdVe5MPNpOhtUIpxps"
     }
 }

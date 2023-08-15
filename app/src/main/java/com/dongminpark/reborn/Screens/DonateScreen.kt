@@ -2,18 +2,26 @@ package com.dongminpark.reborn.Screens
 
 
 import android.annotation.SuppressLint
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -23,8 +31,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.dongminpark.reborn.App
 import com.dongminpark.reborn.R
-import com.dongminpark.reborn.Utils.BackOnPressed
+import com.dongminpark.reborn.Retrofit.RetrofitManager
+import com.dongminpark.reborn.Utils.*
+import kotlinx.coroutines.delay
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -76,8 +87,8 @@ fun DonateScreen(navController: NavController) {
             content = {
                 Column {
                     rebornAppBarDonate()
-                    Spacer(modifier = Modifier.height(20.dp))
                     donateInput(
+                        navController = navController,
                         userInput = userInput,
                         phoneInput = phoneInput,
                         placeInput = placeInput,
@@ -103,9 +114,11 @@ fun DonateScreen(navController: NavController) {
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @SuppressLint("NewApi")
 @Composable
 fun donateInput(
+    navController: NavController,
     userInput: MutableState<TextFieldValue>,
     phoneInput: MutableState<TextFieldValue>,
     placeInput: MutableState<TextFieldValue>,
@@ -116,10 +129,14 @@ fun donateInput(
     showDialogError: MutableState<Boolean>,
     onDonateClicked: () -> Unit
 ) {
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
     val shouldShowHouseNum = remember { mutableStateOf(false) }
     var expanded by remember { mutableStateOf(false) }
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
     var isHouseNumEnabled by remember { mutableStateOf(true) }
+    var sendApi by remember { mutableStateOf(false) }
+
 
     val houseNumResource: (Boolean) -> Int = {
         if (it) {
@@ -132,10 +149,11 @@ fun donateInput(
     // 수거날짜, 이름, 연락처, 주소, 상세주소, 우편번호, 현관비밀번호
     LazyColumn( // LazyColumn으로 수정 -> 방문수거 장소 => 마이페이지에 있는것 처럶 주소, 상세주소, 우편번호
         Modifier
-            .padding(16.dp)
+            .padding(horizontal = 16.dp)
             .fillMaxWidth()
     ) {
         item {
+            Spacer(modifier = Modifier.height(20.dp))
             Text(text = "수거날짜")
             Button(
                 onClick = { expanded = !expanded },
@@ -152,11 +170,12 @@ fun donateInput(
                 )
                 Text(text = "▼")
             }
-
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .fillMaxHeight(0.8f)
             ) {
                 val startDate = LocalDate.now()
                 val endDate = LocalDate.now().plusMonths(6).minusDays(1) // 6개월 이후까지의 날짜 표시
@@ -225,7 +244,7 @@ fun donateInput(
                 modifier = Modifier.fillMaxWidth(),
                 value = phoneInput.value,
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number,
+                    keyboardType = KeyboardType.NumberPassword,
                     imeAction = ImeAction.Next
                 ),
                 onValueChange = { newValue ->
@@ -314,10 +333,19 @@ fun donateInput(
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = postInput.value,
-                onValueChange = { newValue -> postInput.value = newValue },
+                onValueChange = { newValue ->
+                    if (newValue.text.all { it.isDigit() } && newValue.text.length <= 5) {
+                        postInput.value = newValue
+                    } },
                 keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Next
+                    keyboardType = KeyboardType.NumberPassword,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        focusManager.clearFocus()
+                        keyboardController?.hide()
+                    }
                 ),
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = Color.White,
@@ -369,7 +397,13 @@ fun donateInput(
                 visualTransformation = if (shouldShowHouseNum.value) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.NumberPassword,
-                    imeAction = ImeAction.Next
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        focusManager.clearFocus()
+                        keyboardController?.hide()
+                    }
                 ),
                 onValueChange = { newValue -> houseNumInput.value = newValue },
                 colors = TextFieldDefaults.textFieldColors(
@@ -382,32 +416,68 @@ fun donateInput(
             Spacer(modifier = Modifier.height(20.dp))
         }//현관비밀번호
         item {
-            Box(
+            Column(
                 modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.BottomCenter
             ) {
-                donateButton(onDonateClicked = {
-                    if(isHouseNumEnabled){
-                        if (placeInput.value.text.isEmpty()|| userInput.value.text.isEmpty()
-                            || phoneInput.value.text.length != 11
-                        ) {
-                            showDialogError.value = true
-                        } else {
-                            onDonateClicked()
-                        }
-                    }else{
-                        if (placeInput.value.text.isEmpty()|| userInput.value.text.isEmpty()
-                            || phoneInput.value.text.length != 11 ||houseNumInput.value.text.isEmpty()
-                        ) {
-                            showDialogError.value = true
-                        } else {
-                            onDonateClicked()
-                        }
+                donateButton(
+                    enabled =!(placeInput.value.text.isEmpty() || userInput.value.text.isEmpty() || placeDetailInput.value.text.isEmpty() || postInput.value.text.length != 5
+                            || phoneInput.value.text.length != 11 || (!isHouseNumEnabled && houseNumInput.value.text.isEmpty())
+                            )
+                    , onDonateClicked = {
+                    if (
+                        placeInput.value.text.isEmpty() || userInput.value.text.isEmpty() || placeDetailInput.value.text.isEmpty() || postInput.value.text.length != 5
+                                || phoneInput.value.text.length != 11 || (!isHouseNumEnabled && houseNumInput.value.text.isEmpty())
+                    ) {
+                        showDialogError.value = true
+                    } else {
+                        sendApi = true
+                        RetrofitManager.instance.receiptCreate(
+                            name = userInput.value.text,
+                            phoneNumber = phoneInput.value.text,
+                            date = selectedDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                            address = placeInput.value.text,
+                            addressDetail = placeDetailInput.value.text,
+                            zipCode = postInput.value.text.toInt(),
+                            gatePassword = if (isHouseNumEnabled) "" else houseNumInput.value.text,
+                            completion = { responseState->
+                                when (responseState) {
+                                    RESPONSE_STATE.OKAY -> {
+                                        Log.d(Constants.TAG, "api 호출 성공")
+                                        onDonateClicked()
+                                    }
+                                    RESPONSE_STATE.FAIL -> {
+                                        Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
+                                        Log.d(Constants.TAG, "api 호출 에러")
+                                    }
+                                }
+                                sendApi = false
+                            })
                     }
-
                 })
+                Spacer(modifier = Modifier.height(20.dp))
             }
         }
+    }
+    if (sendApi){
+        AlertDialog(
+            onDismissRequest = {
+            },
+            title = {
+                Text("잠시만 기다려 주세요")
+            },
+            text = {
+                Text("기부를 진행중입니다.")
+            },
+            confirmButton = {
+            },
+            modifier = Modifier
+                .clip(RoundedCornerShape(8.dp))
+                .border(
+                2.dp,
+                Color.LightGray.copy(alpha = 0.7f),
+                RoundedCornerShape(8.dp)
+            )
+        )
     }
 
     if (showDialog.value) {
@@ -425,6 +495,7 @@ fun donateInput(
                 Button(
                     onClick = {
                         showDialog.value = false
+                        navController.navigate("donate")
                     },
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = Color(0xff78C1F3)
@@ -433,7 +504,9 @@ fun donateInput(
                     Text("확인")
                 }
             },
-            modifier = Modifier.border(
+            modifier = Modifier
+                .clip(RoundedCornerShape(8.dp))
+                .border(
                 2.dp,
                 Color.LightGray.copy(alpha = 0.7f),
                 RoundedCornerShape(8.dp)
@@ -470,10 +543,11 @@ fun donateInput(
 
 
 @Composable
-fun donateButton(onDonateClicked: () -> Unit) {
+fun donateButton(enabled: Boolean, onDonateClicked: () -> Unit) {
     Button(
         modifier = Modifier
             .fillMaxWidth(),
+        enabled = enabled,
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
             backgroundColor = Color(0xff78C1F3),
@@ -487,7 +561,7 @@ fun donateButton(onDonateClicked: () -> Unit) {
             modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth(),
-            verticalArrangement =  Arrangement.Center,
+            verticalArrangement = Arrangement.Center,
         ) {
             Text(
                 text = "기부하기",
