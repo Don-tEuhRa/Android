@@ -68,7 +68,7 @@ fun MainScreen(
     navController: NavController
 ) {
     var isLoading by remember {
-        mutableStateOf(true)
+        mutableStateOf(false)
     }
 
     BackOnPressed()
