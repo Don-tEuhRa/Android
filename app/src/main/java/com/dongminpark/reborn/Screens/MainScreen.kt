@@ -136,7 +136,7 @@ fun introductionView(aIntro: Introduction, navController: NavHostController){
     ) {
                 Column(
                     modifier = Modifier
-                        .padding(start = 8.dp, bottom = 30.dp, top = 15.dp)
+                        .padding(start = 8.dp, bottom = 30.dp, top = 15.dp, end = 16.dp)
                         .fillMaxWidth()
                 ) {
                     Row(
@@ -148,7 +148,7 @@ fun introductionView(aIntro: Introduction, navController: NavHostController){
                             Text(text = aIntro.title)
                             Text(text = aIntro.subtitle)
                         }
-                        Icon(painter = painterResource(id = R.drawable.ribbon), contentDescription = "Icon", Modifier.size(24.dp))
+                        Icon(painter = painterResource(id = aIntro.icon), contentDescription = "Icon", Modifier.size(36.dp))
                     }
 
 
