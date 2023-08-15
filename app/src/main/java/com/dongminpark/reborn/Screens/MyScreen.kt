@@ -367,13 +367,19 @@ fun myProfile(
                             onEditButtonClick()
                         }
                               },
-                    modifier = Modifier.fillMaxWidth(0.4f)
+                    modifier = Modifier.fillMaxWidth(0.4f),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color(0xff78C1F3)
+                    )
                 ) {
                     Text("등록")
                 }
                 Button(
                     onClick = { onCloseRequest() },
                     modifier = Modifier.fillMaxWidth(0.7f),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color(0xff78C1F3)
+                    )
                 ) {
                     Text("취소")
                 }
