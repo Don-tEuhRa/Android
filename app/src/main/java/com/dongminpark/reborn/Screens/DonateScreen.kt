@@ -8,6 +8,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,6 +16,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -35,6 +37,7 @@ import com.dongminpark.reborn.App
 import com.dongminpark.reborn.R
 import com.dongminpark.reborn.Retrofit.RetrofitManager
 import com.dongminpark.reborn.Utils.*
+import com.dongminpark.reborn.Utils.GetAddress.searchAddress
 import kotlinx.coroutines.delay
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -73,44 +76,72 @@ fun DonateScreen(navController: NavController) {
     BackOnPressed()
     val userInput = remember { mutableStateOf(TextFieldValue()) }
     val phoneInput = remember { mutableStateOf(TextFieldValue()) }
-    val placeInput = remember { mutableStateOf(TextFieldValue()) }
+    val placeInput = remember { mutableStateOf("") }
     val placeDetailInput = remember { mutableStateOf(TextFieldValue()) }
-    val postInput = remember { mutableStateOf(TextFieldValue()) }
+    val postInput = remember { mutableStateOf("") }
     val houseNumInput = remember { mutableStateOf(TextFieldValue()) }
 
     val showDialog = remember { mutableStateOf(false) }
     val showDialogError = remember { mutableStateOf(false) }
 
-    Surface(color = Color.White) {
-        Scaffold(
-            backgroundColor = Color.White,
-            content = {
-                Column {
-                    rebornAppBarDonate()
-                    donateInput(
-                        navController = navController,
-                        userInput = userInput,
-                        phoneInput = phoneInput,
-                        placeInput = placeInput,
-                        placeDetailInput = placeDetailInput,
-                        postInput = postInput,
-                        houseNumInput = houseNumInput,
-                        showDialog = showDialog,
-                        showDialogError = showDialogError,
-                        onDonateClicked = {
-                            showDialogError.value = false
-                            showDialog.value = true
-                            userInput.value = TextFieldValue()
-                            phoneInput.value = TextFieldValue()
-                            placeInput.value = TextFieldValue()
-                            placeDetailInput.value = TextFieldValue()
-                            postInput.value = TextFieldValue()
-                            houseNumInput.value = TextFieldValue()
-                        }
-                    )
+    var isLoading by remember {
+        mutableStateOf(true)
+    }
+
+    if (isLoading){
+        LoadingCircle()
+        RetrofitManager.instance.userInfo(
+            completion = { responseState, info ->
+                when (responseState) {
+                    RESPONSE_STATE.OKAY -> {
+                        Log.d(Constants.TAG, "api 호출 성공")
+                        // user에 정보 저장
+                        userInput.value = TextFieldValue(info!!.name)
+                        phoneInput.value = TextFieldValue(info.phone)
+                        placeInput.value = info.address
+                        placeDetailInput.value = TextFieldValue(info.detailAddress)
+                        postInput.value = info.zipCode.toString()
+                        houseNumInput.value = TextFieldValue(info.gatePassword)
+                        isLoading = false
+                    }
+                    RESPONSE_STATE.FAIL -> {
+                        Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
+                        Log.d(Constants.TAG, "api 호출 에러")
+                    }
                 }
-            }
-        )
+            })
+    }else {
+        Surface(color = Color.White) {
+            Scaffold(
+                backgroundColor = Color.White,
+                content = {
+                    Column {
+                        rebornAppBarDonate()
+                        donateInput(
+                            navController = navController,
+                            userInput = userInput,
+                            phoneInput = phoneInput,
+                            placeInput = placeInput,
+                            placeDetailInput = placeDetailInput,
+                            postInput = postInput,
+                            houseNumInput = houseNumInput,
+                            showDialog = showDialog,
+                            showDialogError = showDialogError,
+                            onDonateClicked = {
+                                showDialogError.value = false
+                                showDialog.value = true
+                                userInput.value = TextFieldValue()
+                                phoneInput.value = TextFieldValue()
+                                placeInput.value = ""
+                                placeDetailInput.value = TextFieldValue()
+                                postInput.value = ""
+                                houseNumInput.value = TextFieldValue()
+                            }
+                        )
+                    }
+                }
+            )
+        }
     }
 }
 
@@ -121,9 +152,9 @@ fun donateInput(
     navController: NavController,
     userInput: MutableState<TextFieldValue>,
     phoneInput: MutableState<TextFieldValue>,
-    placeInput: MutableState<TextFieldValue>,
+    placeInput: MutableState<String>,
     placeDetailInput: MutableState<TextFieldValue>,
-    postInput: MutableState<TextFieldValue>,
+    postInput: MutableState<String>,
     houseNumInput: MutableState<TextFieldValue>,
     showDialog: MutableState<Boolean>,
     showDialogError: MutableState<Boolean>,
@@ -136,7 +167,7 @@ fun donateInput(
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
     var isHouseNumEnabled by remember { mutableStateOf(true) }
     var sendApi by remember { mutableStateOf(false) }
-
+    var isSearchAddress by remember { mutableStateOf(false) }
 
     val houseNumResource: (Boolean) -> Int = {
         if (it) {
@@ -212,7 +243,7 @@ fun donateInput(
                 }
             }
             OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)),
                 value = userInput.value,
                 onValueChange = { newValue -> userInput.value = newValue },
                 keyboardOptions = KeyboardOptions.Default.copy(
@@ -241,7 +272,7 @@ fun donateInput(
                 }
             }
             OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)),
                 value = phoneInput.value,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.NumberPassword,
@@ -264,7 +295,7 @@ fun donateInput(
         item {
             Row() {
                 Text(text = "방문수거 장소")
-                if (placeInput.value.text.isEmpty()) {
+                if (placeInput.value.isEmpty()) {
                     Text(
                         text = "(장소를 입력해주세요.)",
                         color = Color.Red,
@@ -273,20 +304,14 @@ fun donateInput(
                     )
                 }
             }
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = placeInput.value,
-                onValueChange = { newValue -> placeInput.value = newValue },
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Next
-                ),
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.White,
-                    focusedIndicatorColor = Color.LightGray,
-                    unfocusedIndicatorColor = Color.LightGray,
-                    cursorColor = if (showDialog.value) Color.Transparent else Color(0xff78C1F3)
-                )
-            )
+            TextButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp)),
+                onClick = { isSearchAddress = true}
+            ) {
+                Text(text = placeInput.value, color = Color.Black)
+            }
             Spacer(modifier = Modifier.height(20.dp))
         }//방문수거
         item {
@@ -302,7 +327,7 @@ fun donateInput(
                 }
             }
             OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)),
                 value = placeDetailInput.value,
                 onValueChange = { newValue -> placeDetailInput.value = newValue },
                 keyboardOptions = KeyboardOptions.Default.copy(
@@ -320,8 +345,8 @@ fun donateInput(
         }//상세주소
         item {
             Row() {
-                Text(text = "우편번호")
-                if (postInput.value.text.isEmpty()) {
+                Text(text = "우편번호") // -> readOnly로 수정
+                if (postInput.value.isEmpty()) {
                     Text(
                         text = "(우편번호를 입력해주세요)",
                         color = Color.Red,
@@ -331,22 +356,10 @@ fun donateInput(
                 }
             }
             OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)),
                 value = postInput.value,
-                onValueChange = { newValue ->
-                    if (newValue.text.all { it.isDigit() } && newValue.text.length <= 5) {
-                        postInput.value = newValue
-                    } },
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.NumberPassword,
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        focusManager.clearFocus()
-                        keyboardController?.hide()
-                    }
-                ),
+                readOnly = true,
+                onValueChange = {},
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = Color.White,
                     focusedIndicatorColor = Color.LightGray,
@@ -358,7 +371,6 @@ fun donateInput(
         }//우편변호
 
         item {
-
             Row(
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
@@ -422,12 +434,12 @@ fun donateInput(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 donateButton(
-                    enabled =!(placeInput.value.text.isEmpty() || userInput.value.text.isEmpty() || placeDetailInput.value.text.isEmpty() || postInput.value.text.length != 5
+                    enabled =!(placeInput.value.isEmpty() || userInput.value.text.isEmpty() || placeDetailInput.value.text.isEmpty() || postInput.value.isEmpty()
                             || phoneInput.value.text.length != 11 || (!isHouseNumEnabled && houseNumInput.value.text.isEmpty())
                             )
                     , onDonateClicked = {
                     if (
-                        placeInput.value.text.isEmpty() || userInput.value.text.isEmpty() || placeDetailInput.value.text.isEmpty() || postInput.value.text.length != 5
+                        placeInput.value.isEmpty() || userInput.value.text.isEmpty() || placeDetailInput.value.text.isEmpty() || postInput.value.isEmpty()
                                 || phoneInput.value.text.length != 11 || (!isHouseNumEnabled && houseNumInput.value.text.isEmpty())
                     ) {
                         showDialogError.value = true
@@ -437,9 +449,9 @@ fun donateInput(
                             name = userInput.value.text,
                             phoneNumber = phoneInput.value.text,
                             date = selectedDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-                            address = placeInput.value.text,
+                            address = placeInput.value,
                             addressDetail = placeDetailInput.value.text,
-                            zipCode = postInput.value.text.toInt(),
+                            zipCode = postInput.value.toInt(),
                             gatePassword = if (isHouseNumEnabled) "" else houseNumInput.value.text,
                             completion = { responseState->
                                 when (responseState) {
@@ -460,6 +472,66 @@ fun donateInput(
             }
         }
     }
+    if (isSearchAddress){
+        val SearchAddressInput = remember { mutableStateOf(TextFieldValue()) }
+        AlertDialog(
+            onDismissRequest = {
+                isSearchAddress = false
+            },
+            title = {
+                Text("주소 검색")
+            },
+            text = {
+                OutlinedTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = SearchAddressInput.value,
+                    onValueChange = { newValue -> SearchAddressInput.value = newValue },
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        imeAction = ImeAction.Search
+                    ),
+                    placeholder = { Text(text = "도로명 주소를 입력해 주세요") },
+                    singleLine = true,
+                    keyboardActions = KeyboardActions(
+                        onSearch = {
+                            focusManager.clearFocus()
+                            keyboardController?.hide()
+                            // API 호출
+                            searchAddress(SearchAddressInput.value.text,postInput,placeInput)
+                            isSearchAddress = false
+                        }
+                    ),
+                    colors = TextFieldDefaults.textFieldColors(
+                        backgroundColor = Color.White,
+                        focusedIndicatorColor = Color.LightGray,
+                        unfocusedIndicatorColor = Color.LightGray,
+                        cursorColor = if (showDialog.value) Color.Transparent else Color(0xff78C1F3)
+                    )
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        isSearchAddress = false
+                        // api 호출  -> 호출 결과 성공하면 searchAddress = false
+                        searchAddress(SearchAddressInput.value.text,postInput,placeInput)
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color(0xff78C1F3)
+                    )
+                ) {
+                    Text("확인")
+                }
+            },
+            modifier = Modifier
+                .clip(RoundedCornerShape(8.dp))
+                .border(
+                    2.dp,
+                    Color.LightGray.copy(alpha = 0.7f),
+                    RoundedCornerShape(8.dp)
+                )
+        )
+    }
+
     if (sendApi){
         AlertDialog(
             onDismissRequest = {
@@ -470,15 +542,14 @@ fun donateInput(
             text = {
                 Text("기부를 진행중입니다.")
             },
-            confirmButton = {
-            },
+            confirmButton = {},
             modifier = Modifier
                 .clip(RoundedCornerShape(8.dp))
                 .border(
-                2.dp,
-                Color.LightGray.copy(alpha = 0.7f),
-                RoundedCornerShape(8.dp)
-            )
+                    2.dp,
+                    Color.LightGray.copy(alpha = 0.7f),
+                    RoundedCornerShape(8.dp)
+                )
         )
     }
 
@@ -509,10 +580,10 @@ fun donateInput(
             modifier = Modifier
                 .clip(RoundedCornerShape(8.dp))
                 .border(
-                2.dp,
-                Color.LightGray.copy(alpha = 0.7f),
-                RoundedCornerShape(8.dp)
-            )
+                    2.dp,
+                    Color.LightGray.copy(alpha = 0.7f),
+                    RoundedCornerShape(8.dp)
+                )
         )
     }
     if (showDialogError.value) {

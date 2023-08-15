@@ -44,9 +44,6 @@ class RetrofitManager {
                 call: Call<JsonElement>,
                 response: Response<JsonElement>
             ) {
-                Log.e(TAG,
-                    "FirebaseConnect - onResponse() called / respose : ${response.body()}"
-                )
                 when (response.code()) {
                     200 -> { // 정상 연결
                         response.body()?.let {
@@ -218,10 +215,6 @@ class RetrofitManager {
                 call: Call<JsonElement>,
                 response: Response<JsonElement>
             ) {
-                Log.d(
-                    TAG,
-                    "userInfo - onResponse() called / respose : ${response.body()}"
-                )
                 when (response.code()) {
                     200 -> { // 정상 연결
                         response.body()?.let {
@@ -229,9 +222,9 @@ class RetrofitManager {
                             val data = body.get("data").asJsonObject.get("user").asJsonObject
                             val info = User(
                                 userId = data.get("userId").asInt,
+                                name = data.get("name").asString,
                                 nickname = data.get("nickname").asString,
                                 email = data.get("email").asString,
-                                role = data.get("role").asString,
                                 address = data.get("address").asString,
                                 detailAddress = data.get("detailAddress").asString,
                                 zipCode = data.get("zipcode").asInt,
