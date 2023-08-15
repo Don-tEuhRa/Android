@@ -32,7 +32,6 @@ fun StoreShoppingCartScreen(navController: NavController) {
 
     if (checkDelete) {
         AlertDialog(
-
             shape = RoundedCornerShape(24.dp),
             onDismissRequest = { },
             title = { TextFormat(text = "알림", size = 20, fontWeight = FontWeight.Bold)},
@@ -146,6 +145,8 @@ fun StoreShoppingCartScreen(navController: NavController) {
                         ClearTextButton {
                             // itemList.remove(item)
                             // api로 삭제 요청
+                            navController.popBackStack()
+                            navController.navigate("storeShoppingCart")
                         }
                     }
                 }
