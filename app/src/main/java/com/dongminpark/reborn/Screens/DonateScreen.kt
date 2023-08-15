@@ -316,6 +316,7 @@ fun donateInput(
                 value = postInput.value,
                 onValueChange = { newValue -> postInput.value = newValue },
                 keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Next
                 ),
                 colors = TextFieldDefaults.textFieldColors(
@@ -326,10 +327,8 @@ fun donateInput(
                 )
             )
             Spacer(modifier = Modifier.height(20.dp))
-        }//우편변호
-
+        }//우편번호
         item {
-
             Row(
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
