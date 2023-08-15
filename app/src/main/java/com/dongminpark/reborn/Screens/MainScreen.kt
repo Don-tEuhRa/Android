@@ -1,6 +1,8 @@
 package com.dongminpark.reborn.Screens
 
 import android.annotation.SuppressLint
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
@@ -33,7 +35,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.dongminpark.reborn.App
+import com.dongminpark.reborn.Model.ProgressBar
 import com.dongminpark.reborn.R
+import com.dongminpark.reborn.Retrofit.RetrofitManager
 import com.dongminpark.reborn.Utils.*
 import com.dongminpark.reborn.ui.theme.ReBornTheme
 
@@ -53,6 +58,8 @@ fun rebornAppBar(){
     }
 }
 
+var progressBar = mutableListOf<ProgressBar>()
+
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun MainScreen(
@@ -60,21 +67,46 @@ fun MainScreen(
     introductions: List<Introduction>,
     navController: NavController
 ) {
+    var isLoading by remember {
+        mutableStateOf(true)
+    }
+
     BackOnPressed()
-    Surface(color = Color.White) {
-        Scaffold(backgroundColor = Color.White,
-            topBar = { rebornAppBar() }
-        ) {
-            Column(
-                modifier = modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
+
+    if (isLoading){
+        LoadingCircle()
+        RetrofitManager.instance.progressList(
+            completion = { responseState, progress ->
+
+                when (responseState) {
+                    RESPONSE_STATE.OKAY -> {
+                        Log.d(Constants.TAG, "api 호출 성공")
+                        progressBar = progress!!
+                        isLoading = false
+                    }
+                    RESPONSE_STATE.FAIL -> {
+                        Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
+                        Log.d(Constants.TAG, "api 호출 에러")
+                    }
+                }
+            })
+    }else{
+        Surface(color = Color.White) {
+            Scaffold(backgroundColor = Color.White,
+                topBar = { rebornAppBar() }
             ) {
-                Spacer(modifier = Modifier.height(12.dp))
-                ProgressBarPager(mutableListOf(ProgressStep(state = "검수중"),ProgressStep(state = "리폼중"),ProgressStep(state = "판매중")))
-                Spacer(modifier = Modifier.height(8.dp))
-                introductions.forEach { introduction ->
-                    introductionView(aIntro = introduction, navController = navController as NavHostController)
+                Column(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    ProgressBarPager(progressBar)
+                    //ProgressStep(state = "검수중"),ProgressStep(state = "리폼중"),ProgressStep(state = "판매중")
+                    Spacer(modifier = Modifier.height(8.dp))
+                    introductions.forEach { introduction ->
+                        introductionView(aIntro = introduction, navController = navController as NavHostController)
+                    }
                 }
             }
         }

@@ -1,6 +1,7 @@
 package com.dongminpark.reborn.Utils
 
 import android.graphics.drawable.Icon
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -17,9 +18,11 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dongminpark.reborn.Frames.TextFormat
+import com.dongminpark.reborn.Model.ProgressBar
 import com.dongminpark.reborn.R
 import com.dongminpark.reborn.ui.theme.MyIconPack
 import com.dongminpark.reborn.ui.theme.Point
@@ -185,14 +188,40 @@ fun ProgressBar(name: String, count: Int, progress: String) {
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun ProgressBarPager(info: MutableList<ProgressStep>) {
+fun ProgressBarPager(progressBar: MutableList<ProgressBar>) {
+    Log.e("ERROR", "ProgressBarPager: ${progressBar.size}", )
     val nowImageIndex = rememberPagerState(0)
     val circle = painterResource(id = R.drawable.circle)
     // 사진 갯수따라 동적인 변화 필요
     var indexIcons: List<Painter> = listOf()
 
-    repeat(info.size) {
+    repeat(progressBar.size) {
         indexIcons = indexIcons.plus(circle)
+    }
+
+    if (progressBar.isEmpty()){
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+            Box(
+                modifier = Modifier
+                    .size(height = 200.dp, width = 370.dp)
+                    .background(ProgressBGColor, shape = RoundedCornerShape(24.dp)),
+                contentAlignment = Alignment.TopCenter
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Image(painter = painterResource(id = R.drawable.tree), contentDescription = "tree")
+                    Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceEvenly) {
+                        TextFormat(text = "Re:Born과 함께 \n옷에 새 생명을 주세요!!", size = 16, fontWeight = FontWeight.Bold)
+
+
+                        TextFormat(text = "의류 폐기물들의 처리 과정에서\n환경이 파괴되고 있어요! \nRe:Born과 옷에 새 생명을 주고\n지구를 지켜요", size = 12)
+                    }
+
+                }
+            }
+        }
     }
 
     Box(
@@ -200,10 +229,10 @@ fun ProgressBarPager(info: MutableList<ProgressStep>) {
         contentAlignment = Alignment.BottomCenter
     ) {
         HorizontalPager(
-            count = info.size,
+            count = progressBar.size,
             state = nowImageIndex
         ) { page ->
-            ProgressBar("박동민", 2, info[page].state)
+            ProgressBar("박동민", progressBar[page].count, progressBar[page].donationStatus)
         }
         Row(modifier = Modifier.padding(3.dp)) {
             indexIcons.forEachIndexed { index, icon ->

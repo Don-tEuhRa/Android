@@ -24,8 +24,8 @@ import com.google.firebase.auth.FirebaseAuth
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        FirebaseApp.initializeApp(this)
-//        OAuthData.auth = FirebaseAuth.getInstance() // 파이어베이스 연동 후 사용 가능
+        FirebaseApp.initializeApp(this)
+        OAuthData.auth = FirebaseAuth.getInstance() // 파이어베이스 연동 후 사용 가능
         OAuthData.GoogleSignResultLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->

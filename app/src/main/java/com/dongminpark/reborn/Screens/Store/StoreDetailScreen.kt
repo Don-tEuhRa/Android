@@ -107,7 +107,7 @@ fun StoreDetailScreen(navController: NavController) {
             val painter =
                 rememberAsyncImagePainter(
                     ImageRequest.Builder(LocalContext.current)
-                        .data(data = R.drawable.detail_contents)
+                        .data(data = R.drawable.detail_image)
                         .apply(block = fun ImageRequest.Builder.() {
                             // 이미지 로드 중 및 실패 시 표시할 이미지 리소스를 설정할 수 있습니다.
                             placeholder(R.drawable.placeholder)
@@ -115,10 +115,11 @@ fun StoreDetailScreen(navController: NavController) {
                         }).build()
                 )
             Image(
-                contentScale = ContentScale.FillBounds,
+                contentScale = ContentScale.FillHeight,
                 painter = painter,
                 contentDescription = "Image",
                 modifier = Modifier
+                    .aspectRatio(1/14f)
                     .fillMaxSize()//Width()
             )
         }
