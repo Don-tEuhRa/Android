@@ -161,6 +161,47 @@ class RetrofitManager {
         })
     }
 
+    // receipt controller
+    fun receiptCreate(
+        address: String,
+        addressDetail: String,
+        zipCode: Int,
+        date: String,
+        gatePassword: String,
+        name: String,
+        phoneNumber: String,
+        completion: (RESPONSE_STATE) -> Unit
+    ){
+        val jsonObject = JsonObject()
+        jsonObject.addProperty("address", address)
+        jsonObject.addProperty("addressDetail", addressDetail)
+        jsonObject.addProperty("zipCode", zipCode)
+        jsonObject.addProperty("date", date)
+        jsonObject.addProperty("gatePassword", gatePassword)
+        jsonObject.addProperty("name", name)
+        jsonObject.addProperty("phoneNumber", phoneNumber)
+
+        val call = iRetrofit?.receiptCreate(jsonObject) ?: return
+
+        call.enqueue(object : retrofit2.Callback<JsonElement> {
+            override fun onResponse(call: Call<JsonElement>, response: Response<JsonElement>) {
+                Log.d(TAG, "gptStop - onResponse() called / respose : ${response.body()}")
+
+                when (response.code()) {
+                    200 -> { // 정상 연결
+                        completion(RESPONSE_STATE.OKAY)
+                    }
+                    else -> { // 에러
+                        completion(RESPONSE_STATE.FAIL)
+                    }
+                }
+            }
+            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
+                completion(RESPONSE_STATE.FAIL)
+            }
+        })
+    }
+
     // user controller
     fun userInfo(completion: (RESPONSE_STATE, info: User?) -> Unit){
         val call = iRetrofit?.userInfo() ?: return
