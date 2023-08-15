@@ -355,10 +355,8 @@ fun donateInput(
                 )
             )
             Spacer(modifier = Modifier.height(20.dp))
-        }//우편변호
-
+        }//우편번호
         item {
-
             Row(
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
