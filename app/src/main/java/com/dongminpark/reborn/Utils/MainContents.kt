@@ -25,6 +25,7 @@ data class Introduction(
     val content: @Composable (Modifier) -> Unit,
     val color: Color,
     val fontColor: Color,
+   // val icon : Int,
     var isSubtitleDisplayed: Boolean = true
 )
 
@@ -53,13 +54,19 @@ object MainContents {
     val introMain= listOf(
         Introduction("Re:Born", "어떤 앱인가요?"
             ,content={ appExplain() },
-                    color = Color(0xff78C1F3),Color.Black),
+            color = Color(0xff78C1F3),Color.Black),
+
         Introduction("신청방법 : ", "이용가이드"
-            ,content={ application() } ,color = Color(0xff374259),Color.White),
+            ,content={ application() },
+            color = Color(0xff374259),Color.White),
+
         Introduction("기부", "어떤식으로 진행되나요?"
-            ,content={ donateExplain() },color = Color(0xff45CFDD),Color.Black),
+            ,content={ donateExplain() },
+            color = Color(0xff45CFDD),Color.Black),
+
         Introduction("수익금", "어떻게 사용되나요?"
-            ,content={ fundsExplain() },color = Color(0xff9BABB8),Color.Black)
+            ,content={ fundsExplain() },
+            color = Color(0xff9BABB8),Color.Black)
     )
 
     val introMainDetail= listOf(
@@ -222,7 +229,10 @@ fun application() {
 
 @Composable
 fun donateExplain(){
-    Text(text = "기부가 어떤식으로 진행되고 어디에 기부되는지")
+    Column() {
+        Text(text = "기부가 어떤식으로 진행되고 어디에 기부되는지")
+        Text(text = "기부금은 여러분들이 옷을 살 때")
+    }
 }
 
 @Composable

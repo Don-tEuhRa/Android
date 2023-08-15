@@ -44,8 +44,6 @@ import com.dongminpark.reborn.Utils.customerServiceCenter
 import com.dongminpark.reborn.Retrofit.RetrofitManager
 import com.dongminpark.reborn.Utils.*
 import com.dongminpark.reborn.Utils.Constants.TAG
-import kotlinx.coroutines.launch
-
 
 //화면전환(기부,주문내역), 회원정보수정
 //사용자이름, 기부금액, 마일리지금액,기부현황진행사항 갯수, 진행현황 임시텍스트로 대체해둠
@@ -114,7 +112,7 @@ fun myAppBar(user: MypageUser) {
 
     if (showProfile) {
         var isLoading by remember {
-            mutableStateOf(true)
+            mutableStateOf(false)
         }
         var userInfo by remember {
             mutableStateOf(User())
@@ -145,7 +143,8 @@ fun myAppBar(user: MypageUser) {
                 address = userInfo.address,
                 detialAddress = userInfo.detailAddress,
                 zipcode = userInfo.zipCode.toString(),
-                onCloseRequest = { showProfile = false }
+                onCloseRequest = { showProfile = false },
+                onEditButtonClick = { editMsg = true }
             )
         }
     }
@@ -199,6 +198,15 @@ fun myProfile(
                         value = newName,
                         singleLine = true,
                         onValueChange = { newValue -> newName = newValue },
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            imeAction = ImeAction.Next
+                        ),
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = Color.White,
+                            focusedIndicatorColor = Color(0xff78C1F3),
+                            unfocusedIndicatorColor = Color.LightGray,
+                            cursorColor = Color.LightGray
+                        )
                     )
                     Spacer(modifier = Modifier.padding(8.dp))
                 }//이름
@@ -211,7 +219,14 @@ fun myProfile(
                         singleLine = true,
                         onValueChange = { newValue -> newPhoneNumber = newValue },
                         keyboardOptions = KeyboardOptions.Default.copy(
-                            keyboardType = KeyboardType.Number
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Next
+                        ),
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = Color.White,
+                            focusedIndicatorColor = Color(0xff78C1F3),
+                            unfocusedIndicatorColor = Color.LightGray,
+                            cursorColor = Color.LightGray
                         )
                     )
                     Spacer(modifier = Modifier.padding(8.dp))
@@ -222,7 +237,16 @@ fun myProfile(
                         modifier = Modifier.fillMaxWidth(),
                         placeholder = { Text(text = address) },
                         value = newAddress,
-                        onValueChange = { newValue -> newAddress = newValue }
+                        onValueChange = { newValue -> newAddress = newValue },
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            imeAction = ImeAction.Next
+                        ),
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = Color.White,
+                            focusedIndicatorColor = Color(0xff78C1F3),
+                            unfocusedIndicatorColor = Color.LightGray,
+                            cursorColor = Color.LightGray
+                        )
                     )
                     Spacer(modifier = Modifier.padding(8.dp))
                 }//주소
@@ -232,7 +256,17 @@ fun myProfile(
                         modifier = Modifier.fillMaxWidth(),
                         placeholder = { Text(text = detialAddress) },
                         value = newDetailAddress,
-                        onValueChange = { newValue -> newDetailAddress = newValue }
+                        onValueChange = { newValue -> newDetailAddress = newValue },
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            imeAction = ImeAction.Next
+                        ),
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = Color.White,
+                            focusedIndicatorColor = Color(0xff78C1F3),
+                            unfocusedIndicatorColor = Color.LightGray,
+                            cursorColor = Color.LightGray
+                        ),
+                        singleLine = true,
                     )
                     Spacer(modifier = Modifier.padding(8.dp))
                 }//상세주소
@@ -244,8 +278,16 @@ fun myProfile(
                         value = newZipcode,
                         onValueChange = { newValue -> newZipcode = newValue },
                         keyboardOptions = KeyboardOptions.Default.copy(
-                            keyboardType = KeyboardType.Number
-                        )
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Next
+                        ),
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = Color.White,
+                            focusedIndicatorColor = Color(0xff78C1F3),
+                            unfocusedIndicatorColor = Color.LightGray,
+                            cursorColor = Color.LightGray
+                        ),
+                        singleLine = true,
                     )
                     Spacer(modifier = Modifier.padding(8.dp))
                 }//우편번호
@@ -282,9 +324,15 @@ fun myProfile(
                             }
                         }, visualTransformation = if (shouldShowHouseNum.value) VisualTransformation.None else PasswordVisualTransformation(),
                         keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.NumberPassword,
-                            imeAction = ImeAction.Next
+                            keyboardType = KeyboardType.NumberPassword
                         ),
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = Color.White,
+                            focusedIndicatorColor = Color(0xff78C1F3),
+                            unfocusedIndicatorColor = Color.LightGray,
+                            cursorColor = Color.LightGray
+                        ),
+                        singleLine = true,
                     )
                 }//현관비밀번호
             }
@@ -295,6 +343,13 @@ fun myProfile(
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 Button(
+                    enabled = (newName.isNotEmpty() ||
+                                (newPhoneNumber.isNotEmpty() && newPhoneNumber.length == 11) ||
+                                newAddress.isNotEmpty() ||
+                                newDetailAddress.isNotEmpty()||
+                                (newZipcode.isNotEmpty() && newZipcode.length == 5) ||
+                                newhouseNum.isNotEmpty())
+                    ,
                     onClick = {
                         onCloseRequest()
                         // api 호출
@@ -335,7 +390,7 @@ fun myEditMsg(
     AlertDialog(
         shape = RoundedCornerShape(24.dp),
         onDismissRequest = { onCloseRequest() },
-        title = { Text("회원정보수정") },
+        title = { Text("수정 완료!") },
         text = { Text(message) },
         confirmButton = {
             Button(
@@ -360,7 +415,7 @@ fun myEditMsg(
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun MyScreen(navController: NavController) {
-    var isLoading by remember { mutableStateOf(true) }
+    var isLoading by remember { mutableStateOf(false) }
     var user by remember{ mutableStateOf(MypageUser()) }
     BackOnPressed()
 
