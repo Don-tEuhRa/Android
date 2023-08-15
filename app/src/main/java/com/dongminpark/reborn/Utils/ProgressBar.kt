@@ -189,7 +189,6 @@ fun ProgressBar(name: String, count: Int, progress: String) {
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ProgressBarPager(progressBar: MutableList<ProgressBar>) {
-    Log.e("ERROR", "ProgressBarPager: ${progressBar.size}", )
     val nowImageIndex = rememberPagerState(0)
     val circle = painterResource(id = R.drawable.circle)
     // 사진 갯수따라 동적인 변화 필요
