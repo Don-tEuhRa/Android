@@ -2,6 +2,7 @@ package com.dongminpark.reborn.Screens
 
 import android.annotation.SuppressLint
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,18 +27,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.dongminpark.reborn.App
+import com.dongminpark.reborn.Model.MypageUser
+import com.dongminpark.reborn.Model.User
 import com.dongminpark.reborn.R
-import com.dongminpark.reborn.Utils.BackOnPressed
-import com.dongminpark.reborn.Utils.IntroductionDetail
-import com.dongminpark.reborn.Utils.MainContents
-import com.dongminpark.reborn.Utils.customerServiceCenter
+import com.dongminpark.reborn.Retrofit.RetrofitManager
+import com.dongminpark.reborn.Utils.*
+import com.dongminpark.reborn.Utils.Constants.TAG
 import kotlinx.coroutines.launch
 
 //화면전환(기부,주문내역), 회원정보수정
 //사용자이름, 기부금액, 마일리지금액,기부현황진행사항 갯수, 진행현황 임시텍스트로 대체해둠
 
 @Composable
-fun myAppBar() {
+fun myAppBar(user: MypageUser) {
     var showProfile by remember { mutableStateOf(false) }
     var showSnackBar by remember { mutableStateOf(false) }
 
@@ -57,17 +60,19 @@ fun myAppBar() {
             )
             Spacer(modifier = Modifier.height(8.dp))
             Row(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Column() {
                     Text(
-                        text = "최수인님 안녕하세요",
+                        text = "${user.name}님 \n안녕하세요!",
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp,
                         color = Color.Black
                     )
                     Text(
                         text = "회원정보 수정하기>",
+                        fontSize = 12.sp,
                         lineHeight = 20.sp,
                         color = Color(0xFFE7E7E7),
                         modifier = Modifier.clickable {
@@ -88,7 +93,7 @@ fun myAppBar() {
                         color = Color.Black
                     )
                     Text(
-                        text = "2,000원",
+                        text = "${user.point}원",
                         lineHeight = 20.sp
                     )
                 }
@@ -97,14 +102,41 @@ fun myAppBar() {
     }
 
     if (showProfile) {
-        myProfile(
-            name = "최수인",
-            phoneNumber = "010-1234-1234",
-            address = "경기도 수원시 장안구 연무동 62-6",
-            detialAddress = "202호",
-            zipcode = "12345",
-            onCloseRequest = { showProfile = false }
-        )
+        var isLoading by remember {
+            mutableStateOf(true)
+        }
+        var userInfo by remember {
+            mutableStateOf(User())
+        }
+
+        if (isLoading) {
+            LoadingCircle()
+
+            RetrofitManager.instance.userInfo(
+                completion = { responseState, user ->
+
+                    when (responseState) {
+                        RESPONSE_STATE.OKAY -> {
+                            Log.d(TAG, "api 호출 성공")
+                            userInfo = user!!
+                            isLoading = false
+                        }
+                        RESPONSE_STATE.FAIL -> {
+                            Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
+                            Log.d(TAG, "api 호출 에러")
+                        }
+                    }
+                })
+        }else{
+            myProfile(
+                name = userInfo.nickname,
+                phoneNumber = userInfo.phone,
+                address = userInfo.address,
+                detialAddress = userInfo.detailAddress,
+                zipcode = userInfo.zipCode.toString(),
+                onCloseRequest = { showProfile = false }
+            )
+        }
     }
 
     if (showSnackBar){
@@ -256,22 +288,44 @@ fun myProfile(
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun MyScreen(navController: NavController) {
+    var isLoading by remember { mutableStateOf(true) }
+    var user by remember{ mutableStateOf(MypageUser()) }
     BackOnPressed()
-    Surface(color = Color.White) {
-        Scaffold(backgroundColor = Color.White,
-            content = {
-                Column {
-                    myAppBar()
-                    Spacer(modifier = Modifier.height(8.dp))
-                    myView(introduction = MainContents.introMainDetail, navController)
+
+    if (isLoading){
+        LoadingCircle()
+        RetrofitManager.instance.mypage(
+            completion = { responseState, info->
+
+                when (responseState) {
+                    RESPONSE_STATE.OKAY -> {
+                        Log.d(TAG, "api 호출 성공")
+                        user = info!!
+                        isLoading = false
+                    }
+                    RESPONSE_STATE.FAIL -> {
+                        Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
+                        Log.d(TAG, "api 호출 에러")
+                    }
                 }
-            }
-        )
+            })
+    }else{
+        Surface(color = Color.White) {
+            Scaffold(backgroundColor = Color.White,
+                content = {
+                    Column {
+                        myAppBar(user)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        myView(introduction = MainContents.introMainDetail, user, navController)
+                    }
+                }
+            )
+        }
     }
 }
 
 @Composable
-fun myView(introduction: List<IntroductionDetail>, navController: NavController) {
+fun myView(introduction: List<IntroductionDetail>, user: MypageUser, navController: NavController) {
     LazyColumn(
         modifier = Modifier
             .padding(12.dp)
@@ -280,9 +334,9 @@ fun myView(introduction: List<IntroductionDetail>, navController: NavController)
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         items(introduction){ aIntroDetail->
-            myDonate(R.drawable.baseline_favorite_24, "금액", "100000원")
+            myDonate(R.drawable.baseline_favorite_24, "금액", "${user.donationPoint}원")
             Spacer(modifier = Modifier.height(20.dp))
-            myDonate(R.drawable.t_shirt, "횟수", "2회")
+            myDonate(R.drawable.t_shirt, "횟수", "${user.donationCount}회")
             Spacer(modifier = Modifier.height(20.dp))
             myDonateOrder(navController)
             Spacer(modifier = Modifier.height(80.dp))

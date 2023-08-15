@@ -113,14 +113,12 @@ fun firebaseAuthWithGoogle(account: GoogleSignInAccount?) {
     Log.e("Firebase", "진입 성공")
     var credntial = GoogleAuthProvider.getCredential(account?.idToken, null)
 
-
     OAuthData.auth?.signInWithCredential(credntial)
         ?.addOnCompleteListener { task ->
             if (task.isSuccessful){
                 var uid = OAuthData.auth?.currentUser?.uid.toString()
 
                 Log.e("Firebase Success", "네 성공했습니다.")
-                Log.e("uid", uid) // BE가 보내달라함
 
                 RetrofitManager.instance.firebaseConnect(uid, completion = {
                         responseState ->
@@ -138,6 +136,7 @@ fun firebaseAuthWithGoogle(account: GoogleSignInAccount?) {
             }
             else{
                 //isLoginLoading = false
+                Log.e("ERROR", "firebaseAuthWithGoogle: error", )
                 Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
             }
         }
@@ -150,7 +149,6 @@ fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
         firebaseAuthWithGoogle(account)
     } catch (e: ApiException) {
         //isLoginLoading = false
-        Log.e("Google account", "signInResult:failed Code = " + e.statusCode)
     }
 }
 
