@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,9 +22,15 @@ import com.dongminpark.reborn.Buttons.ShoppingCart
 import com.dongminpark.reborn.Frames.TextFormat
 import com.dongminpark.reborn.Frames.productFrame
 
+val LikedItemList = SnapshotStateList<Int>()
+
 @Composable
 fun StoreLikeListScreen(navController: NavController) {
-    val itemList by remember { mutableStateOf(mutableListOf(1, 2, 3,4,5,6,7,8,9,10)) }
+    //val itemList by remember { mutableStateOf(mutableListOf(1, 2, 3,4,5,6,7,8,9,10)) }
+
+    if (LikedItemList.isEmpty()) {
+        LikedItemList.addAll(arrayListOf(1, 2, 3,4,5,6,7,8,9,10))
+    }
 
     Column() {
         TopAppBar(
@@ -34,7 +41,7 @@ fun StoreLikeListScreen(navController: NavController) {
             Spacer(modifier = Modifier.weight(0.5f))
             TextFormat(text = "좋아요")
             Spacer(modifier = Modifier.weight(1f))
-            ShoppingCart(){navController.navigate("storeShoppingCart")}
+            ShoppingCart(){ navController.navigate("storeShoppingCart") }
         }
         Divider(color = Color.Black, thickness = 1.dp)
         LazyVerticalGrid(
@@ -44,7 +51,7 @@ fun StoreLikeListScreen(navController: NavController) {
                 .padding(top = 5.dp),
             columns = GridCells.Fixed(2),
         ) {
-            items(itemList) { post ->
+            items(LikedItemList) { post ->
                 productFrame(post, navController, "community")
             }
         }
