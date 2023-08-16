@@ -2,10 +2,7 @@ package com.dongminpark.reborn.Retrofit
 
 import android.util.Log
 import com.dongminpark.reborn.App
-import com.dongminpark.reborn.Model.MypageUser
-import com.dongminpark.reborn.Model.Product
-import com.dongminpark.reborn.Model.ProgressBar
-import com.dongminpark.reborn.Model.User
+import com.dongminpark.reborn.Model.*
 import com.dongminpark.reborn.Utils.OAuthData
 import com.dongminpark.reborn.Utils.API
 import com.dongminpark.reborn.Utils.Constants.TAG
@@ -226,6 +223,70 @@ class RetrofitManager {
                     }
                     else -> { // 에러
                         completion(RESPONSE_STATE.FAIL, null)
+                    }
+                }
+            }
+        })
+    }
+
+    fun mypageDonation(completion: (RESPONSE_STATE, DonationCount?, ArrayList<DonationInfo>?) -> Unit){
+        val call = iRetrofit?.mypageDonation() ?: return
+
+        call.enqueue(object : retrofit2.Callback<JsonElement> {
+            // 응답 실패시
+            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
+                completion(RESPONSE_STATE.FAIL, null, null)
+            }
+
+            // 응답 성공시
+            override fun onResponse(
+                call: Call<JsonElement>,
+                response: Response<JsonElement>
+            ) {
+                Log.d( // 지워야함.
+                    TAG,
+                    "mypage - onResponse() called / respose : ${response.body()}"
+                )
+                when (response.code()) {
+                    200 -> { // 정상 연결
+                        response.body()?.let {
+                            val body = it.asJsonObject
+                            val data = body.get("data").asJsonObject
+                            val donationCount = data.get("donationCount").asJsonObject
+                            val donation = data.getAsJsonArray("donation")
+
+                            val donationCountTemp = DonationCount(
+                                receiptCount = donationCount.get("receiptCount").asInt,
+                                pickupCount = donationCount.get("pickupCount").asInt,
+                                reformCount = donationCount.get("reformCount").asInt,
+                                arriveCount = donationCount.get("arriveCount").asInt,
+                                productCount = donationCount.get("productCount").asInt,
+                                donationCount = donationCount.get("donationCount").asInt
+                            )
+
+                            val donationList = arrayListOf<DonationInfo>()
+                            donation.forEach {
+                                val item = it.asJsonObject
+                                val donate = DonationInfo(
+                                    receiptStatus = item.get("receiptStatus").asString,
+                                    name = item.get("name").asString,
+                                    address = item.get("address").asString,
+                                    phoneNumber = item.get("phoneNumber").asString,
+                                    //pickUpDate = item.get("pickUpDate")?.asString?:"",
+                                    productId = item.get("productId").asInt,
+                                    //productName = item.get("productName")?.asString?:"",
+                                    price = item.get("price").asInt,
+                                    //date = item.get("date")?.asString?:""
+                                )
+
+                                donationList.add(donate)
+                            }
+
+                            completion(RESPONSE_STATE.OKAY, donationCountTemp, donationList)
+                        }
+                    }
+                    else -> { // 에러
+                        completion(RESPONSE_STATE.FAIL, null, null)
                     }
                 }
             }
