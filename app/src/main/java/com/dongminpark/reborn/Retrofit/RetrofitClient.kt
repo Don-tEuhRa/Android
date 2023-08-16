@@ -3,7 +3,6 @@ package com.dongminpark.reborn.Retrofit
 import android.util.Log
 import com.dongminpark.reborn.App
 import com.dongminpark.reborn.Utils.Constants.TAG
-import com.dongminpark.reborn.Utils.USER
 import com.dongminpark.reborn.Utils.isJsonArray
 import com.dongminpark.reborn.Utils.isJsonObject
 import okhttp3.Interceptor

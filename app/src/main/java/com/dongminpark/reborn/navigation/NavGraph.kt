@@ -1,5 +1,6 @@
 package com.dongminpark.reborn.Navigation
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -12,11 +13,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.dongminpark.foodmarketandroid.navigation.Screen
+import androidx.navigation.navArgument
 import com.dongminpark.reborn.Screens.*
 import com.dongminpark.reborn.navigation.*
 import com.dongminpark.reborn.Screens.LoginScreen
@@ -119,8 +121,16 @@ fun MainScreenView(startDestination: String) {
                 composable(StoreNavigationScreens.Store.route) {
                     StoreScreen(navController = navController)
                 }
-                composable(StoreNavigationScreens.StoreDetail.route) {
-                    StoreDetailScreen(navController = navController)
+                composable(
+                    route = "${StoreNavigationScreens.StoreDetail.route}/{variable}",
+                    arguments = listOf(navArgument("variable") { type = NavType.StringType })
+                ) { entry ->
+                    val variable = entry.arguments?.getString("variable")
+                    Log.e("TAG", "MainScreenView: ${variable}", )
+                    StoreDetailScreen(
+                        navController = navController,
+                        productId = variable!!.toInt()
+                    )
                 }
                 composable(StoreNavigationScreens.StoreLikeList.route) {
                     StoreLikeListScreen(navController = navController)
@@ -128,8 +138,21 @@ fun MainScreenView(startDestination: String) {
                 composable(StoreNavigationScreens.StorePay.route) {
                     StorePayScreen(navController = navController)
                 }
-                composable(StoreNavigationScreens.StorePayAfter.route) {
-                    StorePayAfterScreen(navController = navController)
+                composable(
+                    route = "${StoreNavigationScreens.StorePayAfter.route}/{name}/{phone}/{address}/{point}",
+                    arguments = listOf(
+                        navArgument("name") { type = NavType.StringType },
+                        navArgument("phone") { type = NavType.StringType },
+                        navArgument("address") { type = NavType.StringType },
+                        navArgument("point") { type = NavType.StringType }
+                    )
+                ) {entry ->
+                    val name = entry.arguments?.getString("name")
+                    val phone = entry.arguments?.getString("phone")
+                    val address = entry.arguments?.getString("address")
+                    val point = entry.arguments?.getString("point")
+
+                    StorePayAfterScreen(navController = navController, name!!, phone!!, address!!, point!!)
                 }
                 composable(StoreNavigationScreens.StoreShoppingCart.route) {
                     StoreShoppingCartScreen(navController = navController)

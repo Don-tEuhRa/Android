@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,7 +50,7 @@ import com.dongminpark.reborn.Utils.Constants.TAG
 //사용자이름, 기부금액, 마일리지금액,기부현황진행사항 갯수, 진행현황 임시텍스트로 대체해둠
 
 @Composable
-fun myAppBar(user: MypageUser) {
+fun myAppBar(userName: String, userPoint: String) {
     var showProfile by remember { mutableStateOf(false) }
     var editMsg by remember { mutableStateOf(false) }
 
@@ -74,7 +75,7 @@ fun myAppBar(user: MypageUser) {
             ) {
                 Column() {
                     Text(
-                        text = "${user.name}님 \n안녕하세요!",
+                        text = "${userName}님 \n안녕하세요!",
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp,
                         color = Color.Black
@@ -102,7 +103,7 @@ fun myAppBar(user: MypageUser) {
                         color = Color.Black
                     )
                     Text(
-                        text = "${user.point}원",
+                        text = "${userPoint}원",
                         lineHeight = 20.sp
                     )
                 }
@@ -421,8 +422,12 @@ fun myEditMsg(
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun MyScreen(navController: NavController) {
-    var isLoading by remember { mutableStateOf(false) }
-    var user by remember{ mutableStateOf(MypageUser()) }
+    var isLoading by rememberSaveable { mutableStateOf( true) }
+    var userName by rememberSaveable { mutableStateOf("") }
+    var userPoint by rememberSaveable { mutableStateOf("") }
+    var userDonationPoint by rememberSaveable { mutableStateOf("") }
+    var userDonationCount by rememberSaveable { mutableStateOf("") }
+
     BackOnPressed()
 
     if (isLoading){
@@ -433,7 +438,10 @@ fun MyScreen(navController: NavController) {
                 when (responseState) {
                     RESPONSE_STATE.OKAY -> {
                         Log.d(TAG, "api 호출 성공")
-                        user = info!!
+                        userName = info!!.name
+                        userPoint = info.point.toString()
+                        userDonationPoint = info.donationPoint.toString()
+                        userDonationCount = info.donationCount.toString()
                         isLoading = false
                     }
                     RESPONSE_STATE.FAIL -> {
@@ -447,9 +455,9 @@ fun MyScreen(navController: NavController) {
             Scaffold(backgroundColor = Color.White,
                 content = {
                     Column {
-                        myAppBar(user)
+                        myAppBar(userName, userPoint)
                         Spacer(modifier = Modifier.height(8.dp))
-                        myView(introduction = MainContents.introMainDetail, user, navController)
+                        myView(introduction = MainContents.introMainDetail, userDonationPoint = userDonationPoint, userDonationCount = userDonationCount, navController)
                     }
                 }
             )
@@ -458,7 +466,11 @@ fun MyScreen(navController: NavController) {
 }
 
 @Composable
-fun myView(introduction: List<IntroductionDetail>, user: MypageUser, navController: NavController) {
+fun myView(
+    introduction: List<IntroductionDetail>,
+    userDonationPoint: String,
+    userDonationCount: String,
+    navController: NavController) {
     LazyColumn(
         modifier = Modifier
             .padding(12.dp)
@@ -467,9 +479,9 @@ fun myView(introduction: List<IntroductionDetail>, user: MypageUser, navControll
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         items(introduction){ aIntroDetail->
-            myDonate(R.drawable.baseline_favorite_24, "금액", "${user.donationPoint}원")
+            myDonate(R.drawable.baseline_favorite_24, "금액", "${userDonationPoint}원")
             Spacer(modifier = Modifier.height(20.dp))
-            myDonate(R.drawable.t_shirt, "횟수", "${user.donationCount}회")
+            myDonate(R.drawable.t_shirt, "횟수", "${userDonationCount}회")
             Spacer(modifier = Modifier.height(20.dp))
             myDonateOrder(navController)
             Spacer(modifier = Modifier.height(80.dp))

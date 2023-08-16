@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -67,8 +68,8 @@ fun MainScreen(
     introductions: List<Introduction>,
     navController: NavController
 ) {
-    var isLoading by remember {
-        mutableStateOf(false)
+    var isLoading by rememberSaveable {
+        mutableStateOf(true)
     }
 
     BackOnPressed()

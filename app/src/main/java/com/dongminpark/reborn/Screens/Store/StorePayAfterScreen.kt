@@ -1,16 +1,13 @@
 package com.dongminpark.reborn.Screens.Store
 
-import android.app.Activity
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -18,11 +15,16 @@ import androidx.navigation.compose.rememberNavController
 import com.dongminpark.reborn.Buttons.TextButtonFormat
 import com.dongminpark.reborn.Frames.*
 import com.dongminpark.reborn.Utils.SpacerHeight
+import com.dongminpark.reborn.ui.theme.Point
 
 @Composable
-fun StorePayAfterScreen(navController: NavController) {
-    val itemList by remember { mutableStateOf(mutableListOf(1, 2, 3)) }
-
+fun StorePayAfterScreen(
+    navController: NavController,
+    name: String,
+    phone: String,
+    address: String,
+    point: String
+) {
     BackToStore(navController)
 
     Column() {
@@ -50,7 +52,7 @@ fun StorePayAfterScreen(navController: NavController) {
             }
 
             item{
-                UserInfoFrame(name = "박동민", phone = "010-2245-3683", address = "수원시 장안구 연무동 123-456")
+                UserInfoFrame(name = name, phone = phone, address = address)
             }
 
             item {
@@ -60,8 +62,8 @@ fun StorePayAfterScreen(navController: NavController) {
             item {
                 TextFormat(text = "상품 정보")
 
-                itemList.forEach{item ->
-                    ItemInfoFrame(item = item.toString(), navController)
+                PayCartItemList.forEach{item ->
+                    ItemInfoFrame(item = item, navController)
                 }
             }
 
@@ -70,7 +72,7 @@ fun StorePayAfterScreen(navController: NavController) {
             }
 
             item {
-                FinalPayPriceFrame(price = 12000, point = 1200)
+                FinalPayPriceFrame(price = PayCartItemList.sumOf { it.price }, point = point.toInt())
             }
 
             item {
@@ -80,7 +82,7 @@ fun StorePayAfterScreen(navController: NavController) {
             item {
                 // 스토어로 돌아가는 버튼
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center){
-                    TextButtonFormat(text = "스토어로 돌아가기", widthSize = 120, shape = RoundedCornerShape(8.dp)) {
+                    TextButtonFormat(text = "스토어로 돌아가기", backgroundColor = Point, borderColor = Color.LightGray, textColor = Color.White, widthSize = 120, shape = RoundedCornerShape(8.dp)) {
                         navController.navigate("store")
                     }
                 }
@@ -105,5 +107,5 @@ fun BackToStore(navController: NavController) {
 @Preview
 @Composable
 fun StorePayAfterScreenPreview() {
-    StorePayAfterScreen(navController = rememberNavController())
+    //StorePayAfterScreen(navController = rememberNavController())
 }
