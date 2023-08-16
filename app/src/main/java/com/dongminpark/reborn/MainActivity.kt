@@ -1,6 +1,7 @@
 package com.dongminpark.reborn
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -14,6 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import com.dongminpark.reborn.Navigation.SetupNavGraph
 import com.dongminpark.reborn.Screens.handleSignInResult
 import com.dongminpark.reborn.Utils.OAuthData
+import com.dongminpark.reborn.navigation.Screen
 import com.dongminpark.reborn.ui.theme.Point
 import com.dongminpark.reborn.ui.theme.ReBornTheme
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -45,7 +47,6 @@ class MainActivity : ComponentActivity() {
                 OAuthData.mGoogleSignInClient = GoogleSignIn.getClient(this, OAuthData.gso)
                 OAuthData.account = GoogleSignIn.getLastSignedInAccount(this)
                 SetupNavGraph(navController = navController)
-                // BuildConfig
             }
         }
     }

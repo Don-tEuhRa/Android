@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import com.dongminpark.reborn.Frames.TextFormat
+import com.dongminpark.reborn.ui.theme.Point
 
 @Composable
 fun TextButtonFormat(
@@ -42,15 +43,16 @@ fun TextButtonFormat(
 fun LongTextButtonFormat(
     count: Int,
     price: String,
+    enabled: Boolean = true,
     onClick: () -> Unit
 ) { // 매개변수 text값, onClick매서드
     TextButton(
         modifier = Modifier
             .padding(8.dp)
             .clip(CircleShape)
-            .background(Color.Red, CircleShape)
-            .border(1.dp, Color.Black, CircleShape)
+            .background(if (enabled) Point else Color.LightGray, CircleShape)
             .fillMaxWidth(),
+        enabled = enabled,
         onClick = { onClick() }
     ) {
         Row(

@@ -1,5 +1,7 @@
 package com.dongminpark.reborn.Screens
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -33,28 +35,90 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.dongminpark.reborn.App
 import com.dongminpark.reborn.Buttons.FavoriteListButton
 import com.dongminpark.reborn.Buttons.ReBorn
 import com.dongminpark.reborn.Buttons.ShoppingCart
 import com.dongminpark.reborn.Frames.productFrame
-import com.dongminpark.reborn.Utils.BackOnPressed
+import com.dongminpark.reborn.Model.Product
+import com.dongminpark.reborn.Retrofit.RetrofitManager
+import com.dongminpark.reborn.Utils.*
 import com.dongminpark.reborn.ui.theme.Point
 
-val ItemList = SnapshotStateList<Int>()
+val ItemList = SnapshotStateList<Product>()
+val ItemList1 = SnapshotStateList<Product>()
+val ItemList2 = SnapshotStateList<Product>()
+val ItemList3 = SnapshotStateList<Product>()
+val ItemList4 = SnapshotStateList<Product>()
 
 @Composable
 fun StoreScreen(navController: NavController) {
     var isLoading by rememberSaveable { mutableStateOf(true) }
-    var buttons by remember { mutableStateOf(mutableListOf("전체", "상의", "하의", "잡화")) }
+    val buttons = listOf("전체", "상의", "하의", "잡화")
     var searchState by rememberSaveable { mutableStateOf(true) } // 검색 전후 구분
     var selectedButtonIndex by rememberSaveable { mutableStateOf(0) }
 
     BackOnPressed()
 
-    if (isLoading){
-        ItemList.addAll(arrayListOf(1, 2))
-        isLoading = false
-    }else{
+    if (isLoading) {
+        LoadingCircle()
+        RetrofitManager.instance.productListUnsold(
+            completion = { responseState, productList ->
+                when (responseState) {
+                    RESPONSE_STATE.OKAY -> {
+                        ItemList.clear()
+                        ItemList.addAll(productList!!)
+                        ItemList1.clear()
+                        ItemList1.addAll(productList)
+                        isLoading = false
+                    }
+                    RESPONSE_STATE.FAIL -> {
+                        Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            })
+        RetrofitManager.instance.productCategory(
+            "상의",
+            completion = { responseState, productList ->
+                when (responseState) {
+                    RESPONSE_STATE.OKAY -> {
+                        ItemList2.clear()
+                        ItemList2.addAll(productList!!)
+                    }
+                    RESPONSE_STATE.FAIL -> {
+                        Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            })
+        RetrofitManager.instance.productCategory(
+            "하의",
+            completion = { responseState, productList ->
+                when (responseState) {
+                    RESPONSE_STATE.OKAY -> {
+                        ItemList3.clear()
+                        ItemList3.addAll(productList!!)
+
+                    }
+                    RESPONSE_STATE.FAIL -> {
+                        Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            })
+        RetrofitManager.instance.productCategory(
+            "잡화",
+            completion = { responseState, productList ->
+                when (responseState) {
+                    RESPONSE_STATE.OKAY -> {
+                        ItemList4.clear()
+                        ItemList4.addAll(productList!!)
+
+                    }
+                    RESPONSE_STATE.FAIL -> {
+                        Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            })
+    } else {
         Column() {
             TopAppBar(
                 backgroundColor = Color.White,
@@ -62,18 +126,39 @@ fun StoreScreen(navController: NavController) {
             ) {
                 ReBorn()
                 Spacer(modifier = Modifier.weight(1f))
-                SearchBar{text ->
+                SearchBar { text ->
                     searchState = text.isEmpty()
-                    if (searchState){
-                        // buttons.get(selectedButtonIndex)을 사용해서 api 호출
+                    if (searchState) {
                         ItemList.clear()
-                        ItemList.addAll(Array(4){0})
-                    }else{
-                        // text로 검색하는 api 호출
 
-                        // test용 내용. 지워야함
-                        ItemList.clear()
-                        ItemList.addAll(Array(text.length){0})
+                        when (selectedButtonIndex) {
+                            0 -> {
+                                ItemList.addAll(ItemList1)
+                            }
+                            1 -> {
+                                ItemList.addAll(ItemList2)
+                            }
+                            2 -> {
+                                ItemList.addAll(ItemList3)
+                            }
+                            3 -> {
+                                ItemList.addAll(ItemList4)
+                            }
+                        }
+                    } else {
+                        RetrofitManager.instance.productSearch(
+                            text,
+                            completion = { responseState, productList ->
+                                when (responseState) {
+                                    RESPONSE_STATE.OKAY -> {
+                                        ItemList.clear()
+                                        ItemList.addAll(productList!!)
+                                    }
+                                    RESPONSE_STATE.FAIL -> {
+                                        Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            })
                     }
                 }
                 Spacer(modifier = Modifier.weight(1f))
@@ -84,49 +169,48 @@ fun StoreScreen(navController: NavController) {
             Divider(color = Color.Black, thickness = 1.dp)
 
             if (searchState) {
-                LazyRow(
+                Row(
                     modifier = Modifier
-                        .padding(horizontal = 10.dp, vertical = 5.dp)
+                        .padding(horizontal = 14.dp, vertical = 5.dp)
                         .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Start,
+                    horizontalArrangement = Arrangement.Center,
                 ) {
-                    item {
-                        buttons.forEachIndexed { index, label ->
-                            OutlinedButton(
-                                modifier = Modifier.size(
-                                    (label.length * 13 + 50).dp,
-                                    height = 35.dp
-                                ),
-                                onClick = {
-                                    selectedButtonIndex = index
-                                    /*
-                                loadPost = false
-                                postList.clear()
-                                start = 0
-                                display = 20
+                    buttons.forEachIndexed { index, label ->
+                        OutlinedButton(
+                            modifier = Modifier.size(
+                                (label.length * 14 + 55).dp,
+                                height = 35.dp
+                            ),
+                            onClick = {
                                 selectedButtonIndex = index
-                                selectedButtonIndex2 = index
-                                if (label == buttons[0]) {
-                                    postpopular(start, display, postList)
-                                } else postfilter(label, start, display, postList)
-                                start += 20
-                                display += 20
-
-                                 */
-                                },
-                                colors = ButtonDefaults.buttonColors(backgroundColor = if (selectedButtonIndex == index) Point else Color.White),
-                                shape = RoundedCornerShape(30),
-                                content = {
-                                    Text(
-                                        text = label,
-                                        fontWeight = FontWeight.SemiBold,
-                                        fontSize = 12.sp,
-                                        color = if (selectedButtonIndex == index) Color.White else Color.Black
-                                    )
+                                ItemList.clear()
+                                when (selectedButtonIndex) {
+                                    0 -> {
+                                        ItemList.addAll(ItemList1)
+                                    }
+                                    1 -> {
+                                        ItemList.addAll(ItemList2)
+                                    }
+                                    2 -> {
+                                        ItemList.addAll(ItemList3)
+                                    }
+                                    3 -> {
+                                        ItemList.addAll(ItemList4)
+                                    }
                                 }
-                            )
-                            Spacer(modifier = Modifier.width(10.dp))
-                        }
+                            },
+                            colors = ButtonDefaults.buttonColors(backgroundColor = if (selectedButtonIndex == index) Point else Color.White),
+                            shape = RoundedCornerShape(30),
+                            content = {
+                                Text(
+                                    text = label,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 12.sp,
+                                    color = if (selectedButtonIndex == index) Color.White else Color.Black
+                                )
+                            }
+                        )
+                        Spacer(modifier = Modifier.width(10.dp))
                     }
                 }
             }
@@ -136,10 +220,12 @@ fun StoreScreen(navController: NavController) {
                     .fillMaxSize()
                     .padding(horizontal = 10.dp)
                     .padding(top = 5.dp),
-                columns = GridCells.Fixed(2),
+                columns = GridCells.Fixed(3),
             ) {
-                items(ItemList) { post ->
-                    productFrame(post, navController, "store")
+                items(ItemList) { product ->
+                    Box(modifier = Modifier.padding(4.dp)) {
+                        productFrame(product, navController)
+                    }
                 }
             }
         }

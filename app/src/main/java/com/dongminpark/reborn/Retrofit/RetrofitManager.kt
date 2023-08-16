@@ -3,13 +3,14 @@ package com.dongminpark.reborn.Retrofit
 import android.util.Log
 import com.dongminpark.reborn.App
 import com.dongminpark.reborn.Model.MypageUser
+import com.dongminpark.reborn.Model.Product
 import com.dongminpark.reborn.Model.ProgressBar
 import com.dongminpark.reborn.Model.User
 import com.dongminpark.reborn.Utils.OAuthData
 import com.dongminpark.reborn.Utils.API
 import com.dongminpark.reborn.Utils.Constants.TAG
 import com.dongminpark.reborn.Utils.RESPONSE_STATE
-import com.dongminpark.reborn.Utils.USER
+import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import retrofit2.Call
@@ -21,7 +22,8 @@ class RetrofitManager {
     }
 
     // 레트로핏 인터페이스 가져오기
-    private val iRetrofit: IRetrofit? = RetrofitClient.getClient(API.BASE_URL)?.create(IRetrofit::class.java)
+    private val iRetrofit: IRetrofit? =
+        RetrofitClient.getClient(API.BASE_URL)?.create(IRetrofit::class.java)
 
     // firebase와 DB 연결
     fun firebaseConnect(
@@ -35,7 +37,6 @@ class RetrofitManager {
         call.enqueue(object : retrofit2.Callback<JsonElement> {
             // 응답 실패시
             override fun onFailure(call: Call<JsonElement>, t: Throwable) {
-                Log.e(TAG, "FirebaseConnect - onFailure() called / t: $t")
                 completion(RESPONSE_STATE.FAIL)
             }
 
@@ -63,9 +64,132 @@ class RetrofitManager {
         })
     }
 
+    // cart controller
+    fun cartCreate(productId: Int, completion: (RESPONSE_STATE) -> Unit){
+        val call = iRetrofit?.cartCreate(productId) ?: return
+
+        call.enqueue(object : retrofit2.Callback<JsonElement> {
+            // 응답 실패시
+            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
+                completion(RESPONSE_STATE.FAIL)
+            }
+
+            // 응답 성공시
+            override fun onResponse(
+                call: Call<JsonElement>,
+                response: Response<JsonElement>
+            ) {
+                when (response.code()) {
+                    200 -> { // 정상 연결
+                        completion(RESPONSE_STATE.OKAY)
+                    }
+                    else -> { // 에러
+                        completion(RESPONSE_STATE.FAIL)
+                    }
+                }
+            }
+        })
+    }
+
+
+    fun cartFinAll(completion: (RESPONSE_STATE, ArrayList<Product>?) -> Unit) {
+        val call = iRetrofit?.cartFindAll() ?: return
+
+        call.enqueue(object : retrofit2.Callback<JsonElement> {
+            // 응답 실패시
+            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
+                Log.d(TAG, "userInfo - onFailure() called / t: $t")
+                completion(RESPONSE_STATE.FAIL, null)
+            }
+
+            // 응답 성공시
+            override fun onResponse(
+                call: Call<JsonElement>,
+                response: Response<JsonElement>
+            ) {
+                when (response.code()) {
+                    200 -> { // 정상 연결
+                        response.body()?.let {
+                            val products = arrayListOf<Product>()
+                            val body = it.asJsonObject
+                            val data = body.get("data").asJsonObject
+                            val productList = data.getAsJsonArray("cartList")
+
+                            productList.forEach {
+                                val item = it.asJsonObject
+                                val product = Product(
+                                    productId = item.get("productId").asInt,
+                                    title = item.get("title").asString,
+                                    price = item.get("price").asInt,
+                                    thumbnailUrl = API.BASE_URL + "/resources/files/" + item.get("thumnailUrl").asString,
+                                )
+                                products.add(product)
+                            }
+
+                            completion(RESPONSE_STATE.OKAY, products)
+                        }
+                    }
+                    else -> { // 에러
+                        completion(RESPONSE_STATE.FAIL, null)
+                    }
+                }
+            }
+        })
+    }
+
+    // interest controller
+    fun interestList(completion: (RESPONSE_STATE, ArrayList<Product>?) -> Unit) {
+        val call = iRetrofit?.interestList() ?: return
+
+        call.enqueue(object : retrofit2.Callback<JsonElement> {
+            // 응답 실패시
+            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
+                Log.d(TAG, "userInfo - onFailure() called / t: $t")
+                completion(RESPONSE_STATE.FAIL, null)
+            }
+
+            // 응답 성공시
+            override fun onResponse(
+                call: Call<JsonElement>,
+                response: Response<JsonElement>
+            ) {
+                when (response.code()) {
+                    200 -> { // 정상 연결
+                        response.body()?.let {
+                            val products = arrayListOf<Product>()
+                            val body = it.asJsonObject
+                            val data = body.get("data").asJsonObject
+                            val productList = data.getAsJsonArray("productVoList")
+
+                            productList.forEach {
+                                val item = it.asJsonObject
+                                val product = Product(
+                                    productId = item.get("productId").asInt,
+                                    title = item.get("title").asString,
+                                    price = item.get("price").asInt,
+                                    content = item.get("content").asString,
+                                    thumbnailUrl = API.BASE_URL + "/resources/files/" + item.get("thumbnailUrl").asString,
+                                    categoryName = item.get("categoryName").asString,
+                                    imageUrl = item.get("imageUrl").asJsonArray.map { API.BASE_URL + "/resources/files/" + it.asString },
+                                    isInterested = item.get("isInterested").asBoolean
+                                )
+                                products.add(product)
+                            }
+
+                            completion(RESPONSE_STATE.OKAY, products)
+                        }
+                    }
+                    else -> { // 에러
+                        completion(RESPONSE_STATE.FAIL, null)
+                    }
+                }
+            }
+        })
+    }
+
 
     // mypage contrller
-    fun mypage(completion: (RESPONSE_STATE, MypageUser?) -> Unit){
+    fun mypage(completion: (RESPONSE_STATE, MypageUser?) -> Unit) {
         val call = iRetrofit?.mypage() ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
@@ -108,10 +232,239 @@ class RetrofitManager {
         })
     }
 
+    // order controller
+    fun orderCreate(
+        usePoint: Int,
+        payMethod: String,
+        productId: List<Int>,
+        completion: (RESPONSE_STATE) -> Unit
+    ) {
+        val jsonObject = JsonObject()
+        jsonObject.addProperty("usePoint", usePoint)
+        jsonObject.addProperty("payMethod", payMethod)
+        jsonObject.add("productId", Gson().toJsonTree(productId))
+        Log.e(TAG, "orderCreate: ${Gson().toJsonTree(productId)}", )
 
+        val call = iRetrofit?.orderCreate(jsonObject) ?: return
+
+        call.enqueue(object : retrofit2.Callback<JsonElement> {
+            override fun onResponse(call: Call<JsonElement>, response: Response<JsonElement>) {
+                Log.d(TAG, "gptStop - onResponse() called / respose : ${response.body()}")
+
+                when (response.code()) {
+                    200 -> { // 정상 연결
+                        completion(RESPONSE_STATE.OKAY)
+                    }
+                    else -> { // 에러
+                        completion(RESPONSE_STATE.FAIL)
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
+                completion(RESPONSE_STATE.FAIL)
+            }
+        })
+    }
+
+
+    // product controller
+    fun productCategory(
+        category: String,
+        completion: (RESPONSE_STATE, ArrayList<Product>?) -> Unit
+    ) {
+        val call = iRetrofit?.productCategory(category) ?: return
+
+        call.enqueue(object : retrofit2.Callback<JsonElement> {
+            // 응답 실패시
+            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
+                Log.d(TAG, "userInfo - onFailure() called / t: $t")
+                completion(RESPONSE_STATE.FAIL, null)
+            }
+
+            // 응답 성공시
+            override fun onResponse(
+                call: Call<JsonElement>,
+                response: Response<JsonElement>
+            ) {
+                when (response.code()) {
+                    200 -> { // 정상 연결
+                        response.body()?.let {
+                            val products = arrayListOf<Product>()
+                            val body = it.asJsonObject
+                            val data = body.get("data").asJsonObject
+                            val productList = data.getAsJsonArray("products")
+
+                            productList.forEach {
+                                val item = it.asJsonObject
+                                val product = Product(
+                                    productId = item.get("productId").asInt,
+                                    title = item.get("title").asString,
+                                    price = item.get("price").asInt,
+                                    content = item.get("content").asString,
+                                    thumbnailUrl = API.BASE_URL + "/resources/files/" + item.get("thumbnailUrl").asString,
+                                    categoryName = item.get("categoryName").asString,
+                                    imageUrl = item.get("imageUrl").asJsonArray.map { API.BASE_URL + "/resources/files/" + it.asString },
+                                    isInterested = item.get("isInterested").asBoolean
+                                )
+                                products.add(product)
+                            }
+
+                            completion(RESPONSE_STATE.OKAY, products)
+                        }
+                    }
+                    else -> { // 에러
+                        completion(RESPONSE_STATE.FAIL, null)
+                    }
+                }
+            }
+        })
+    }
+
+    fun productListUnsold(completion: (RESPONSE_STATE, ArrayList<Product>?) -> Unit) {
+        val call = iRetrofit?.productListUnsold() ?: return
+
+        call.enqueue(object : retrofit2.Callback<JsonElement> {
+            // 응답 실패시
+            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
+                Log.d(TAG, "userInfo - onFailure() called / t: $t")
+                completion(RESPONSE_STATE.FAIL, null)
+            }
+
+            // 응답 성공시
+            override fun onResponse(
+                call: Call<JsonElement>,
+                response: Response<JsonElement>
+            ) {
+                when (response.code()) {
+                    200 -> { // 정상 연결
+                        response.body()?.let {
+                            val products = arrayListOf<Product>()
+                            val body = it.asJsonObject
+                            val data = body.get("data").asJsonObject
+                            val productList = data.getAsJsonArray("products")
+
+                            productList.forEach {
+                                val item = it.asJsonObject
+                                val product = Product(
+                                    productId = item.get("productId").asInt,
+                                    title = item.get("title").asString,
+                                    price = item.get("price").asInt,
+                                    content = item.get("content").asString,
+                                    thumbnailUrl = API.BASE_URL + "/resources/files/" + item.get("thumbnailUrl").asString,
+                                    categoryName = item.get("categoryName").asString,
+                                    imageUrl = item.get("imageUrl").asJsonArray.map { API.BASE_URL + "/resources/files/" + it.asString },
+                                    isInterested = item.get("isInterested").asBoolean
+                                )
+                                products.add(product)
+                            }
+
+                            completion(RESPONSE_STATE.OKAY, products)
+                        }
+                    }
+                    else -> { // 에러
+                        completion(RESPONSE_STATE.FAIL, null)
+                    }
+                }
+            }
+        })
+    }
+
+    fun productShowID(id: Int, completion: (RESPONSE_STATE, Product?) -> Unit) {
+        val call = iRetrofit?.productId(id) ?: return
+
+        call.enqueue(object : retrofit2.Callback<JsonElement> {
+            // 응답 실패시
+            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
+                Log.d(TAG, "userInfo - onFailure() called / t: $t")
+                completion(RESPONSE_STATE.FAIL, null)
+            }
+
+            // 응답 성공시
+            override fun onResponse(
+                call: Call<JsonElement>,
+                response: Response<JsonElement>
+            ) {
+                when (response.code()) {
+                    200 -> { // 정상 연결
+                        response.body()?.let {
+                            val body = it.asJsonObject
+                            val data = body.get("data").asJsonObject
+                            val item = data.get("product").asJsonObject
+
+                            val product = Product(
+                                productId = item.get("productId").asInt,
+                                title = item.get("title").asString,
+                                price = item.get("price").asInt,
+                                content = item.get("content").asString,
+                                thumbnailUrl = API.BASE_URL + "/resources/files/" + item.get("thumbnailUrl").asString,
+                                categoryName = item.get("categoryName").asString,
+                                imageUrl = item.get("imageUrl").asJsonArray.map { API.BASE_URL + "/resources/files/" + it.asString },
+                                isInterested = item.get("isInterested").asBoolean
+                            )
+
+                            completion(RESPONSE_STATE.OKAY, product)
+                        }
+                    }
+                    else -> { // 에러
+                        completion(RESPONSE_STATE.FAIL, null)
+                    }
+                }
+            }
+        })
+    }
+
+    fun productSearch(keyword: String, completion: (RESPONSE_STATE, ArrayList<Product>?) -> Unit) {
+        val call = iRetrofit?.productSearch(keyword) ?: return
+
+        call.enqueue(object : retrofit2.Callback<JsonElement> {
+            // 응답 실패시
+            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
+                Log.d(TAG, "userInfo - onFailure() called / t: $t")
+                completion(RESPONSE_STATE.FAIL, null)
+            }
+
+            // 응답 성공시
+            override fun onResponse(
+                call: Call<JsonElement>,
+                response: Response<JsonElement>
+            ) {
+                when (response.code()) {
+                    200 -> { // 정상 연결
+                        response.body()?.let {
+                            val products = arrayListOf<Product>()
+                            val body = it.asJsonObject
+                            val data = body.get("data").asJsonObject
+                            val productList = data.getAsJsonArray("products")
+
+                            productList.forEach {
+                                val item = it.asJsonObject
+                                val product = Product(
+                                    productId = item.get("productId").asInt,
+                                    title = item.get("title").asString,
+                                    price = item.get("price").asInt,
+                                    content = item.get("content").asString,
+                                    thumbnailUrl = API.BASE_URL + "/resources/files/" + item.get("thumbnailUrl").asString,
+                                    categoryName = item.get("categoryName").asString,
+                                    imageUrl = item.get("imageUrl").asJsonArray.map { API.BASE_URL + "/resources/files/" + it.asString },
+                                    isInterested = item.get("isInterested").asBoolean
+                                )
+                                products.add(product)
+                            }
+
+                            completion(RESPONSE_STATE.OKAY, products)
+                        }
+                    }
+                    else -> { // 에러
+                        completion(RESPONSE_STATE.FAIL, null)
+                    }
+                }
+            }
+        })
+    }
 
     // progress controller
-    fun progressList(completion: (RESPONSE_STATE, MutableList<ProgressBar>?) -> Unit){
+    fun progressList(completion: (RESPONSE_STATE, MutableList<ProgressBar>?) -> Unit) {
         val call = iRetrofit?.progressList() ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
@@ -126,10 +479,6 @@ class RetrofitManager {
                 call: Call<JsonElement>,
                 response: Response<JsonElement>
             ) {
-                Log.d(
-                    TAG,
-                    "progressBar - onResponse() called / respose : ${response.body()}"
-                )
                 when (response.code()) {
                     200 -> { // 정상 연결
                         response.body()?.let {
@@ -168,7 +517,7 @@ class RetrofitManager {
         name: String,
         phoneNumber: String,
         completion: (RESPONSE_STATE) -> Unit
-    ){
+    ) {
         val jsonObject = JsonObject()
         jsonObject.addProperty("address", address)
         jsonObject.addProperty("addressDetail", addressDetail)
@@ -182,7 +531,6 @@ class RetrofitManager {
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
             override fun onResponse(call: Call<JsonElement>, response: Response<JsonElement>) {
-                Log.d(TAG, "gptStop - onResponse() called / respose : ${response.body()}")
 
                 when (response.code()) {
                     200 -> { // 정상 연결
@@ -193,6 +541,7 @@ class RetrofitManager {
                     }
                 }
             }
+
             override fun onFailure(call: Call<JsonElement>, t: Throwable) {
                 completion(RESPONSE_STATE.FAIL)
             }
@@ -200,13 +549,12 @@ class RetrofitManager {
     }
 
     // user controller
-    fun userInfo(completion: (RESPONSE_STATE, info: User?) -> Unit){
+    fun userInfo(completion: (RESPONSE_STATE, info: User?) -> Unit) {
         val call = iRetrofit?.userInfo() ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
             // 응답 실패시
             override fun onFailure(call: Call<JsonElement>, t: Throwable) {
-                Log.d(TAG, "userInfo - onFailure() called / t: $t")
                 completion(RESPONSE_STATE.FAIL, null)
             }
 
@@ -227,6 +575,7 @@ class RetrofitManager {
                                 email = data.get("email").asString,
                                 address = data.get("address").asString,
                                 detailAddress = data.get("detailAddress").asString,
+                                gatePassword = data.get("gatePassword").asString,
                                 zipCode = data.get("zipcode").asInt,
                                 phone = data.get("phone").asString,
                                 point = data.get("point").asInt

@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
-import com.dongminpark.foodmarketandroid.navigation.Screen
 import com.dongminpark.reborn.App
 import com.dongminpark.reborn.ui.theme.Point
 import com.dongminpark.reborn.R
@@ -33,6 +32,7 @@ import com.dongminpark.reborn.Utils.API
 import com.dongminpark.reborn.Utils.MESSAGE
 import com.dongminpark.reborn.Utils.OAuthData
 import com.dongminpark.reborn.Utils.RESPONSE_STATE
+import com.dongminpark.reborn.navigation.Screen
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
@@ -43,7 +43,6 @@ var isLoginLoading by mutableStateOf(false)
 @Composable
 fun LoginScreen(navController: NavHostController) {
     navController.enableOnBackPressed(false)
-
 
     if (isLoginLoading){
         Column(
@@ -121,9 +120,9 @@ fun LoginScreen(navController: NavHostController) {
                     contentDescription = "Google Login",
                     modifier = Modifier
                         .clickable {
-                            //isLoginLoading = true
-                            //googleLogin()
-                            OAuthData.nav?.navigate(Screen.Once.route)
+                            isLoginLoading = true
+                            googleLogin()
+                            //OAuthData.nav?.navigate(Screen.Once.route)
                         }
                         .padding(10.dp)
                         .width(240.dp),
