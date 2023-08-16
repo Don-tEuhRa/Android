@@ -395,7 +395,7 @@ fun myEditMsg(
     onCloseRequest: () -> Unit
 ){
     AlertDialog(
-        shape = RoundedCornerShape(24.dp),
+        shape = RoundedCornerShape(8.dp),
         onDismissRequest = { onCloseRequest() },
         title = { Text("수정 완료!") },
         text = { Text(message) },
