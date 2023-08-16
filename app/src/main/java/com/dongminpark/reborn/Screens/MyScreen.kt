@@ -35,6 +35,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.dongminpark.reborn.App
+import com.dongminpark.reborn.Frames.TextFormat
+import com.dongminpark.reborn.Model.DonationInfo
 import com.dongminpark.reborn.Model.MypageUser
 import com.dongminpark.reborn.Model.User
 import com.dongminpark.reborn.R
@@ -43,8 +45,10 @@ import com.dongminpark.reborn.Utils.IntroductionDetail
 import com.dongminpark.reborn.Utils.MainContents
 import com.dongminpark.reborn.Utils.customerServiceCenter
 import com.dongminpark.reborn.Retrofit.RetrofitManager
+import com.dongminpark.reborn.Screens.Store.CartItemList
 import com.dongminpark.reborn.Utils.*
 import com.dongminpark.reborn.Utils.Constants.TAG
+import com.dongminpark.reborn.ui.theme.Point
 
 //화면전환(기부,주문내역), 회원정보수정
 //사용자이름, 기부금액, 마일리지금액,기부현황진행사항 갯수, 진행현황 임시텍스트로 대체해둠
@@ -137,7 +141,7 @@ fun myAppBar(userName: String, userPoint: String) {
                         }
                     }
                 })
-        }else{
+        } else {
             myProfile(
                 name = userInfo.nickname,
                 phoneNumber = userInfo.phone,
@@ -150,7 +154,7 @@ fun myAppBar(userName: String, userPoint: String) {
         }
     }
 
-    if(editMsg){
+    if (editMsg) {
         myEditMsg(
             "회원정보가 수정되었습니다.",
             onCloseRequest = { editMsg = false }
@@ -319,11 +323,16 @@ fun myProfile(
                                 shouldShowHouseNum.value = !shouldShowHouseNum.value
                             }) {
                                 Icon(
-                                    painter = painterResource(id = houseNumResource(shouldShowHouseNum.value)),
+                                    painter = painterResource(
+                                        id = houseNumResource(
+                                            shouldShowHouseNum.value
+                                        )
+                                    ),
                                     contentDescription = null
                                 )
                             }
-                        }, visualTransformation = if (shouldShowHouseNum.value) VisualTransformation.None else PasswordVisualTransformation(),
+                        },
+                        visualTransformation = if (shouldShowHouseNum.value) VisualTransformation.None else PasswordVisualTransformation(),
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.NumberPassword
                         ),
@@ -345,29 +354,29 @@ fun myProfile(
             ) {
                 Button(
                     enabled = (newName.isNotEmpty() ||
-                                (newPhoneNumber.isNotEmpty() && newPhoneNumber.length == 11) ||
-                                newAddress.isNotEmpty() ||
-                                newDetailAddress.isNotEmpty()||
-                                (newZipcode.isNotEmpty() && newZipcode.length == 5) ||
-                                newhouseNum.isNotEmpty())
-                    ,
+                            (newPhoneNumber.isNotEmpty() && newPhoneNumber.length == 11) ||
+                            newAddress.isNotEmpty() ||
+                            newDetailAddress.isNotEmpty() ||
+                            (newZipcode.isNotEmpty() && newZipcode.length == 5) ||
+                            newhouseNum.isNotEmpty()),
                     onClick = {
                         onCloseRequest()
                         // api 호출
                         val nameAPI = if (newName.isEmpty()) name else newName
-                        val phoneNumberAPI = if (newPhoneNumber.isEmpty()) phoneNumber else newPhoneNumber
+                        val phoneNumberAPI =
+                            if (newPhoneNumber.isEmpty()) phoneNumber else newPhoneNumber
                         val addressAPI = if (newAddress.isEmpty()) address else newAddress
 
                         if (newName.isNotEmpty() ||
                             (newPhoneNumber.isNotEmpty() && newPhoneNumber.length == 11) ||
                             newAddress.isNotEmpty() ||
-                            newDetailAddress.isNotEmpty()||
+                            newDetailAddress.isNotEmpty() ||
                             (newZipcode.isNotEmpty() && newZipcode.length == 5) ||
-                            newhouseNum.isNotEmpty())
-                        {
+                            newhouseNum.isNotEmpty()
+                        ) {
                             onEditButtonClick()
                         }
-                              },
+                    },
                     modifier = Modifier.fillMaxWidth(0.4f),
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = Color(0xff78C1F3)
@@ -391,9 +400,9 @@ fun myProfile(
 
 @Composable
 fun myEditMsg(
-    message :String,
+    message: String,
     onCloseRequest: () -> Unit
-){
+) {
     AlertDialog(
         shape = RoundedCornerShape(8.dp),
         onDismissRequest = { onCloseRequest() },
@@ -418,11 +427,10 @@ fun myEditMsg(
 }
 
 
-
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun MyScreen(navController: NavController) {
-    var isLoading by rememberSaveable { mutableStateOf( true) }
+    var isLoading by rememberSaveable { mutableStateOf(true) }
     var userName by rememberSaveable { mutableStateOf("") }
     var userPoint by rememberSaveable { mutableStateOf("") }
     var userDonationPoint by rememberSaveable { mutableStateOf("") }
@@ -430,10 +438,10 @@ fun MyScreen(navController: NavController) {
 
     BackOnPressed()
 
-    if (isLoading){
+    if (isLoading) {
         LoadingCircle()
         RetrofitManager.instance.mypage(
-            completion = { responseState, info->
+            completion = { responseState, info ->
 
                 when (responseState) {
                     RESPONSE_STATE.OKAY -> {
@@ -450,14 +458,19 @@ fun MyScreen(navController: NavController) {
                     }
                 }
             })
-    }else{
+    } else {
         Surface(color = Color.White) {
             Scaffold(backgroundColor = Color.White,
                 content = {
                     Column {
                         myAppBar(userName, userPoint)
                         Spacer(modifier = Modifier.height(8.dp))
-                        myView(introduction = MainContents.introMainDetail, userDonationPoint = userDonationPoint, userDonationCount = userDonationCount, navController)
+                        myView(
+                            introduction = MainContents.introMainDetail,
+                            userDonationPoint = userDonationPoint,
+                            userDonationCount = userDonationCount,
+                            navController
+                        )
                     }
                 }
             )
@@ -470,7 +483,8 @@ fun myView(
     introduction: List<IntroductionDetail>,
     userDonationPoint: String,
     userDonationCount: String,
-    navController: NavController) {
+    navController: NavController
+) {
     LazyColumn(
         modifier = Modifier
             .padding(12.dp)
@@ -478,7 +492,7 @@ fun myView(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        items(introduction){ aIntroDetail->
+        items(introduction) { aIntroDetail ->
             myDonate(R.drawable.baseline_favorite_24, "금액", "${userDonationPoint}원")
             Spacer(modifier = Modifier.height(20.dp))
             myDonate(R.drawable.t_shirt, "횟수", "${userDonationCount}회")
@@ -568,9 +582,7 @@ fun myDonateOrder(navController: NavController) {
                 contentColor = Color.Black
             ),
             onClick = {
-                //navController.navigate("donation_status")
                 navController.navigate("myDonate")
-                Log.d("TAG", "기부현황클릭")
             }
         ) {
             Text(text = "기부현황")
@@ -585,7 +597,6 @@ fun myDonateOrder(navController: NavController) {
                 contentColor = Color.Black
             ),
             onClick = {
-                //navController.navigate("donation_status")
                 navController.navigate("myOrder")
                 Log.d("TAG", "주문현황클릭")
             }
@@ -603,8 +614,10 @@ fun myInquiry() {
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             //Spacer(modifier = Modifier.width(16.dp))
-            Image(painter = painterResource(id = R.drawable.baseline_email_24),
-                contentDescription = null)
+            Image(
+                painter = painterResource(id = R.drawable.baseline_email_24),
+                contentDescription = null
+            )
             Spacer(modifier = Modifier.width(16.dp))
             Column() {
                 Text(text = "Re:Born 문의하기")
@@ -624,8 +637,10 @@ fun rebornAppBarDetailBottom(customerServiceCenter: List<customerServiceCenter>)
         customerServiceCenter.forEach { serviceContent ->
             Row(verticalAlignment = Alignment.Top) {
                 //Spacer(modifier = Modifier.width(16.dp))
-                Image(painter = painterResource(id = R.drawable.baseline_call_24),
-                    contentDescription = null)
+                Image(
+                    painter = painterResource(id = R.drawable.baseline_call_24),
+                    contentDescription = null
+                )
                 Spacer(modifier = Modifier.width(16.dp))
                 Column() {
                     Text(
@@ -669,22 +684,87 @@ fun myDonatePageAppBar() {
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun myDonatePage() {
-    Surface(color = Color.White) {
-        Scaffold(backgroundColor = Color(0xFFE6E5E5),
-            content = {
-                Column {
-                    myDonatePageAppBar()
-                    Spacer(modifier = Modifier.height(16.dp))
-                    myDonatePageProG()
-                    Spacer(modifier = Modifier.height(32.dp))
-                    myDonatePageList()
+    var isLoading by rememberSaveable {
+        mutableStateOf(true)
+    }
+
+    var receiptCount by rememberSaveable {
+        mutableStateOf(0)
+    }
+    var pickupCount by rememberSaveable {
+        mutableStateOf(0)
+    }
+    var reformCount by rememberSaveable {
+        mutableStateOf(0)
+    }
+    var arriveCount by rememberSaveable {
+        mutableStateOf(0)
+    }
+    var productCount by rememberSaveable {
+        mutableStateOf(0)
+    }
+    var donationCount by rememberSaveable {
+        mutableStateOf(0)
+    }
+    var donationList by rememberSaveable { mutableStateOf(List<DonationInfo>(0) { DonationInfo() }) }
+
+
+    if (isLoading) {
+        LoadingCircle()
+        RetrofitManager.instance.mypageDonation(
+            completion = { responseState, donationCounts, donationInfoList ->
+
+                when (responseState) {
+                    RESPONSE_STATE.OKAY -> {
+                        receiptCount = donationCounts!!.receiptCount
+                        pickupCount = donationCounts.pickupCount
+                        reformCount = donationCounts.reformCount
+                        arriveCount = donationCounts.arriveCount
+                        productCount = donationCounts.productCount
+                        donationCount = donationCounts.donationCount
+                        donationList = donationInfoList!!
+
+                        isLoading = false
+                    }
+                    RESPONSE_STATE.FAIL -> {
+                        Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
+                        Log.d(Constants.TAG, "api 호출 에러")
+                    }
                 }
-            }
-        )
+            })
+    } else {
+        Surface(color = Color.White) {
+            Scaffold(backgroundColor = Color(0xFFE6E5E5),
+                content = {
+                    Column {
+                        myDonatePageAppBar()
+                        Spacer(modifier = Modifier.height(16.dp))
+                        myDonatePageProG(
+                            receiptCount = receiptCount,
+                            pickupCount = pickupCount,
+                            reformCount = reformCount,
+                            arriveCount = arriveCount,
+                            productCount = productCount,
+                            donationCount = donationCount
+                        )
+                        Spacer(modifier = Modifier.height(32.dp))
+                        myDonatePageList(donationList = donationList)
+                    }
+                }
+            )
+        }
     }
 }
+
 @Composable
-fun myDonatePageProG() {
+fun myDonatePageProG(
+    receiptCount: Int,
+    pickupCount: Int,
+    reformCount: Int,
+    arriveCount: Int,
+    productCount: Int,
+    donationCount: Int
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth(1f)
@@ -716,7 +796,21 @@ fun myDonatePageProG() {
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = "1")
+                        Text(text = "$receiptCount")
+                        Image(
+                            painter = painterResource(R.drawable.ribbon2),
+                            contentDescription = "Your Image",
+                            modifier = Modifier.size(32.dp)
+                        )
+                        Text(text = "접수완료")
+                    }
+                }
+                Box() {
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = "$pickupCount")
                         Image(
                             painter = painterResource(R.drawable.local_shipping),
                             contentDescription = "Your Image",
@@ -730,7 +824,7 @@ fun myDonatePageProG() {
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = "2")
+                        Text(text = "$arriveCount")
                         Image(
                             painter = painterResource(R.drawable.business),
                             contentDescription = "Your Image",
@@ -745,7 +839,7 @@ fun myDonatePageProG() {
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = "3")
+                        Text(text = "$reformCount")
                         Image(
                             painter = painterResource(R.drawable.cut),
                             contentDescription = "Your Image",
@@ -759,7 +853,7 @@ fun myDonatePageProG() {
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = "4")
+                        Text(text = "$productCount")
                         Image(
                             painter = painterResource(R.drawable.shopping_bag),
                             contentDescription = "판매중",
@@ -773,7 +867,7 @@ fun myDonatePageProG() {
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = "5")
+                        Text(text = "$donationCount")
                         Image(
                             painter = painterResource(R.drawable.baseline_favorite_24),
                             contentDescription = "기부완료",
@@ -786,58 +880,110 @@ fun myDonatePageProG() {
         }
     }
 }
+
 @Composable
-fun myDonatePageList() {
+fun myDonatePageList(donationList: List<DonationInfo>) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.White),
         contentAlignment = Alignment.CenterStart,
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
+        LazyColumn(
+            modifier = Modifier.padding(horizontal = 16.dp)
         ) {
-            //임시텍스트
-            Text(
-                text = "수거중",
-                fontWeight = FontWeight.Bold
-            )
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // 이미지
-                Image(
-                    painter = painterResource(R.drawable.baseline_favorite_24),
-                    contentDescription = "Your Image",
-                    modifier = Modifier
-                        .size(72.dp)
-                        .background(Color.Gray)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(8.dp)
-                ) {
-                    Column(horizontalAlignment = Alignment.Start) {
-                        //임시 텍스트
-                        Text(
-                            text = "기부자 : 홍길동(닉네임)",
-                        )
-                        Text(
-                            text = "수거 날짜 : 2023.07.22",
-                        )
-                        Text(
-                            text = "연락처 : 010 - XXXX - XXXX",
-                        )
-                        Text(
-                            text = "주소 : XXX - XXXX",
-                        )
-                    }
-                }
+            item {
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+            items(donationList) { donationInfo ->
+                DonationInfoFormat(donationInfo)
+                Spacer(modifier = Modifier.height(12.dp))
             }
         }
     }
+}
+
+@Composable
+fun DonationInfoFormat(donationInfo: DonationInfo) {
+    val img = when (donationInfo.receiptStatus) {
+        "접수완료" -> {
+            R.drawable.ribbon2
+        }
+        "수거중" -> {
+            R.drawable.local_shipping
+        }
+        "검수중" -> {
+            R.drawable.business
+        }
+        "리폼중" -> {
+            R.drawable.cut
+        }
+        "판매중" -> {
+            R.drawable.shopping_bag
+        }
+        "기부완료" -> {
+            R.drawable.baseline_favorite_24
+        }
+        else -> {
+            R.drawable.baseline_favorite_24
+        }
+    }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(24.dp))
+            .background(Point),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Spacer(modifier = Modifier.width(12.dp))
+        // 이미지
+        Column(
+            modifier = Modifier.padding(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Image(
+                painter = painterResource(img),
+                contentDescription = "Your Image",
+                modifier = Modifier
+                    .size(72.dp)
+            )
+            Text(
+                text = donationInfo.receiptStatus,
+                fontWeight = FontWeight.Bold
+            )
+        }
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.SpaceEvenly
+        ) {
+            val size = 12
+            val mod = Modifier.padding(4.dp).fillMaxWidth(0.9f)
+            TextFormat(modifier = mod, text = "기부자 : ${donationInfo.name}", size = size)
+            TextFormat(modifier = mod, text = "기부자 연락처 : ${donationInfo.phoneNumber}", size = size)
+            TextFormat(modifier = mod, text = "기부자 주소 : ${donationInfo.address}", size = size)
+            //${donationInfo.phoneNumber.slice(0..2)} - ${donationInfo.phoneNumber.slice(3..6)} - ${donationInfo.phoneNumber.slice(7..10)}",
+        }
+    }
+}
+
+@Preview
+@Composable
+fun prepreview() {
+    DonationInfoFormat(
+        DonationInfo(
+            receiptStatus = "접수완료",
+            name = "박동민",
+            address = "수원시 장안구 연무동 62-6",
+            phoneNumber = "01022453683",
+            productId = 0,
+            price = 0,
+        )
+    )
 }
 
 

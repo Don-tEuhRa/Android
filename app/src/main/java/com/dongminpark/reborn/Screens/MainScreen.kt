@@ -117,14 +117,6 @@ fun MainScreen(
 fun introductionView(aIntro: Introduction, navController: NavHostController){
     var expanded by remember { mutableStateOf(false) }
 
-    val extraPadding by animateDpAsState(
-        if (expanded) 15.dp else 0.dp,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessLow
-        ),
-    )
-
     Button(
         onClick = { expanded = !expanded },
         shape = RoundedCornerShape(24.dp),
