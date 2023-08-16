@@ -5,11 +5,13 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -21,6 +23,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,10 +38,13 @@ import com.dongminpark.reborn.App
 import com.dongminpark.reborn.Model.MypageUser
 import com.dongminpark.reborn.Model.User
 import com.dongminpark.reborn.R
+import com.dongminpark.reborn.Utils.BackOnPressed
+import com.dongminpark.reborn.Utils.IntroductionDetail
+import com.dongminpark.reborn.Utils.MainContents
+import com.dongminpark.reborn.Utils.customerServiceCenter
 import com.dongminpark.reborn.Retrofit.RetrofitManager
 import com.dongminpark.reborn.Utils.*
 import com.dongminpark.reborn.Utils.Constants.TAG
-import kotlinx.coroutines.launch
 
 //화면전환(기부,주문내역), 회원정보수정
 //사용자이름, 기부금액, 마일리지금액,기부현황진행사항 갯수, 진행현황 임시텍스트로 대체해둠
@@ -43,7 +52,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun myAppBar(userName: String, userPoint: String) {
     var showProfile by remember { mutableStateOf(false) }
-    var showSnackBar by remember { mutableStateOf(false) }
+    var editMsg by remember { mutableStateOf(false) }
 
     TopAppBar(
         elevation = 10.dp,
@@ -104,7 +113,7 @@ fun myAppBar(userName: String, userPoint: String) {
 
     if (showProfile) {
         var isLoading by remember {
-            mutableStateOf(true)
+            mutableStateOf(false)
         }
         var userInfo by remember {
             mutableStateOf(User())
@@ -135,16 +144,19 @@ fun myAppBar(userName: String, userPoint: String) {
                 address = userInfo.address,
                 detialAddress = userInfo.detailAddress,
                 zipcode = userInfo.zipCode.toString(),
-                onCloseRequest = { showProfile = false }
+                onCloseRequest = { showProfile = false },
+                onEditButtonClick = { editMsg = true }
             )
         }
     }
 
-    if (showSnackBar){
-
+    if(editMsg){
+        myEditMsg(
+            "회원정보가 수정되었습니다.",
+            onCloseRequest = { editMsg = false }
+        )
     }
 }
-
 
 @Composable
 fun myProfile(
@@ -153,18 +165,27 @@ fun myProfile(
     address: String,
     detialAddress: String,
     zipcode: String,
-    onCloseRequest: () -> Unit
+    onCloseRequest: () -> Unit,
+    onEditButtonClick: () -> Unit
 ) {
     var newName by remember { mutableStateOf("") }
     var newPhoneNumber by remember { mutableStateOf("") }
     var newAddress by remember { mutableStateOf("") }
     var newDetailAddress by remember { mutableStateOf("") }
     var newZipcode by remember { mutableStateOf("") }
-    val snackbarHostState = remember { SnackbarHostState() }
-    val coroutineScope = rememberCoroutineScope()
+    var newhouseNum by remember { mutableStateOf("") }
+    var isHouseNumEnabled by remember { mutableStateOf(true) }
+    val shouldShowHouseNum = remember { mutableStateOf(false) }
+    val houseNumResource: (Boolean) -> Int = {
+        if (it) {
+            R.drawable.baseline_visibility_24
+        } else {
+            R.drawable.baseline_visibility_off_24
+        }
+    }
+
 
     AlertDialog(
-        //modifier = Modifier.fillMaxHeight(0.9f),
         shape = RoundedCornerShape(24.dp),
         onDismissRequest = { onCloseRequest() },
         title = { Text("회원정보수정") },
@@ -178,9 +199,18 @@ fun myProfile(
                         value = newName,
                         singleLine = true,
                         onValueChange = { newValue -> newName = newValue },
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            imeAction = ImeAction.Next
+                        ),
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = Color.White,
+                            focusedIndicatorColor = Color(0xff78C1F3),
+                            unfocusedIndicatorColor = Color.LightGray,
+                            cursorColor = Color.LightGray
+                        )
                     )
                     Spacer(modifier = Modifier.padding(8.dp))
-                }
+                }//이름
                 item {
                     Text(text = "연락처")
                     OutlinedTextField(
@@ -188,50 +218,124 @@ fun myProfile(
                         placeholder = { Text(text = phoneNumber) },
                         value = newPhoneNumber,
                         singleLine = true,
-                        onValueChange = { newValue -> newPhoneNumber = newValue }
+                        onValueChange = { newValue -> newPhoneNumber = newValue },
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Next
+                        ),
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = Color.White,
+                            focusedIndicatorColor = Color(0xff78C1F3),
+                            unfocusedIndicatorColor = Color.LightGray,
+                            cursorColor = Color.LightGray
+                        )
                     )
                     Spacer(modifier = Modifier.padding(8.dp))
-                }
+                }//연락처
                 item {
                     Text(text = "주소")
                     OutlinedTextField(
                         modifier = Modifier.fillMaxWidth(),
                         placeholder = { Text(text = address) },
                         value = newAddress,
-                        onValueChange = { newValue -> newAddress = newValue }
+                        onValueChange = { newValue -> newAddress = newValue },
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            imeAction = ImeAction.Next
+                        ),
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = Color.White,
+                            focusedIndicatorColor = Color(0xff78C1F3),
+                            unfocusedIndicatorColor = Color.LightGray,
+                            cursorColor = Color.LightGray
+                        )
                     )
                     Spacer(modifier = Modifier.padding(8.dp))
-                }
+                }//주소
                 item {
                     Text(text = "상세주소")
                     OutlinedTextField(
                         modifier = Modifier.fillMaxWidth(),
                         placeholder = { Text(text = detialAddress) },
-                        value = newAddress,
-                        onValueChange = { newValue -> newDetailAddress = newValue }
+                        value = newDetailAddress,
+                        onValueChange = { newValue -> newDetailAddress = newValue },
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            imeAction = ImeAction.Next
+                        ),
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = Color.White,
+                            focusedIndicatorColor = Color(0xff78C1F3),
+                            unfocusedIndicatorColor = Color.LightGray,
+                            cursorColor = Color.LightGray
+                        ),
+                        singleLine = true,
                     )
                     Spacer(modifier = Modifier.padding(8.dp))
-                }
-                item { // 숫자만 입력가능하게.
+                }//상세주소
+                item {
                     Text(text = "우편번호")
                     OutlinedTextField(
                         modifier = Modifier.fillMaxWidth(),
                         placeholder = { Text(text = zipcode) },
-                        value = newAddress,
-                        onValueChange = { newValue -> newZipcode = newValue }
+                        value = newZipcode,
+                        onValueChange = { newValue -> newZipcode = newValue },
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Next
+                        ),
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = Color.White,
+                            focusedIndicatorColor = Color(0xff78C1F3),
+                            unfocusedIndicatorColor = Color.LightGray,
+                            cursorColor = Color.LightGray
+                        ),
+                        singleLine = true,
                     )
                     Spacer(modifier = Modifier.padding(8.dp))
-                }
-                item { // 맞춰서 수정해주ㅏㅓ요
-                    Text(text = "현관 비밀번호")
+                }//우편번호
+                item {
+                    Row(
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(text = "현관 비밀번호")
+                        Checkbox(
+                            checked = isHouseNumEnabled,
+                            onCheckedChange = {
+                                isHouseNumEnabled = it
+                            },
+                            modifier = Modifier.align(Alignment.Bottom)
+                        )
+                        Text(text = "없음")
+                    }
                     OutlinedTextField(
                         modifier = Modifier.fillMaxWidth(),
                         placeholder = { Text(text = zipcode) },
-                        value = newAddress,
-                        onValueChange = { newValue -> newZipcode = newValue }
+                        value = newhouseNum,
+                        onValueChange = { newValue -> newhouseNum = newValue },
+                        enabled = !isHouseNumEnabled,
+                        trailingIcon = {
+                            IconButton(onClick = {
+                                Log.d("TAG", "Housenum:클릭")
+                                shouldShowHouseNum.value = !shouldShowHouseNum.value
+                            }) {
+                                Icon(
+                                    painter = painterResource(id = houseNumResource(shouldShowHouseNum.value)),
+                                    contentDescription = null
+                                )
+                            }
+                        }, visualTransformation = if (shouldShowHouseNum.value) VisualTransformation.None else PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.NumberPassword
+                        ),
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = Color.White,
+                            focusedIndicatorColor = Color(0xff78C1F3),
+                            unfocusedIndicatorColor = Color.LightGray,
+                            cursorColor = Color.LightGray
+                        ),
+                        singleLine = true,
                     )
-                    Spacer(modifier = Modifier.padding(8.dp))
-                }
+                }//현관비밀번호
             }
         },
         confirmButton = {
@@ -240,6 +344,13 @@ fun myProfile(
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 Button(
+                    enabled = (newName.isNotEmpty() ||
+                                (newPhoneNumber.isNotEmpty() && newPhoneNumber.length == 11) ||
+                                newAddress.isNotEmpty() ||
+                                newDetailAddress.isNotEmpty()||
+                                (newZipcode.isNotEmpty() && newZipcode.length == 5) ||
+                                newhouseNum.isNotEmpty())
+                    ,
                     onClick = {
                         onCloseRequest()
                         // api 호출
@@ -247,44 +358,66 @@ fun myProfile(
                         val phoneNumberAPI = if (newPhoneNumber.isEmpty()) phoneNumber else newPhoneNumber
                         val addressAPI = if (newAddress.isEmpty()) address else newAddress
 
-                        /*
-                        if (newName.isNotEmpty() && newPhoneNumber.isNotEmpty() && newAddress.isNotEmpty()) {
-                            coroutineScope.launch {
-                                coroutineScope.launch {
-                                    val result = snackbarHostState.showSnackbar(
-                                        "회원정보가 수정되었습니다.",
-                                        "확인",
-                                        SnackbarDuration.Short
-                                    )
-
-                                    when (result) {
-                                        SnackbarResult.Dismissed -> {
-                                            Log.d("TAG", "스낵바 닫아짐")
-                                        }
-                                        SnackbarResult.ActionPerformed -> {
-                                            Log.d("TAG", "스낵바 확인버튼을 누름")
-                                        }
-                                    }
-                                }
-                            }
+                        if (newName.isNotEmpty() ||
+                            (newPhoneNumber.isNotEmpty() && newPhoneNumber.length == 11) ||
+                            newAddress.isNotEmpty() ||
+                            newDetailAddress.isNotEmpty()||
+                            (newZipcode.isNotEmpty() && newZipcode.length == 5) ||
+                            newhouseNum.isNotEmpty())
+                        {
+                            onEditButtonClick()
                         }
-                         */
-                    },
-                    modifier = Modifier.fillMaxWidth(0.4f)
+                              },
+                    modifier = Modifier.fillMaxWidth(0.4f),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color(0xff78C1F3)
+                    )
                 ) {
                     Text("등록")
                 }
                 Button(
                     onClick = { onCloseRequest() },
                     modifier = Modifier.fillMaxWidth(0.7f),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color(0xff78C1F3)
+                    )
                 ) {
                     Text("취소")
                 }
             }
-            SnackbarHost(hostState = snackbarHostState, modifier = Modifier.offset(y = (-20).dp))
         }
     )
 }
+
+@Composable
+fun myEditMsg(
+    message :String,
+    onCloseRequest: () -> Unit
+){
+    AlertDialog(
+        shape = RoundedCornerShape(24.dp),
+        onDismissRequest = { onCloseRequest() },
+        title = { Text("수정 완료!") },
+        text = { Text(message) },
+        confirmButton = {
+            Button(
+                onClick = { onCloseRequest() },
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = Color(0xff78C1F3)
+                )
+            ) {
+                Text(text = "확인")
+            }
+        },
+        modifier = Modifier.border(
+            2.dp,
+            Color.LightGray.copy(alpha = 0.7f),
+            RoundedCornerShape(8.dp)
+        )
+    )
+}
+
+
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -294,6 +427,7 @@ fun MyScreen(navController: NavController) {
     var userPoint by rememberSaveable { mutableStateOf("") }
     var userDonationPoint by rememberSaveable { mutableStateOf("") }
     var userDonationCount by rememberSaveable { mutableStateOf("") }
+
     BackOnPressed()
 
     if (isLoading){
@@ -549,7 +683,6 @@ fun myDonatePage() {
         )
     }
 }
-
 @Composable
 fun myDonatePageProG() {
     Column(
@@ -653,7 +786,6 @@ fun myDonatePageProG() {
         }
     }
 }
-
 @Composable
 fun myDonatePageList() {
     Box(
