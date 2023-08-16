@@ -39,8 +39,8 @@ interface IRetrofit {
     @GET(API.MYPAGE)
     fun mypage(): Call<JsonElement>
 
-    @POST(API.MYPAGE_ADDRESS_SAVE)
-    fun mypageAddressSave(@Body address: JsonObject): Call<JsonElement>
+    @PUT(API.MYPAGE_USER_UPDATE)
+    fun mypageUserUpdate(@Body address: JsonObject): Call<JsonElement>
 
     @GET(API.MYPAGE_DONATION)
     fun mypageDonation(): Call<JsonElement>

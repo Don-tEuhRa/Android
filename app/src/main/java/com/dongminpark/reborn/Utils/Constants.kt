@@ -24,7 +24,7 @@ object API{
 
     // mypage controller
     const val MYPAGE = "/mypage/"
-    const val MYPAGE_ADDRESS_SAVE = "/mypage/address/save"
+    const val MYPAGE_USER_UPDATE = "/mypage/user/update"
     const val MYPAGE_DONATION = "/mypage/donation"
     const val MYPAGE_INFO = "/mypage/info"
     const val MYPAGE_ORDER = "/mypage/order"

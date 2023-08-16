@@ -355,6 +355,46 @@ class RetrofitManager {
         })
     }
 
+    fun mypageUserUpdate(
+        name: String,
+        address: String,
+        addressDetail: String,
+        zipCode: Int,
+        doorPassword: String,
+        phoneNumber: String,
+        completion: (RESPONSE_STATE) -> Unit
+    ){
+        val jsonObject = JsonObject()
+        jsonObject.addProperty("name", name)
+        jsonObject.addProperty("address", address)
+        jsonObject.addProperty("addressDetail", addressDetail)
+        jsonObject.addProperty("zipCode", zipCode)
+        jsonObject.addProperty("doorPassword", doorPassword)
+        jsonObject.addProperty("phoneNumber", phoneNumber)
+
+        val call = iRetrofit?.mypageUserUpdate(jsonObject) ?: return
+
+        call.enqueue(object : retrofit2.Callback<JsonElement> {
+            override fun onResponse(call: Call<JsonElement>, response: Response<JsonElement>) {
+                Log.d(TAG, "gptStop - onResponse() called / respose : ${response.body()}")
+
+                when (response.code()) {
+                    200 -> { // 정상 연결
+                        completion(RESPONSE_STATE.OKAY)
+                    }
+                    else -> { // 에러
+                        completion(RESPONSE_STATE.FAIL)
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
+                completion(RESPONSE_STATE.FAIL)
+            }
+        })
+    }
+
+
     // order controller
     fun orderCreate(
         usePoint: Int,
@@ -366,7 +406,6 @@ class RetrofitManager {
         jsonObject.addProperty("usePoint", usePoint)
         jsonObject.addProperty("payMethod", payMethod)
         jsonObject.add("productId", Gson().toJsonTree(productId))
-        Log.e(TAG, "orderCreate: ${Gson().toJsonTree(productId)}", )
 
         val call = iRetrofit?.orderCreate(jsonObject) ?: return
 
