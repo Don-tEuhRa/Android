@@ -187,8 +187,34 @@ fun StoreDetailScreen(navController: NavController, productId: Int) {
                                 isFavorite = !isFavorite
                                 if(isFavorite){
                                     // 관심상품 등록
+                                    RetrofitManager.instance.interestedSave(
+                                        productId = productId,
+                                        completion = { responseState ->
+
+                                            when (responseState) {
+                                                RESPONSE_STATE.OKAY -> {
+                                                    Toast.makeText(App.instance, "좋아요 목록에 추가되었습니다", Toast.LENGTH_SHORT).show()
+                                                }
+                                                RESPONSE_STATE.FAIL -> {
+                                                    Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
+                                                }
+                                            }
+                                        })
                                 }else{
                                     // 관심상품 해제
+                                    RetrofitManager.instance.interestedDelete(
+                                        productId = productId,
+                                        completion = { responseState ->
+
+                                            when (responseState) {
+                                                RESPONSE_STATE.OKAY -> {
+                                                    Toast.makeText(App.instance, "좋아요 목록에서 삭제되었습니다", Toast.LENGTH_SHORT).show()
+                                                }
+                                                RESPONSE_STATE.FAIL -> {
+                                                    Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
+                                                }
+                                            }
+                                        })
                                 }
                             }
                             TextButtonFormat(

@@ -26,18 +26,13 @@ object API{
     const val MYPAGE = "/mypage/"
     const val MYPAGE_USER_UPDATE = "/mypage/user/update"
     const val MYPAGE_DONATION = "/mypage/donation"
-    const val MYPAGE_INFO = "/mypage/info"
     const val MYPAGE_ORDER = "/mypage/order"
 
     // order controller
     const val ORDER_SAVE = "/order/save"
-    const val ORDER_FINDALL = "/order/findAll"
 
     // product controller
     const val PRODUCT_CATEGORY = "/product/category/{category}"
-    const val PRODUCT_DELETE = "/product/{id}/delete"
-    const val PRODUCT_EDIT = "/product/{id}/edit"
-    const val PRODUCT_CREATE_FILE = "/product/create/file"
     const val PRODUCT_LIST_UNSOLD = "/product/list/UnSold"
     const val PRODUCT_SEARCH = "/product/search/{keyword}"
     const val PRODUCT_SHOW_ID = "/product/show/{id}"
@@ -47,7 +42,6 @@ object API{
 
     // receipt controller
     const val RECEIPT_CREATE = "/receipt/create"
-    const val RECEIPT_CANCEL = "/receipt/cancel/{receiptId}"
 
     // user controller
     const val FIREBASE_CONNECT = "/user/firebase/{uid}"

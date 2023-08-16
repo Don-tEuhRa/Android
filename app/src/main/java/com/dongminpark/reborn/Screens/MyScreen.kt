@@ -439,14 +439,9 @@ fun myProfile(
                             || userPhone.length != 11 || (!isHouseNumEnabled && userHouseNum.isEmpty())
                             ),
                     onClick = {
-                        Log.e(TAG, "myProfile: butto click", )
-                        //onCloseRequest()
-                        // api 호출
                         if (!(userPlace.value.isEmpty() || userName.isEmpty() || userPlaceDetail.isEmpty() || userPost.value.isEmpty()
                             || userPhone.length != 11 || (!isHouseNumEnabled && userHouseNum.isEmpty())
                         )) {
-                            // api 호출
-                            Log.e(TAG, "myProfile: api call", )
                             RetrofitManager.instance.mypageUserUpdate(
                                 name = userName,
                                 phoneNumber = userPhone,
@@ -457,12 +452,10 @@ fun myProfile(
                                 completion = { responseState->
                                     when (responseState) {
                                         RESPONSE_STATE.OKAY -> {
-                                            Log.e(TAG, "myProfile: respose okay", )
                                             onCloseRequest()
                                             onEditButtonClick()
                                         }
                                         RESPONSE_STATE.FAIL -> {
-                                            Log.e(TAG, "myProfile: respose fail", )
                                             Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
                                         }
                                     }

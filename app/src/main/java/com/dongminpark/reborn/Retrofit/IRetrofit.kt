@@ -45,16 +45,10 @@ interface IRetrofit {
     @GET(API.MYPAGE_DONATION)
     fun mypageDonation(): Call<JsonElement>
 
-    @GET(API.MYPAGE_INFO)
-    fun mypageInfo(): Call<JsonElement>
-
     @GET(API.MYPAGE_ORDER)
     fun mypageOrder(): Call<JsonElement>
 
     // order controller
-    @GET(API.ORDER_FINDALL)
-    fun orderFindAll(): Call<JsonElement>
-
     @POST(API.ORDER_SAVE)
     fun orderCreate(@Body product: JsonObject): Call<JsonElement>
 
@@ -79,9 +73,6 @@ interface IRetrofit {
     // receipt controller
     @POST(API.RECEIPT_CREATE)
     fun receiptCreate(@Body receipt: JsonObject): Call<JsonElement>
-
-    @DELETE(API.RECEIPT_CANCEL)
-    fun receiptCancel(@Path("receiptId") receiptId: Int): Call<JsonElement>
 
     // user controller
     @GET(API.USER_INFO)
