@@ -38,6 +38,7 @@ import com.dongminpark.reborn.App
 import com.dongminpark.reborn.Frames.TextFormat
 import com.dongminpark.reborn.Model.DonationInfo
 import com.dongminpark.reborn.Model.MypageUser
+import com.dongminpark.reborn.Model.OrderInfo
 import com.dongminpark.reborn.Model.User
 import com.dongminpark.reborn.R
 import com.dongminpark.reborn.Utils.BackOnPressed
@@ -598,7 +599,6 @@ fun myDonateOrder(navController: NavController) {
             ),
             onClick = {
                 navController.navigate("myOrder")
-                Log.d("TAG", "주문현황클릭")
             }
         ) {
             Text(text = "주문현황")
@@ -912,7 +912,7 @@ fun DonationInfoFormat(donationInfo: DonationInfo) {
         "수거중" -> {
             R.drawable.local_shipping
         }
-        "검수중" -> {
+        "배달완료" -> {
             R.drawable.business
         }
         "리폼중" -> {
@@ -962,7 +962,9 @@ fun DonationInfoFormat(donationInfo: DonationInfo) {
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
             val size = 12
-            val mod = Modifier.padding(4.dp).fillMaxWidth(0.9f)
+            val mod = Modifier
+                .padding(4.dp)
+                .fillMaxWidth(0.9f)
             TextFormat(modifier = mod, text = "기부자 : ${donationInfo.name}", size = size)
             TextFormat(modifier = mod, text = "기부자 연락처 : ${donationInfo.phoneNumber}", size = size)
             TextFormat(modifier = mod, text = "기부자 주소 : ${donationInfo.address}", size = size)
@@ -1015,23 +1017,83 @@ fun myOrderPageAppBar() {
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun myOrderPage() {
-    Surface(color = Color.White) {
-        Scaffold(backgroundColor = Color(0xFFE6E5E5),
-            content = {
-                Column {
-                    myOrderPageAppBar()
-                    Spacer(modifier = Modifier.height(16.dp))
-                    myOrderPageProG()
-                    Spacer(modifier = Modifier.height(32.dp))
-                    myOrderPageList()
+    var isLoading by rememberSaveable {
+        mutableStateOf(true)
+    }
+
+    // orderCount의 인자들
+    var allOrderCount by rememberSaveable {
+        mutableStateOf(0)
+    }
+    var payCount by rememberSaveable {
+        mutableStateOf(0)
+    }
+    var deliveryCount by rememberSaveable {
+        mutableStateOf(0)
+    }
+    var deliveredCount by rememberSaveable {
+        mutableStateOf(0)
+    }
+    var completeCount by rememberSaveable {
+        mutableStateOf(0)
+    }
+
+
+    var orderList by rememberSaveable { mutableStateOf(List<OrderInfo>(0) { OrderInfo() }) }
+
+
+    if (isLoading) {
+        LoadingCircle()
+        RetrofitManager.instance.mypageOrder(
+            completion = { responseState, orderCounts, orderInfoList ->
+
+                when (responseState) {
+                    RESPONSE_STATE.OKAY -> {
+                        allOrderCount = orderCounts!!.allOrderCount
+                        payCount = orderCounts.payCount
+                        deliveryCount = orderCounts.deliveryCount
+                        deliveredCount = orderCounts.deliveredCount
+                        completeCount = orderCounts.completeCount
+
+                        orderList = orderInfoList!!
+                        isLoading = false
+                    }
+                    RESPONSE_STATE.FAIL -> {
+                        Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
+                    }
                 }
-            }
-        )
+            })
+    } else {
+        Surface(color = Color.White) {
+            Scaffold(backgroundColor = Color(0xFFE6E5E5),
+                content = {
+                    Column {
+                        myOrderPageAppBar()
+                        Spacer(modifier = Modifier.height(16.dp))
+                        myOrderPageProG(
+                            allOrderCount = allOrderCount,
+                            payCount = payCount,
+                            deliveryCount = deliveryCount,
+                            deliveredCount = deliveredCount,
+                            completeCount = completeCount
+                        )
+                        Spacer(modifier = Modifier.height(32.dp))
+                        myOrderPageList(orderList = orderList)
+                    }
+                }
+            )
+        }
     }
 }
 
 @Composable
-fun myOrderPageProG() {
+fun myOrderPageProG(
+    allOrderCount: Int,
+    payCount: Int,
+    deliveryCount: Int,
+    deliveredCount: Int,
+    completeCount: Int
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth(1f)
@@ -1063,7 +1125,12 @@ fun myOrderPageProG() {
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = "1")
+                        Text(text = "$allOrderCount")
+                        Image(
+                            painter = painterResource(R.drawable.ribbon2),
+                            contentDescription = "Your Image",
+                            modifier = Modifier.size(32.dp)
+                        )
                         Text(text = "전체")
                     }
                 }
@@ -1072,7 +1139,12 @@ fun myOrderPageProG() {
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = "2")
+                        Text(text = "$payCount")
+                        Image(
+                            painter = painterResource(R.drawable.baseline_monetization_on_24),
+                            contentDescription = "Your Image",
+                            modifier = Modifier.size(32.dp)
+                        )
                         Text(text = "입금/결제")
 
                     }
@@ -1082,7 +1154,12 @@ fun myOrderPageProG() {
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = "3")
+                        Text(text = "$deliveryCount")
+                        Image(
+                            painter = painterResource(R.drawable.local_shipping),
+                            contentDescription = "Your Image",
+                            modifier = Modifier.size(32.dp)
+                        )
                         Text(text = "배송중/")
                         Text(text = "픽업대기")
                     }
@@ -1092,7 +1169,12 @@ fun myOrderPageProG() {
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = "4")
+                        Text(text = "$deliveredCount")
+                        Image(
+                            painter = painterResource(R.drawable.shopping_bag),
+                            contentDescription = "Your Image",
+                            modifier = Modifier.size(32.dp)
+                        )
                         Text(text = "배송완료/")
                         Text(text = "픽업완료")
                     }
@@ -1102,7 +1184,12 @@ fun myOrderPageProG() {
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = "5")
+                        Text(text = "$completeCount")
+                        Image(
+                            painter = painterResource(R.drawable.baseline_favorite_24),
+                            contentDescription = "기부완료",
+                            modifier = Modifier.size(32.dp)
+                        )
                         Text(text = "구매확정")
                     }
                 }
@@ -1112,56 +1199,107 @@ fun myOrderPageProG() {
 }
 
 @Composable
-fun myOrderPageList() {
+fun myOrderPageList(orderList: List<OrderInfo>) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.White),
         contentAlignment = Alignment.CenterStart,
     ) {
-        Column(
-            modifier = Modifier.padding(8.dp)
+        LazyColumn(
+            modifier = Modifier.padding(horizontal = 16.dp)
         ) {
-            //임시텍스트
-            Text(
-                text = "배송완료",
-                fontWeight = FontWeight.Bold
-            )
+            item {
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+            items(orderList) { orderInfo ->
+                OrderInfoFormat(orderInfo)
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+        }
+    }
+}
+
+@Composable
+fun OrderInfoFormat(orderInfo: OrderInfo) {
+    val img = when (orderInfo.status) {
+        "결제성공" -> {
+            R.drawable.baseline_monetization_on_24
+        }
+        "배송중" -> {
+            R.drawable.local_shipping
+        }
+        "배달완료" -> {
+            R.drawable.shopping_bag
+        }
+        "구매확정" -> {
+            R.drawable.baseline_favorite_24
+        }
+        else -> {
+            R.drawable.baseline_favorite_24
+        }
+    }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(24.dp))
+            .background(Point),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Spacer(modifier = Modifier.width(12.dp))
+        // 이미지
+        Column() {
+
             Row(
+                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Image(
-                    painter = painterResource(R.drawable.baseline_favorite_24),
-                    contentDescription = "Your Image",
-                    modifier = Modifier
-                        .size(72.dp)
-                        .background(Color.Gray)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(8.dp)
+                Column(
+                    modifier = Modifier.padding(8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Column() {
-                        //임시 텍스트
-                        Text(
-                            text = "기부자 : 홍길동(닉네임)",
-                        )
-                        Text(
-                            text = "상품이름",
-                        )
-                        Text(
-                            text = "가격 : 10000000",
-                        )
-                    }
+                    Image(
+                        painter = painterResource(img),
+                        contentDescription = "Your Image",
+                        modifier = Modifier
+                            .size(72.dp)
+                    )
+                    Text(
+                        text = orderInfo.status,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    val size = 12
+                    val mod = Modifier
+                        .padding(4.dp)
+                        .fillMaxWidth(0.9f)
+                    TextFormat(
+                        modifier = mod,
+                        text = "구매 일자 : ${orderInfo.paymentDate.slice(0..9)}",
+                        size = size
+                    )
+                    //TextFormat(modifier = mod, text = "기부자 연락처 : ${donationInfo.phoneNumber}", size = size) 가격, 상품명
+                    TextFormat(
+                        modifier = mod,
+                        text = "주소 : ${orderInfo.address} ${orderInfo.addressDetail} (${orderInfo.zipCode})",
+                        size = size
+                    )
                 }
             }
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                //환불요청
+                //환불요청 -> 팝업 만들기...?
                 Button(
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
                     onClick = { }) {

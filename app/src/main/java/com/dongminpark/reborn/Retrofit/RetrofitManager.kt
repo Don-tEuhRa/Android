@@ -293,6 +293,68 @@ class RetrofitManager {
         })
     }
 
+    fun mypageOrder(completion: (RESPONSE_STATE, OrderCount?, ArrayList<OrderInfo>?) -> Unit){
+        val call = iRetrofit?.mypageOrder() ?: return
+
+        call.enqueue(object : retrofit2.Callback<JsonElement> {
+            // 응답 실패시
+            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
+                completion(RESPONSE_STATE.FAIL, null, null)
+            }
+
+            // 응답 성공시
+            override fun onResponse(
+                call: Call<JsonElement>,
+                response: Response<JsonElement>
+            ) {
+                Log.d( // 지워야함.
+                    TAG,
+                    "mypage - onResponse() called / respose : ${response.body()}"
+                )
+                when (response.code()) {
+                    200 -> { // 정상 연결
+                        response.body()?.let {
+                            val body = it.asJsonObject
+                            val data = body.get("data").asJsonObject
+                            val orderCount = data.get("orderCount").asJsonObject
+                            val order = data.getAsJsonArray("order")
+
+                            val orderCountTemp = OrderCount(
+                                allOrderCount = orderCount.get("allOrderCount").asInt,
+                                payCount = orderCount.get("payCount").asInt,
+                                deliveryCount = orderCount.get("deliveryCount").asInt,
+                                deliveredCount = orderCount.get("deliveredCount").asInt,
+                                completeCount = orderCount.get("completeCount").asInt
+                            )
+
+                            val orderList = arrayListOf<OrderInfo>()
+                            order.forEach {
+                                val item = it.asJsonObject
+                                val addressTemp = item.get("address").asJsonObject
+                                val ord = OrderInfo(
+                                    orderId = item.get("orderId").asInt,
+                                    status = item.get("status").asString,
+                                    phone = item.get("phone").asString,
+                                    address = addressTemp.get("address").asString,
+                                    addressDetail = addressTemp.get("addressDetail").asString,
+                                    zipCode = addressTemp.get("zipCode").asString,
+                                    paymentDate = item.get("paymentDate").asString
+                                )
+
+                                orderList.add(ord)
+                            }
+
+                            completion(RESPONSE_STATE.OKAY, orderCountTemp, orderList)
+                        }
+                    }
+                    else -> { // 에러
+                        completion(RESPONSE_STATE.FAIL, null, null)
+                    }
+                }
+            }
+        })
+    }
+
     // order controller
     fun orderCreate(
         usePoint: Int,
