@@ -180,26 +180,27 @@ fun reviewBar(
                 .padding(horizontal = 4.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = "Re:Born의 리뷰모음")
+            Text(text = "Re:Born 사용자들의 생생한 리뷰모음")
             Text(
                 text = "더보기>",
                 modifier = Modifier.clickable {
-                    // 네비게이션 이동 -> 더보기 페이지
+                    navController.navigate("mainReview")
                 },
                 color = Color.Gray
             )
         }
         SatisfactionBar(
-            review.userName,
-            review.star,
-            review.createdAt,
-            review.content
+            name = review.userName,
+            star = review.star,
+            date = review.createdAt,
+            content = review.content
         )
     }
 }
 
 @Composable
 fun SatisfactionBar(
+    modifier: Modifier = Modifier,
     name: String,
     star: Int,
     date:String,
@@ -208,7 +209,7 @@ fun SatisfactionBar(
     val roundCornerShape = RoundedCornerShape(24.dp)
     //리뷰박스
     Button(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(roundCornerShape),
         shape = roundCornerShape,

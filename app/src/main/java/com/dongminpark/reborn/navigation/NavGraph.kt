@@ -110,6 +110,9 @@ fun MainScreenView(startDestination: String) {
                 composable(MainNavigationScreens.Main.route) {
                     MainScreen(modifier = Modifier, introductions = MainContents.introMain,navController = navController)
                 }
+                composable(MainNavigationScreens.MainReview.route) {
+                    MainReviewScreen()
+                }
 
                 // Donate
                 composable(DonateNavigationScreens.Donate.route) {

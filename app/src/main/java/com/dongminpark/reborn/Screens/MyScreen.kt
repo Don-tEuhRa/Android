@@ -49,7 +49,6 @@ import com.dongminpark.reborn.Utils.MainContents
 import com.dongminpark.reborn.Utils.customerServiceCenter
 import com.dongminpark.reborn.Retrofit.RetrofitManager
 import com.dongminpark.reborn.Utils.*
-import com.dongminpark.reborn.Utils.Constants.TAG
 import com.dongminpark.reborn.Utils.GetAddress.searchAddress
 import com.dongminpark.reborn.ui.theme.Point
 

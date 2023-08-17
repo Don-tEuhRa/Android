@@ -29,6 +29,7 @@ sealed class BottomScreen(
 
 sealed class MainNavigationScreens(val route: String) {
     object Main : MainNavigationScreens("main")
+    object MainReview : MainNavigationScreens("mainReview")
 }
 
 sealed class DonateNavigationScreens(val route: String) {
