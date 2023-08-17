@@ -14,7 +14,7 @@ object API{
     // cart controller
     const val CART_CREATE = "/cart/create/{productId}"
     const val CART_DELETE = "/cart/delete/{cartId}"
-    const val CART_DELETE_ALL = "/cart/deleteAll/{cartId}"
+    const val CART_DELETE_ALL = "/cart/delete/{productId}"
     const val CART_FINDALL = "/cart/findAll"
 
     // interest controller

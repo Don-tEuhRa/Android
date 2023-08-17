@@ -1,6 +1,5 @@
 package com.dongminpark.reborn.Frames
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -17,8 +16,6 @@ import com.dongminpark.reborn.App
 import com.dongminpark.reborn.Buttons.FavoriteButton
 import com.dongminpark.reborn.Model.Product
 import com.dongminpark.reborn.Retrofit.RetrofitManager
-import com.dongminpark.reborn.Screens.progressBar
-import com.dongminpark.reborn.Utils.Constants
 import com.dongminpark.reborn.Utils.MESSAGE
 import com.dongminpark.reborn.Utils.RESPONSE_STATE
 

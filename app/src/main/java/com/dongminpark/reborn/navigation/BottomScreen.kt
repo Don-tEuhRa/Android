@@ -4,7 +4,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.dongminpark.reborn.R
 import com.dongminpark.reborn.ui.theme.MyIconPack
 import com.dongminpark.reborn.ui.theme.myiconpack.GiftOutline
 import com.dongminpark.reborn.ui.theme.myiconpack.GiftSolid

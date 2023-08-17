@@ -29,11 +29,8 @@ import com.dongminpark.reborn.App
 import com.dongminpark.reborn.Buttons.*
 import com.dongminpark.reborn.Frames.ImageFormat
 import com.dongminpark.reborn.Frames.TextFormat
-import com.dongminpark.reborn.Model.MypageUser
-import com.dongminpark.reborn.Model.Product
 import com.dongminpark.reborn.R
 import com.dongminpark.reborn.Retrofit.RetrofitManager
-import com.dongminpark.reborn.Screens.Store.CartItemList
 import com.dongminpark.reborn.Screens.Store.PayCartItemList
 import com.dongminpark.reborn.Utils.Constants
 import com.dongminpark.reborn.Utils.LoadingCircle
@@ -100,7 +97,6 @@ fun StoreDetailScreen(navController: NavController, productId: Int) {
     }else {
         LazyColumn(
             modifier = Modifier
-            //.padding(bottom = 16.dp)
         ) {
             item {
                 TopAppBar(
@@ -121,13 +117,11 @@ fun StoreDetailScreen(navController: NavController, productId: Int) {
             }
 
             item {
-                // 사진 Pager로 표시 및 현재 페이지 표시
                 PostUi(images = productImageUrl)
             }
 
             item {
                 var isFavorite by remember { mutableStateOf(productIsInterested) }
-                // 상품 이름, 가격, 버튼 3개 Row
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(4.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -258,7 +252,6 @@ fun StoreDetailScreen(navController: NavController, productId: Int) {
                         ImageRequest.Builder(LocalContext.current)
                             .data(data = productContent)
                             .apply(block = fun ImageRequest.Builder.() {
-                                // 이미지 로드 중 및 실패 시 표시할 이미지 리소스를 설정할 수 있습니다.
                                 placeholder(R.drawable.detail_image)
                                 error(R.drawable.detail_image)
                             }).build()

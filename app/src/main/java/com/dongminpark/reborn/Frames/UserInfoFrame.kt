@@ -7,9 +7,8 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun UserInfoFrame(name: String, phone: String, address: String) {
-    // 주문자 정보
     TextFormat(text = "주문자 정보")
-    // 주문자 세부 정보(이름 / 전화번호) + 주소
+
     Column(modifier = Modifier.padding(vertical = 8.dp)) {
         TextFormat(text = name, size = 16)
         TextFormat(text = phone, size = 12)

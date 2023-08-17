@@ -2,8 +2,6 @@ package com.dongminpark.reborn.Buttons
 
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -19,6 +17,3 @@ fun CheckBoxButton(isChecked: Boolean, onClick: () -> Unit){
         onClick()
     }
 }
-
-// Icons.Outlined.CheckCircle - 빈 체크박스
-// Icons.Filled.CheckCircle - 체크된 체크박스

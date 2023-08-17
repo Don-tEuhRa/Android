@@ -1,12 +1,9 @@
 package com.dongminpark.reborn.Frames
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -19,15 +16,12 @@ import com.dongminpark.reborn.R
 @Composable
 fun ImageFormat(modifier: Modifier = Modifier, url: String, size: Int = 0){
     Box (
-        //contentAlignment = Alignment.Center,
         modifier = modifier
-            //.fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
     ){
-        val painter = // 이미지 로드 중 및 실패 시 표시할 이미지 리소스를 설정할 수 있습니다.
+        val painter =
             rememberAsyncImagePainter(
                 ImageRequest.Builder(LocalContext.current).data(data = url).apply(block = fun ImageRequest.Builder.() {
-                    // 이미지 로드 중 및 실패 시 표시할 이미지 리소스를 설정할 수 있습니다.
                     placeholder(R.drawable.placeholder)
                     error(R.drawable.placeholder)
                 }).build()
@@ -39,7 +33,7 @@ fun ImageFormat(modifier: Modifier = Modifier, url: String, size: Int = 0){
             modifier = if (size == 0) {
                 Modifier
                     .aspectRatio(1f)
-                    .fillMaxSize()//Width()
+                    .fillMaxSize()
                     .clip(RoundedCornerShape(12.dp))
             } else {
                 Modifier

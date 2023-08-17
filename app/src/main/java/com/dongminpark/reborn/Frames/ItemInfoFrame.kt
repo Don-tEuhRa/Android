@@ -3,7 +3,6 @@ package com.dongminpark.reborn.Frames
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,12 +22,12 @@ fun ItemInfoFrame(item: Product, navController: NavController) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         // item 이미지
-        ImageFormat(modifier = Modifier.padding(12.dp), url = item.thumbnailUrl, size = 80) // item.url
+        ImageFormat(modifier = Modifier.padding(12.dp), url = item.thumbnailUrl, size = 80)
 
         // item 이름, 가격
         Column(modifier = Modifier.padding(8.dp)) {
-            TextFormat(text = item.title, size = 12) // item.name
-            TextFormat(text = "${item.price}원", size = 16) // item.price
+            TextFormat(text = item.title, size = 12)
+            TextFormat(text = "${item.price}원", size = 16)
         }
     }
 }

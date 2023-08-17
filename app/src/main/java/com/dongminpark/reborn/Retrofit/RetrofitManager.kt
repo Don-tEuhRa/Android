@@ -3,7 +3,6 @@ package com.dongminpark.reborn.Retrofit
 import android.util.Log
 import com.dongminpark.reborn.App
 import com.dongminpark.reborn.Model.*
-import com.dongminpark.reborn.Utils.OAuthData
 import com.dongminpark.reborn.Utils.API
 import com.dongminpark.reborn.Utils.Constants.TAG
 import com.dongminpark.reborn.Utils.RESPONSE_STATE
@@ -26,7 +25,7 @@ class RetrofitManager {
     fun firebaseConnect(
         uid: String?,
         completion: (RESPONSE_STATE) -> Unit
-    ) { // 통신 성공 여부 , 토큰, 멤버 여부
+    ) {
         val term = uid ?: ""
 
         val call = iRetrofit?.firebaseConnect(uid = term) ?: return
@@ -95,7 +94,6 @@ class RetrofitManager {
         call.enqueue(object : retrofit2.Callback<JsonElement> {
             // 응답 실패시
             override fun onFailure(call: Call<JsonElement>, t: Throwable) {
-                Log.d(TAG, "userInfo - onFailure() called / t: $t")
                 completion(RESPONSE_STATE.FAIL, null)
             }
 
@@ -210,7 +208,6 @@ class RetrofitManager {
         })
     }
 
-
     fun interestedSave(productId: Int, completion: (RESPONSE_STATE) -> Unit){
         val call = iRetrofit?.interestSave(productId) ?: return
 
@@ -279,10 +276,6 @@ class RetrofitManager {
                 call: Call<JsonElement>,
                 response: Response<JsonElement>
             ) {
-                Log.d( // 지워야함.
-                    TAG,
-                    "mypage - onResponse() called / respose : ${response.body()}"
-                )
                 when (response.code()) {
                     200 -> { // 정상 연결
                         response.body()?.let {
@@ -321,10 +314,6 @@ class RetrofitManager {
                 call: Call<JsonElement>,
                 response: Response<JsonElement>
             ) {
-                Log.d( // 지워야함.
-                    TAG,
-                    "mypage - onResponse() called / respose : ${response.body()}"
-                )
                 when (response.code()) {
                     200 -> { // 정상 연결
                         response.body()?.let {
@@ -350,11 +339,8 @@ class RetrofitManager {
                                     name = item.get("name").asString,
                                     address = item.get("address").asString,
                                     phoneNumber = item.get("phoneNumber").asString,
-                                    //pickUpDate = item.get("pickUpDate")?.asString?:"",
                                     productId = item.get("productId").asInt,
-                                    //productName = item.get("productName")?.asString?:"",
                                     price = item.get("price").asInt,
-                                    //date = item.get("date")?.asString?:""
                                 )
 
                                 donationList.add(donate)
@@ -385,10 +371,6 @@ class RetrofitManager {
                 call: Call<JsonElement>,
                 response: Response<JsonElement>
             ) {
-                Log.d( // 지워야함.
-                    TAG,
-                    "mypage - onResponse() called / respose : ${response.body()}"
-                )
                 when (response.code()) {
                     200 -> { // 정상 연결
                         response.body()?.let {
@@ -454,7 +436,6 @@ class RetrofitManager {
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
             override fun onResponse(call: Call<JsonElement>, response: Response<JsonElement>) {
-                Log.d(TAG, "gptStop - onResponse() called / respose : ${response.body()}")
 
                 when (response.code()) {
                     200 -> { // 정상 연결
@@ -489,7 +470,6 @@ class RetrofitManager {
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
             override fun onResponse(call: Call<JsonElement>, response: Response<JsonElement>) {
-                Log.d(TAG, "gptStop - onResponse() called / respose : ${response.body()}")
 
                 when (response.code()) {
                     200 -> { // 정상 연결
@@ -518,7 +498,6 @@ class RetrofitManager {
         call.enqueue(object : retrofit2.Callback<JsonElement> {
             // 응답 실패시
             override fun onFailure(call: Call<JsonElement>, t: Throwable) {
-                Log.d(TAG, "userInfo - onFailure() called / t: $t")
                 completion(RESPONSE_STATE.FAIL, null)
             }
 
@@ -660,7 +639,6 @@ class RetrofitManager {
         call.enqueue(object : retrofit2.Callback<JsonElement> {
             // 응답 실패시
             override fun onFailure(call: Call<JsonElement>, t: Throwable) {
-                Log.d(TAG, "userInfo - onFailure() called / t: $t")
                 completion(RESPONSE_STATE.FAIL, null)
             }
 
@@ -830,5 +808,4 @@ class RetrofitManager {
             }
         })
     }
-
 }

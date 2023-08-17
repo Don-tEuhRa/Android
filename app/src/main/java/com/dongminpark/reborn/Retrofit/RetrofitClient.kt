@@ -14,7 +14,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-// 싱글턴
 object RetrofitClient {
     private var retrofitClient: Retrofit? = null
 
@@ -48,7 +47,7 @@ object RetrofitClient {
         // 위에서 설정한 로깅 인터셉터를 okhttp 클라이언트에 추가
         client.addInterceptor(loggingIntercepter)
 
-        // 엑세스 토큰을 헤더에 넣는 방법
+        // 엑세스 토큰을 헤더에 넣기
         val baseParameterInterceptor: Interceptor = (object : Interceptor{
             override fun intercept(chain: Interceptor.Chain): Response {
                 Log.d(TAG, "RetrofitClient - intercept() called")
