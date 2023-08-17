@@ -1,11 +1,9 @@
 package com.dongminpark.reborn.Screens
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -55,7 +53,7 @@ val ItemList4 = SnapshotStateList<Product>()
 fun StoreScreen(navController: NavController) {
     var isLoading by rememberSaveable { mutableStateOf(true) }
     val buttons = listOf("전체", "상의", "하의", "잡화")
-    var searchState by rememberSaveable { mutableStateOf(true) } // 검색 전후 구분
+    var searchState by rememberSaveable { mutableStateOf(true) }
     var selectedButtonIndex by rememberSaveable { mutableStateOf(0) }
 
     BackOnPressed()

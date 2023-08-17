@@ -18,6 +18,7 @@ class App: Application() {
     }
 }
 
+// token 보관 보안 향상
 class TokenSharedPreferences(context: Context) {
     private val prefsFilename = "token_prefs"
     private val key_accessToken = "accessToken"

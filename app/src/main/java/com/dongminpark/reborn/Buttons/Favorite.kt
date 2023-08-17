@@ -5,7 +5,6 @@ import androidx.compose.runtime.*
 import com.dongminpark.reborn.R
 import com.dongminpark.reborn.Utils.Constants.TAG
 
-// 좋아요 버튼
 @Composable
 fun FavoriteButton(isFavorite: Boolean, onClick: () -> Unit) {
     val icon = if (isFavorite) R.drawable.heart_filled else R.drawable.heart_outline

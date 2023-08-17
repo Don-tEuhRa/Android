@@ -1,7 +1,6 @@
 package com.dongminpark.reborn.Screens
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -167,7 +166,6 @@ fun StoreDetailScreen(navController: NavController, productId: Int) {
                                         }
                                         RESPONSE_STATE.FAIL -> {
                                             Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
-                                            Log.d(Constants.TAG, "api 호출 에러")
                                         }
                                     }
                                 })

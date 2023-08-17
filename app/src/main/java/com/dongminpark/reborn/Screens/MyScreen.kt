@@ -1,8 +1,6 @@
 package com.dongminpark.reborn.Screens
 
 import android.annotation.SuppressLint
-import android.util.Log
-import android.util.Size
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,14 +13,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -56,7 +48,6 @@ import com.dongminpark.reborn.Utils.IntroductionDetail
 import com.dongminpark.reborn.Utils.MainContents
 import com.dongminpark.reborn.Utils.customerServiceCenter
 import com.dongminpark.reborn.Retrofit.RetrofitManager
-import com.dongminpark.reborn.Screens.Store.LikedItemList
 import com.dongminpark.reborn.Utils.*
 import com.dongminpark.reborn.Utils.Constants.TAG
 import com.dongminpark.reborn.Utils.GetAddress.searchAddress
@@ -140,13 +131,11 @@ fun myAppBar(navController: NavController, userName: String, userPoint: String) 
 
                     when (responseState) {
                         RESPONSE_STATE.OKAY -> {
-                            Log.d(TAG, "api 호출 성공")
                             userInfo = user!!
                             isLoading = false
                         }
                         RESPONSE_STATE.FAIL -> {
                             Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
-                            Log.d(TAG, "api 호출 에러")
                         }
                     }
                 })
@@ -410,7 +399,6 @@ fun myProfile(
                         enabled = !isHouseNumEnabled,
                         trailingIcon = {
                             IconButton(onClick = {
-                                Log.d("TAG", "Housenum:클릭")
                                 shouldShowHouseNum.value = !shouldShowHouseNum.value
                             }) {
                                 Icon(
@@ -694,7 +682,6 @@ fun MyScreen(navController: NavController) {
 
                 when (responseState) {
                     RESPONSE_STATE.OKAY -> {
-                        Log.d(TAG, "api 호출 성공")
                         userName = info!!.name
                         userPoint = info.point.toString()
                         userDonationPoint = info.donationPoint.toString()
@@ -703,7 +690,6 @@ fun MyScreen(navController: NavController) {
                     }
                     RESPONSE_STATE.FAIL -> {
                         Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
-                        Log.d(TAG, "api 호출 에러")
                     }
                 }
             })
@@ -1014,7 +1000,6 @@ fun myDonatePage() {
                     }
                     RESPONSE_STATE.FAIL -> {
                         Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
-                        Log.d(Constants.TAG, "api 호출 에러")
                     }
                 }
             })

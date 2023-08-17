@@ -16,7 +16,6 @@ fun ButtonFormat(
     icon: Int,
     size: Int = 24,
     onClick: () -> Unit,
-    //content: @Composable () -> Unit
 ) {
     Icon(
         modifier = modifier
@@ -34,7 +33,6 @@ fun ButtonFormat(
     icon: ImageVector,
     size: Int = 24,
     onClick: () -> Unit,
-    //content: @Composable () -> Unit
 ) {
     Icon(
         modifier = modifier

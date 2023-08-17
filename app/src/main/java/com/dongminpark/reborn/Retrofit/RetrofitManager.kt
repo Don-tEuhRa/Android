@@ -1,11 +1,8 @@
 package com.dongminpark.reborn.Retrofit
 
-import android.util.Log
 import com.dongminpark.reborn.App
 import com.dongminpark.reborn.Model.*
-import com.dongminpark.reborn.Screens.QnA
 import com.dongminpark.reborn.Utils.API
-import com.dongminpark.reborn.Utils.Constants.TAG
 import com.dongminpark.reborn.Utils.RESPONSE_STATE
 import com.google.gson.Gson
 import com.google.gson.JsonElement
@@ -32,18 +29,16 @@ class RetrofitManager {
         val call = iRetrofit?.firebaseConnect(uid = term) ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
-            // 응답 실패시
             override fun onFailure(call: Call<JsonElement>, t: Throwable) {
                 completion(RESPONSE_STATE.FAIL)
             }
 
-            // 응답 성공시
             override fun onResponse(
                 call: Call<JsonElement>,
                 response: Response<JsonElement>
             ) {
                 when (response.code()) {
-                    200 -> { // 정상 연결
+                    200 -> {
                         response.body()?.let {
                             val body = it.asJsonObject
                             val data = body.get("data").asJsonObject
@@ -53,7 +48,7 @@ class RetrofitManager {
                             completion(RESPONSE_STATE.OKAY)
                         }
                     }
-                    else -> { // 에러
+                    else -> {
                         completion(RESPONSE_STATE.FAIL)
                     }
                 }
@@ -66,21 +61,19 @@ class RetrofitManager {
         val call = iRetrofit?.cartCreate(productId) ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
-            // 응답 실패시
             override fun onFailure(call: Call<JsonElement>, t: Throwable) {
                 completion(RESPONSE_STATE.FAIL)
             }
 
-            // 응답 성공시
             override fun onResponse(
                 call: Call<JsonElement>,
                 response: Response<JsonElement>
             ) {
                 when (response.code()) {
-                    200 -> { // 정상 연결
+                    200 -> {
                         completion(RESPONSE_STATE.OKAY)
                     }
-                    else -> { // 에러
+                    else -> {
                         completion(RESPONSE_STATE.FAIL)
                     }
                 }
@@ -88,23 +81,20 @@ class RetrofitManager {
         })
     }
 
-
     fun cartFinAll(completion: (RESPONSE_STATE, ArrayList<Product>?) -> Unit) {
         val call = iRetrofit?.cartFindAll() ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
-            // 응답 실패시
             override fun onFailure(call: Call<JsonElement>, t: Throwable) {
                 completion(RESPONSE_STATE.FAIL, null)
             }
 
-            // 응답 성공시
             override fun onResponse(
                 call: Call<JsonElement>,
                 response: Response<JsonElement>
             ) {
                 when (response.code()) {
-                    200 -> { // 정상 연결
+                    200 -> {
                         response.body()?.let {
                             val products = arrayListOf<Product>()
                             val body = it.asJsonObject
@@ -117,6 +107,7 @@ class RetrofitManager {
                                     productId = item.get("productId").asInt,
                                     title = item.get("title").asString,
                                     price = item.get("price").asInt,
+                                    // local url을 사용하여 이미지를 불러옴
                                     thumbnailUrl = API.BASE_URL + "/resources/files/" + item.get("thumnailUrl").asString,
                                 )
                                 products.add(product)
@@ -125,7 +116,7 @@ class RetrofitManager {
                             completion(RESPONSE_STATE.OKAY, products)
                         }
                     }
-                    else -> { // 에러
+                    else -> {
                         completion(RESPONSE_STATE.FAIL, null)
                     }
                 }
@@ -137,21 +128,19 @@ class RetrofitManager {
         val call = iRetrofit?.cartDeleteAll(productId) ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
-            // 응답 실패시
             override fun onFailure(call: Call<JsonElement>, t: Throwable) {
                 completion(RESPONSE_STATE.FAIL)
             }
 
-            // 응답 성공시
             override fun onResponse(
                 call: Call<JsonElement>,
                 response: Response<JsonElement>
             ) {
                 when (response.code()) {
-                    200 -> { // 정상 연결
+                    200 -> {
                         completion(RESPONSE_STATE.OKAY)
                     }
-                    else -> { // 에러
+                    else -> {
                         completion(RESPONSE_STATE.FAIL)
                     }
                 }
@@ -164,19 +153,16 @@ class RetrofitManager {
         val call = iRetrofit?.interestList() ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
-            // 응답 실패시
             override fun onFailure(call: Call<JsonElement>, t: Throwable) {
-                Log.d(TAG, "userInfo - onFailure() called / t: $t")
                 completion(RESPONSE_STATE.FAIL, null)
             }
 
-            // 응답 성공시
             override fun onResponse(
                 call: Call<JsonElement>,
                 response: Response<JsonElement>
             ) {
                 when (response.code()) {
-                    200 -> { // 정상 연결
+                    200 -> {
                         response.body()?.let {
                             val products = arrayListOf<Product>()
                             val body = it.asJsonObject
@@ -201,7 +187,7 @@ class RetrofitManager {
                             completion(RESPONSE_STATE.OKAY, products)
                         }
                     }
-                    else -> { // 에러
+                    else -> {
                         completion(RESPONSE_STATE.FAIL, null)
                     }
                 }
@@ -213,21 +199,19 @@ class RetrofitManager {
         val call = iRetrofit?.interestSave(productId) ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
-            // 응답 실패시
             override fun onFailure(call: Call<JsonElement>, t: Throwable) {
                 completion(RESPONSE_STATE.FAIL)
             }
 
-            // 응답 성공시
             override fun onResponse(
                 call: Call<JsonElement>,
                 response: Response<JsonElement>
             ) {
                 when (response.code()) {
-                    200 -> { // 정상 연결
+                    200 -> {
                         completion(RESPONSE_STATE.OKAY)
                     }
-                    else -> { // 에러
+                    else -> {
                         completion(RESPONSE_STATE.FAIL)
                     }
                 }
@@ -239,21 +223,19 @@ class RetrofitManager {
         val call = iRetrofit?.interestDelete(productId) ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
-            // 응답 실패시
             override fun onFailure(call: Call<JsonElement>, t: Throwable) {
                 completion(RESPONSE_STATE.FAIL)
             }
 
-            // 응답 성공시
             override fun onResponse(
                 call: Call<JsonElement>,
                 response: Response<JsonElement>
             ) {
                 when (response.code()) {
-                    200 -> { // 정상 연결
+                    200 -> {
                         completion(RESPONSE_STATE.OKAY)
                     }
-                    else -> { // 에러
+                    else -> {
                         completion(RESPONSE_STATE.FAIL)
                     }
                 }
@@ -266,19 +248,16 @@ class RetrofitManager {
         val call = iRetrofit?.mypage() ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
-            // 응답 실패시
             override fun onFailure(call: Call<JsonElement>, t: Throwable) {
-                Log.d(TAG, "mypage - onFailure() called / t: $t")
                 completion(RESPONSE_STATE.FAIL, null)
             }
 
-            // 응답 성공시
             override fun onResponse(
                 call: Call<JsonElement>,
                 response: Response<JsonElement>
             ) {
                 when (response.code()) {
-                    200 -> { // 정상 연결
+                    200 -> {
                         response.body()?.let {
                             val body = it.asJsonObject
                             val data = body.get("data").asJsonObject.get("vo").asJsonObject
@@ -293,7 +272,7 @@ class RetrofitManager {
                             completion(RESPONSE_STATE.OKAY, info)
                         }
                     }
-                    else -> { // 에러
+                    else -> {
                         completion(RESPONSE_STATE.FAIL, null)
                     }
                 }
@@ -305,18 +284,16 @@ class RetrofitManager {
         val call = iRetrofit?.mypageDonation() ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
-            // 응답 실패시
             override fun onFailure(call: Call<JsonElement>, t: Throwable) {
                 completion(RESPONSE_STATE.FAIL, null, null)
             }
 
-            // 응답 성공시
             override fun onResponse(
                 call: Call<JsonElement>,
                 response: Response<JsonElement>
             ) {
                 when (response.code()) {
-                    200 -> { // 정상 연결
+                    200 -> {
                         response.body()?.let {
                             val body = it.asJsonObject
                             val data = body.get("data").asJsonObject
@@ -350,7 +327,7 @@ class RetrofitManager {
                             completion(RESPONSE_STATE.OKAY, donationCountTemp, donationList)
                         }
                     }
-                    else -> { // 에러
+                    else -> {
                         completion(RESPONSE_STATE.FAIL, null, null)
                     }
                 }
@@ -362,18 +339,16 @@ class RetrofitManager {
         val call = iRetrofit?.mypageOrder() ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
-            // 응답 실패시
             override fun onFailure(call: Call<JsonElement>, t: Throwable) {
                 completion(RESPONSE_STATE.FAIL, null, null)
             }
 
-            // 응답 성공시
             override fun onResponse(
                 call: Call<JsonElement>,
                 response: Response<JsonElement>
             ) {
                 when (response.code()) {
-                    200 -> { // 정상 연결
+                    200 -> {
                         response.body()?.let {
                             val body = it.asJsonObject
                             val data = body.get("data").asJsonObject
@@ -411,7 +386,7 @@ class RetrofitManager {
                             completion(RESPONSE_STATE.OKAY, orderCountTemp, orderList)
                         }
                     }
-                    else -> { // 에러
+                    else -> {
                         completion(RESPONSE_STATE.FAIL, null, null)
                     }
                 }
@@ -442,10 +417,10 @@ class RetrofitManager {
             override fun onResponse(call: Call<JsonElement>, response: Response<JsonElement>) {
 
                 when (response.code()) {
-                    200 -> { // 정상 연결
+                    200 -> {
                         completion(RESPONSE_STATE.OKAY)
                     }
-                    else -> { // 에러
+                    else -> {
                         completion(RESPONSE_STATE.FAIL)
                     }
                 }
@@ -476,10 +451,10 @@ class RetrofitManager {
             override fun onResponse(call: Call<JsonElement>, response: Response<JsonElement>) {
 
                 when (response.code()) {
-                    200 -> { // 정상 연결
+                    200 -> {
                         completion(RESPONSE_STATE.OKAY)
                     }
-                    else -> { // 에러
+                    else -> {
                         completion(RESPONSE_STATE.FAIL)
                     }
                 }
@@ -500,18 +475,16 @@ class RetrofitManager {
         val call = iRetrofit?.productCategory(category) ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
-            // 응답 실패시
             override fun onFailure(call: Call<JsonElement>, t: Throwable) {
                 completion(RESPONSE_STATE.FAIL, null)
             }
 
-            // 응답 성공시
             override fun onResponse(
                 call: Call<JsonElement>,
                 response: Response<JsonElement>
             ) {
                 when (response.code()) {
-                    200 -> { // 정상 연결
+                    200 -> {
                         response.body()?.let {
                             val products = arrayListOf<Product>()
                             val body = it.asJsonObject
@@ -536,7 +509,7 @@ class RetrofitManager {
                             completion(RESPONSE_STATE.OKAY, products)
                         }
                     }
-                    else -> { // 에러
+                    else -> {
                         completion(RESPONSE_STATE.FAIL, null)
                     }
                 }
@@ -548,19 +521,16 @@ class RetrofitManager {
         val call = iRetrofit?.productListUnsold() ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
-            // 응답 실패시
             override fun onFailure(call: Call<JsonElement>, t: Throwable) {
-                Log.d(TAG, "userInfo - onFailure() called / t: $t")
                 completion(RESPONSE_STATE.FAIL, null)
             }
 
-            // 응답 성공시
             override fun onResponse(
                 call: Call<JsonElement>,
                 response: Response<JsonElement>
             ) {
                 when (response.code()) {
-                    200 -> { // 정상 연결
+                    200 -> {
                         response.body()?.let {
                             val products = arrayListOf<Product>()
                             val body = it.asJsonObject
@@ -585,7 +555,7 @@ class RetrofitManager {
                             completion(RESPONSE_STATE.OKAY, products)
                         }
                     }
-                    else -> { // 에러
+                    else -> {
                         completion(RESPONSE_STATE.FAIL, null)
                     }
                 }
@@ -597,19 +567,16 @@ class RetrofitManager {
         val call = iRetrofit?.productId(id) ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
-            // 응답 실패시
             override fun onFailure(call: Call<JsonElement>, t: Throwable) {
-                Log.d(TAG, "userInfo - onFailure() called / t: $t")
                 completion(RESPONSE_STATE.FAIL, null)
             }
 
-            // 응답 성공시
             override fun onResponse(
                 call: Call<JsonElement>,
                 response: Response<JsonElement>
             ) {
                 when (response.code()) {
-                    200 -> { // 정상 연결
+                    200 -> {
                         response.body()?.let {
                             val body = it.asJsonObject
                             val data = body.get("data").asJsonObject
@@ -629,7 +596,7 @@ class RetrofitManager {
                             completion(RESPONSE_STATE.OKAY, product)
                         }
                     }
-                    else -> { // 에러
+                    else -> {
                         completion(RESPONSE_STATE.FAIL, null)
                     }
                 }
@@ -641,18 +608,16 @@ class RetrofitManager {
         val call = iRetrofit?.productSearch(keyword) ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
-            // 응답 실패시
             override fun onFailure(call: Call<JsonElement>, t: Throwable) {
                 completion(RESPONSE_STATE.FAIL, null)
             }
 
-            // 응답 성공시
             override fun onResponse(
                 call: Call<JsonElement>,
                 response: Response<JsonElement>
             ) {
                 when (response.code()) {
-                    200 -> { // 정상 연결
+                    200 -> {
                         response.body()?.let {
                             val products = arrayListOf<Product>()
                             val body = it.asJsonObject
@@ -677,7 +642,7 @@ class RetrofitManager {
                             completion(RESPONSE_STATE.OKAY, products)
                         }
                     }
-                    else -> { // 에러
+                    else -> {
                         completion(RESPONSE_STATE.FAIL, null)
                     }
                 }
@@ -690,19 +655,16 @@ class RetrofitManager {
         val call = iRetrofit?.progressList() ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
-            // 응답 실패시
             override fun onFailure(call: Call<JsonElement>, t: Throwable) {
-                Log.d(TAG, "userInfo - onFailure() called / t: $t")
                 completion(RESPONSE_STATE.FAIL, null)
             }
 
-            // 응답 성공시
             override fun onResponse(
                 call: Call<JsonElement>,
                 response: Response<JsonElement>
             ) {
                 when (response.code()) {
-                    200 -> { // 정상 연결
+                    200 -> {
                         response.body()?.let {
                             val progress = mutableListOf<ProgressBar>()
                             val body = it.asJsonObject
@@ -721,7 +683,7 @@ class RetrofitManager {
                             completion(RESPONSE_STATE.OKAY, progress)
                         }
                     }
-                    else -> { // 에러
+                    else -> {
                         completion(RESPONSE_STATE.FAIL, null)
                     }
                 }
@@ -755,10 +717,10 @@ class RetrofitManager {
             override fun onResponse(call: Call<JsonElement>, response: Response<JsonElement>) {
 
                 when (response.code()) {
-                    200 -> { // 정상 연결
+                    200 -> {
                         completion(RESPONSE_STATE.OKAY)
                     }
-                    else -> { // 에러
+                    else -> {
                         completion(RESPONSE_STATE.FAIL)
                     }
                 }
@@ -805,7 +767,7 @@ class RetrofitManager {
         call.enqueue(object : retrofit2.Callback<JsonElement> {
             override fun onResponse(call: Call<JsonElement>, response: Response<JsonElement>) {
                 when (response.code()) {
-                    200 -> { // 정상 연결
+                    200 -> {
                         response.body()?.let {
                             val reviews = arrayListOf<Review>()
                             val body = it.asJsonObject
@@ -844,7 +806,7 @@ class RetrofitManager {
         call.enqueue(object : retrofit2.Callback<JsonElement> {
             override fun onResponse(call: Call<JsonElement>, response: Response<JsonElement>) {
                 when (response.code()) {
-                    200 -> { // 정상 연결
+                    200 -> {
                         response.body()?.let {
                             val body = it.asJsonObject
                             val data = body.get("data").asJsonObject.get("review").asJsonObject
@@ -892,10 +854,10 @@ class RetrofitManager {
             override fun onResponse(call: Call<JsonElement>, response: Response<JsonElement>) {
 
                 when (response.code()) {
-                    200 -> { // 정상 연결
+                    200 -> {
                         completion(RESPONSE_STATE.OKAY)
                     }
-                    else -> { // 에러
+                    else -> {
                         completion(RESPONSE_STATE.FAIL)
                     }
                 }
@@ -914,7 +876,7 @@ class RetrofitManager {
             override fun onResponse(call: Call<JsonElement>, response: Response<JsonElement>) {
 
                 when (response.code()) {
-                    200 -> { // 정상 연결
+                    200 -> {
                         response.body()?.let {
                             val DonatePosts = arrayListOf<QnAList>()
                             val OrderPosts = arrayListOf<QnAList>()
@@ -951,7 +913,7 @@ class RetrofitManager {
                             completion(RESPONSE_STATE.OKAY, DonatePosts, OrderPosts)
                         }
                     }
-                    else -> { // 에러
+                    else -> {
                         completion(RESPONSE_STATE.FAIL, null, null)
                     }
                 }
@@ -967,18 +929,16 @@ class RetrofitManager {
         val call = iRetrofit?.postReadId(postId) ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
-            // 응답 실패시
             override fun onFailure(call: Call<JsonElement>, t: Throwable) {
                 completion(RESPONSE_STATE.FAIL, null, null, null)
             }
 
-            // 응답 성공시
             override fun onResponse(
                 call: Call<JsonElement>,
                 response: Response<JsonElement>
             ) {
                 when (response.code()) {
-                    200 -> { // 정상 연결
+                    200 -> {
                         response.body()?.let {
                             val body = it.asJsonObject
                             val data = body.get("data").asJsonObject.get("post").asJsonObject
@@ -997,7 +957,7 @@ class RetrofitManager {
                             completion(RESPONSE_STATE.OKAY, info, reviewContent, reviewCreateAt)
                         }
                     }
-                    else -> { // 에러
+                    else -> {
                         completion(RESPONSE_STATE.FAIL, null, null, null)
                     }
                 }
@@ -1012,10 +972,10 @@ class RetrofitManager {
             override fun onResponse(call: Call<JsonElement>, response: Response<JsonElement>) {
 
                 when (response.code()) {
-                    200 -> { // 정상 연결
+                    200 -> {
                         completion(RESPONSE_STATE.OKAY)
                     }
-                    else -> { // 에러
+                    else -> {
                         completion(RESPONSE_STATE.FAIL)
                     }
                 }
@@ -1047,10 +1007,10 @@ class RetrofitManager {
             override fun onResponse(call: Call<JsonElement>, response: Response<JsonElement>) {
 
                 when (response.code()) {
-                    200 -> { // 정상 연결
+                    200 -> {
                         completion(RESPONSE_STATE.OKAY)
                     }
-                    else -> { // 에러
+                    else -> {
                         completion(RESPONSE_STATE.FAIL)
                     }
                 }
@@ -1067,18 +1027,16 @@ class RetrofitManager {
         val call = iRetrofit?.userInfo() ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
-            // 응답 실패시
             override fun onFailure(call: Call<JsonElement>, t: Throwable) {
                 completion(RESPONSE_STATE.FAIL, null)
             }
 
-            // 응답 성공시
             override fun onResponse(
                 call: Call<JsonElement>,
                 response: Response<JsonElement>
             ) {
                 when (response.code()) {
-                    200 -> { // 정상 연결
+                    200 -> {
                         response.body()?.let {
                             val body = it.asJsonObject
                             val data = body.get("data").asJsonObject.get("user").asJsonObject
@@ -1097,7 +1055,7 @@ class RetrofitManager {
                             completion(RESPONSE_STATE.OKAY, info)
                         }
                     }
-                    else -> { // 에러
+                    else -> {
                         completion(RESPONSE_STATE.FAIL, null)
                     }
                 }

@@ -7,28 +7,21 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import coil.compose.rememberAsyncImagePainter
-import coil.request.ImageRequest
 import com.dongminpark.reborn.App
 import com.dongminpark.reborn.ui.theme.Point
 import com.dongminpark.reborn.R
 import com.dongminpark.reborn.Retrofit.RetrofitManager
-import com.dongminpark.reborn.Utils.API
 import com.dongminpark.reborn.Utils.MESSAGE
 import com.dongminpark.reborn.Utils.OAuthData
 import com.dongminpark.reborn.Utils.RESPONSE_STATE
@@ -70,25 +63,6 @@ fun LoginScreen(navController: NavHostController) {
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                /* // 이미지 받는 주소 양식 예시
-                val painter = // 이미지 로드 중 및 실패 시 표시할 이미지 리소스를 설정할 수 있습니다.
-                    rememberAsyncImagePainter(
-                        ImageRequest.Builder(LocalContext.current).data(data = API.BASE_URL + "/resources/files/318991937141700_0c2a924b-e262-4c76-a2bf-b3d1dc756bf4.jpg").apply(block = fun ImageRequest.Builder.() {
-                            // 이미지 로드 중 및 실패 시 표시할 이미지 리소스를 설정할 수 있습니다.
-                            placeholder(R.drawable.placeholder)
-                            error(R.drawable.placeholder)
-                        }).build()
-                    )
-                Image(
-                    contentScale = ContentScale.FillBounds,
-                    painter = painter,
-                    contentDescription = "Image",
-                    modifier = Modifier
-                        .aspectRatio(1f)
-                        .fillMaxSize()//Width()
-                        .clip(RoundedCornerShape(12.dp))
-                )
-                 */
                 Image(
                     painter = painterResource(id = R.drawable.ribbon),
                     contentDescription = "리본 아이콘",
@@ -120,9 +94,8 @@ fun LoginScreen(navController: NavHostController) {
                     contentDescription = "Google Login",
                     modifier = Modifier
                         .clickable {
-                            //isLoginLoading = true
-                            //googleLogin()
-                            OAuthData.nav?.navigate(Screen.Once.route)
+                            isLoginLoading = true
+                            googleLogin()
                         }
                         .padding(10.dp)
                         .width(240.dp),
@@ -170,7 +143,6 @@ fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
 
         firebaseAuthWithGoogle(account)
     } catch (e: ApiException) {
-        //isLoginLoading = false
     }
 }
 

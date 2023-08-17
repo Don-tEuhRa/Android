@@ -1,6 +1,5 @@
 package com.dongminpark.reborn.Screens.Store
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -24,8 +23,6 @@ import com.dongminpark.reborn.Frames.TextFormat
 import com.dongminpark.reborn.Frames.productFrame
 import com.dongminpark.reborn.Model.Product
 import com.dongminpark.reborn.Retrofit.RetrofitManager
-import com.dongminpark.reborn.Screens.progressBar
-import com.dongminpark.reborn.Utils.Constants
 import com.dongminpark.reborn.Utils.LoadingCircle
 import com.dongminpark.reborn.Utils.MESSAGE
 import com.dongminpark.reborn.Utils.RESPONSE_STATE
@@ -39,21 +36,18 @@ fun StoreLikeListScreen(navController: NavController) {
     }
 
     if (isLoading){
-        // api 호출
         LoadingCircle()
         RetrofitManager.instance.interestList(
             completion = { responseState, list ->
 
                 when (responseState) {
                     RESPONSE_STATE.OKAY -> {
-                        Log.d(Constants.TAG, "api 호출 성공")
                         LikedItemList.clear()
                         LikedItemList.addAll(list!!)
                         isLoading = false
                     }
                     RESPONSE_STATE.FAIL -> {
                         Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
-                        Log.d(Constants.TAG, "api 호출 에러")
                     }
                 }
             })

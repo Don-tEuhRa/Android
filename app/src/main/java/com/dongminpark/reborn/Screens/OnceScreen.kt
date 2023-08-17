@@ -9,8 +9,6 @@ import com.dongminpark.reborn.Navigation.MainScreenView
 import com.dongminpark.reborn.navigation.BottomScreen
 import com.dongminpark.reborn.ui.theme.Point
 
-
-// 매개변수로 원하는 페이지를 넣으면 해당 페이지에서 시작. 안넣을 경우 기본은 메인페이지로 설정.
 @Composable
 fun OnceScreen(
     startDestination: String = BottomScreen.Main.screenRoute

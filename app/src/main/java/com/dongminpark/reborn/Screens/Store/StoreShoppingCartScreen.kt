@@ -1,7 +1,6 @@
 package com.dongminpark.reborn.Screens.Store
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -24,7 +23,6 @@ import com.dongminpark.reborn.Buttons.*
 import com.dongminpark.reborn.Frames.*
 import com.dongminpark.reborn.Model.Product
 import com.dongminpark.reborn.Retrofit.RetrofitManager
-import com.dongminpark.reborn.Utils.Constants
 import com.dongminpark.reborn.Utils.LoadingCircle
 import com.dongminpark.reborn.Utils.MESSAGE
 import com.dongminpark.reborn.Utils.RESPONSE_STATE
@@ -70,7 +68,6 @@ fun StoreShoppingCartScreen(navController: NavController) {
                         modifier = Modifier.fillMaxWidth(),
                         onClick = {
                             isDelete = true
-                            // api 호출
                             for (i in deleteItems.indices){
                                     RetrofitManager.instance.cartDelete(
                                         productId = deleteItems[i].productId,
@@ -90,7 +87,6 @@ fun StoreShoppingCartScreen(navController: NavController) {
                                                         MESSAGE.ERROR,
                                                         Toast.LENGTH_SHORT
                                                     ).show()
-                                                    Log.d(Constants.TAG, "api 호출 에러")
                                                 }
                                             }
                                         })
@@ -131,14 +127,12 @@ fun StoreShoppingCartScreen(navController: NavController) {
 
                 when (responseState) {
                     RESPONSE_STATE.OKAY -> {
-                        Log.d(Constants.TAG, "api 호출 성공")
                         CartItemList.clear()
                         CartItemList.addAll(list!!)
                         isLoading = false
                     }
                     RESPONSE_STATE.FAIL -> {
                         Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
-                        Log.d(Constants.TAG, "api 호출 에러")
                     }
                 }
             })
@@ -167,7 +161,6 @@ fun StoreShoppingCartScreen(navController: NavController) {
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                // 체크버튼
                                 CheckBoxButton(allSelected, onClick = {
                                     allSelected = !allSelected
 
@@ -177,7 +170,6 @@ fun StoreShoppingCartScreen(navController: NavController) {
                                     }
 
                                 })
-                                // 전체선택
                                 TextFormat(
                                     text = "전체선택",
                                     size = 16,
@@ -185,9 +177,8 @@ fun StoreShoppingCartScreen(navController: NavController) {
                                 )
                             }
 
-                            // 선택 삭제
                             TextFormat(
-                                modifier = Modifier.clickable { // 체크된 리스트 삭제 api 호출
+                                modifier = Modifier.clickable {
                                     checkDelete = true
                                     deleteItems = CartItemList.filterIndexed { index, _ -> selectedItems[index] }
                                     deleteItemsBool = MutableList(deleteItems.size) { false }
@@ -208,7 +199,6 @@ fun StoreShoppingCartScreen(navController: NavController) {
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                // item 체크버튼
                                 CheckBoxButton(selectedItems[item], onClick = {
                                     selectedItems = selectedItems.toMutableList()
                                         .also { it[item] = !selectedItems[item] }
@@ -217,7 +207,6 @@ fun StoreShoppingCartScreen(navController: NavController) {
 
                                 ItemInfoFrame(item = CartItemList[item], navController)
                             }
-                            // x버튼
                             ClearTextButton {
                                 checkDelete = true
                                 deleteItems = CartItemList.filterIndexed { index, _ -> selectedItems[index] }
@@ -231,7 +220,6 @@ fun StoreShoppingCartScreen(navController: NavController) {
                     count = selectedItems.count { it },
                     price = (0 until CartItemList.size).filter { selectedItems[it] }.sumOf { CartItemList[it].price }.toString(), // 계산 과정 필요...
                     onClick = {
-                        // 페이지 이동
                         if (selectedItems.count { it } > 0){
                             PayCartItemList.clear()
                             PayCartItemList.addAll(CartItemList.filterIndexed { index, _ -> selectedItems[index] })

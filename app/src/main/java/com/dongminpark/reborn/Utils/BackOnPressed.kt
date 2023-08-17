@@ -1,12 +1,10 @@
 package com.dongminpark.reborn.Utils
 
 import android.app.Activity
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
-import com.dongminpark.reborn.Utils.Constants.TAG
 
 @Composable
 fun BackOnPressed() {

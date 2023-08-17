@@ -2,13 +2,10 @@ package com.dongminpark.reborn.Screens
 
 
 import android.annotation.SuppressLint
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -38,10 +35,8 @@ import com.dongminpark.reborn.R
 import com.dongminpark.reborn.Retrofit.RetrofitManager
 import com.dongminpark.reborn.Utils.*
 import com.dongminpark.reborn.Utils.GetAddress.searchAddress
-import kotlinx.coroutines.delay
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-
 
 @Composable
 fun rebornAppBarDonate() {
@@ -94,21 +89,16 @@ fun DonateScreen(navController: NavController) {
             completion = { responseState, info ->
                 when (responseState) {
                     RESPONSE_STATE.OKAY -> {
-                        Log.d(Constants.TAG, "api 호출 성공")
-                        // user에 정보 저장
                         userInput.value = info!!.name
                         phoneInput.value = info.phone
                         placeInput.value = info.address
                         placeDetailInput.value = info.detailAddress
                         postInput.value = info.zipCode.toString()
                         houseNumInput.value = info.gatePassword
-                        Log.e("info gate", "DonateScreen: ${info.gatePassword}", )
-                        Log.e("HOUSE NUM", "DonateScreen: ${houseNumInput.value}", )
                         isLoading = false
                     }
                     RESPONSE_STATE.FAIL -> {
                         Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
-                        Log.d(Constants.TAG, "api 호출 에러")
                     }
                 }
             })
@@ -408,7 +398,6 @@ fun donateInput(
                 enabled = !isHouseNumEnabled,
                 trailingIcon = {
                     IconButton(onClick = {
-                        Log.d("TAG", "Housenum:클릭")
                         shouldShowHouseNum.value = !shouldShowHouseNum.value
                     }) {
                         Icon(
@@ -464,7 +453,6 @@ fun donateInput(
                                 completion = { responseState ->
                                     when (responseState) {
                                         RESPONSE_STATE.OKAY -> {
-                                            Log.d(Constants.TAG, "api 호출 성공")
                                             onDonateClicked()
                                         }
                                         RESPONSE_STATE.FAIL -> {
@@ -473,7 +461,6 @@ fun donateInput(
                                                 MESSAGE.ERROR,
                                                 Toast.LENGTH_SHORT
                                             ).show()
-                                            Log.d(Constants.TAG, "api 호출 에러")
                                         }
                                     }
                                     sendApi = false
@@ -638,7 +625,6 @@ fun donateButton(enabled: Boolean, onDonateClicked: () -> Unit) {
             contentColor = Color.White
         ),
         onClick = {
-            Log.d("Tag", "DonateButton 눌림")
             onDonateClicked()
         }) {
         Column(
@@ -656,7 +642,6 @@ fun donateButton(enabled: Boolean, onDonateClicked: () -> Unit) {
         }
     }
 }
-
 
 @Preview
 @Composable

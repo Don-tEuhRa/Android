@@ -8,10 +8,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.dongminpark.reborn.Buttons.TextButtonFormat
 import com.dongminpark.reborn.Frames.*
 import com.dongminpark.reborn.Utils.SpacerHeight
@@ -101,11 +99,4 @@ fun BackToStore(navController: NavController) {
     BackHandler(enabled = true) {
         navController.navigate("store")
     }
-}
-
-
-@Preview
-@Composable
-fun StorePayAfterScreenPreview() {
-    //StorePayAfterScreen(navController = rememberNavController())
 }

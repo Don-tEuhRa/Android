@@ -10,18 +10,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dongminpark.reborn.R
-
 
 data class Introduction(
     val title:String,
@@ -80,7 +76,6 @@ object MainContents {
             color = Color(0xff9BABB8),Color.Black,
             icon = R.drawable.baseline_monetization_on_24
             )
-
     )
 
     val introMainDetail= listOf(
@@ -89,13 +84,6 @@ object MainContents {
             "하단의 선물상자 버튼을 click!",
             "주소, 수거 날짜, 휴대번호, 현관 정보 입력 후 신청",
             "마이페이지를 통해 [기부 현황] 및 [주문 현황]을 확인할 수 있어요",
-        )
-    )
-
-    val introMainDetail2=listOf(
-        IntroductionDetail2("체크리스트",
-            "앱 푸시 알람을 통해 수거신청 진행사항 알림을 받을 수 있어요",
-            "수거가 완료된 의류는 수 톤 단위의 의류들과 합쳐져 반환이 어려워요",
         )
     )
 
@@ -127,7 +115,6 @@ fun appExplain(){
 fun application() {
     Spacer(modifier = Modifier.height(8.dp))
     Column() {
-        // 1번 원
         Row() {
             Box(
                 modifier = Modifier
@@ -152,7 +139,6 @@ fun application() {
         }
         Spacer(modifier = Modifier.height(16.dp))
 
-        // 2번 원
         Row() {
             Box(
                 modifier = Modifier
@@ -180,7 +166,6 @@ fun application() {
         }
         Spacer(modifier = Modifier.height(16.dp))
 
-        // 3번 원
         Row() {
             Box(
                 modifier = Modifier
@@ -214,7 +199,6 @@ fun application() {
         }
         Spacer(modifier = Modifier.height(8.dp))
 
-        // 4번 원
         Row() {
             Box(
                 modifier = Modifier

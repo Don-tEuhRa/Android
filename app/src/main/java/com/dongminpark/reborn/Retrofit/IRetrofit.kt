@@ -51,7 +51,6 @@ interface IRetrofit {
     @POST(API.ORDER_SAVE)
     fun orderCreate(@Body product: JsonObject): Call<JsonElement>
 
-
     // product controller
     @GET(API.PRODUCT_CATEGORY)
     fun productCategory(@Path("category") category: String): Call<JsonElement>

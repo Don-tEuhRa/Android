@@ -45,7 +45,7 @@ fun LongTextButtonFormat(
     price: String,
     enabled: Boolean = true,
     onClick: () -> Unit
-) { // 매개변수 text값, onClick매서드
+) {
     TextButton(
         modifier = Modifier
             .padding(8.dp)

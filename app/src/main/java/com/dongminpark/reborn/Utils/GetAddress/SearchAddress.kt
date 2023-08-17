@@ -1,6 +1,5 @@
 package com.dongminpark.reborn.Utils.GetAddress
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import com.dongminpark.reborn.App
@@ -36,8 +35,8 @@ fun searchAddress(query: String, postcode: MutableState<String>, home1: MutableS
             val address = parts[0]
             val postCode = parts[1]
 
-            home1.value = if (address != "null") address else "" // 주소 텍스트뷰에 도로명주소
-            postcode.value = postCode // 우편번호 텍스트뷰에 우편번호
+            home1.value = if (address != "null") address else ""
+            postcode.value = postCode
             if (address == "null"){
                 Toast.makeText(
                     App.instance,
@@ -48,7 +47,7 @@ fun searchAddress(query: String, postcode: MutableState<String>, home1: MutableS
         }
 
         override fun onFailure(call: Call<AddressResponse?>, t: Throwable) {
-            // Handle failure
+
         }
     })
 

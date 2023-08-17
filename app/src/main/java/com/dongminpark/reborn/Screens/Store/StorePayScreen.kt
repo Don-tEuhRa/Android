@@ -1,6 +1,5 @@
 package com.dongminpark.reborn.Screens.Store
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -15,7 +14,6 @@ import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -75,7 +73,6 @@ fun StorePayScreen(navController: NavController) {
 
                 when (responseState) {
                     RESPONSE_STATE.OKAY -> {
-                        Log.d(Constants.TAG, "api 호출 성공")
                         userName = user!!.name
                         userPhone = user.phone
                         userAddress = user.address
@@ -87,7 +84,6 @@ fun StorePayScreen(navController: NavController) {
                     }
                     RESPONSE_STATE.FAIL -> {
                         Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
-                        Log.d(Constants.TAG, "api 호출 에러")
                     }
                 }
             })
@@ -259,11 +255,9 @@ fun StorePayScreen(navController: NavController) {
                                         RESPONSE_STATE.OKAY -> {
                                             navController.navigate("storePayAfter/${userName}/${userPhone}/$userAddress $userDetailAddress ($userZipcode)/${if (usePoint.isNotEmpty()) usePoint.toInt() else 0}")
                                             isPaying = false
-                                            Log.d(Constants.TAG, "api 호출 성공")
                                         }
                                         RESPONSE_STATE.FAIL -> {
                                             Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
-                                            Log.d(Constants.TAG, "api 호출 에러")
                                         }
                                     }
                                 })

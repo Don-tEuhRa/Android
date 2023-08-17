@@ -29,7 +29,6 @@ import com.dongminpark.reborn.Screens.Store.StoreShoppingCartScreen
 import com.dongminpark.reborn.Utils.MainContents
 import java.lang.Exception
 
-
 @Composable
 fun SetupNavGraph(navController: NavHostController){
     NavHost(

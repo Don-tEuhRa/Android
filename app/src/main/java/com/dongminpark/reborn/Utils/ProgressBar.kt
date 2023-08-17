@@ -1,22 +1,16 @@
 package com.dongminpark.reborn.Utils
 
-import android.graphics.drawable.Icon
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -92,7 +86,6 @@ fun ProgressBar(name: String, count: Int, progress: String) {
     Box(
         modifier = Modifier
             .size(height = 200.dp, width = 380.dp)
-            //.border(1.dp, color = Color.Black, shape = RoundedCornerShape(12.dp))
             .background(ProgressBGColor, shape = RoundedCornerShape(24.dp)),
         contentAlignment = Alignment.TopCenter
     ) {
@@ -105,7 +98,6 @@ fun ProgressBar(name: String, count: Int, progress: String) {
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                //.size(height = 36.dp, width = 280.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 TextFormat(text = "${name}님이 ${count}번째 기부하신 물건이\n${state} ~!!", size = 16)
@@ -118,11 +110,10 @@ fun ProgressBar(name: String, count: Int, progress: String) {
 
             val size = 52
             Row(
-                modifier = Modifier.fillMaxWidth(),//.size(height = size.dp, width = 320.dp),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
                 Spacer(modifier = Modifier.size(size.dp))
-                //Icon(modifier = Modifier.size(size.dp), painter = painterResource(id = R.drawable.shopping_outline), contentDescription = "test", tint = ProgressBGColor)
                 Icon(
                     modifier = Modifier.size(size.dp),
                     painter = painterResource(id = firtStep.iconPainter),
@@ -172,7 +163,7 @@ fun ProgressBar(name: String, count: Int, progress: String) {
                         )
                     }
                     Row(
-                        modifier = Modifier.fillMaxWidth(),//.size(height = 12.dp, width = 320.dp),
+                        modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceAround,
                     ) {
                         TextFormat(text = firtStep.state, size = 8)
@@ -191,7 +182,7 @@ fun ProgressBar(name: String, count: Int, progress: String) {
 fun ProgressBarPager(progressBar: MutableList<ProgressBar>) {
     val nowImageIndex = rememberPagerState(0)
     val circle = painterResource(id = R.drawable.circle)
-    // 사진 갯수따라 동적인 변화 필요
+
     var indexIcons: List<Painter> = listOf()
 
     repeat(progressBar.size) {
@@ -213,8 +204,6 @@ fun ProgressBarPager(progressBar: MutableList<ProgressBar>) {
                     Image(painter = painterResource(id = R.drawable.tree), contentDescription = "tree")
                     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceEvenly) {
                         TextFormat(text = "Re:Born과 함께 \n옷에 새 생명을 주세요!!", size = 16, fontWeight = FontWeight.Bold)
-
-
                         TextFormat(text = "의류 폐기물들의 처리 과정에서\n환경이 파괴되고 있어요! \nRe:Born과 옷에 새 생명을 주고\n지구를 지켜요", size = 12)
                     }
 
