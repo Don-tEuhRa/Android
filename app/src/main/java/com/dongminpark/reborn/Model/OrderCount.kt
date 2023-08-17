@@ -15,5 +15,8 @@ data class OrderInfo(
     val address: String = "",
     val addressDetail: String = "",
     val zipCode: String = " ",
-    val paymentDate: String = ""
+    val paymentDate: String = "",
+    val thumbnailUrl: String = "",
+    val title: String = "",
+    val price: Int = -1,
 )

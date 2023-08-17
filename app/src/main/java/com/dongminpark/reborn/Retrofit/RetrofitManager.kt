@@ -399,7 +399,10 @@ class RetrofitManager {
                                     address = addressTemp.get("address").asString,
                                     addressDetail = addressTemp.get("addressDetail").asString,
                                     zipCode = addressTemp.get("zipCode").asString,
-                                    paymentDate = item.get("paymentDate").asString
+                                    paymentDate = item.get("paymentDate").asString,
+                                    thumbnailUrl = item.get("thumbnailUrl").asString,
+                                    title = item.get("title").asString,
+                                    price = item.get("price").asInt,
                                 )
 
                                 orderList.add(ord)

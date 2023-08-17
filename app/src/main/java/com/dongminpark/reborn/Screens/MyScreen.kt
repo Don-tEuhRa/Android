@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.toSize
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.dongminpark.reborn.App
+import com.dongminpark.reborn.Frames.ImageFormat
 import com.dongminpark.reborn.Frames.TextFormat
 import com.dongminpark.reborn.Model.*
 import com.dongminpark.reborn.R
@@ -1544,12 +1545,7 @@ fun OrderInfoFormat(orderInfo: OrderInfo) {
                     modifier = Modifier.padding(8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Image(
-                        painter = painterResource(img),
-                        contentDescription = "Your Image",
-                        modifier = Modifier
-                            .size(72.dp)
-                    )
+                    ImageFormat(url = orderInfo.thumbnailUrl, size = 72)
                     Text(
                         text = orderInfo.status,
                         fontWeight = FontWeight.Bold
@@ -1567,6 +1563,16 @@ fun OrderInfoFormat(orderInfo: OrderInfo) {
                     val mod = Modifier
                         .padding(4.dp)
                         .fillMaxWidth(0.9f)
+                    TextFormat(
+                        modifier = mod,
+                        text = "상품명 : ${orderInfo.title}",
+                        size = size
+                    )
+                    TextFormat(
+                        modifier = mod,
+                        text = "가격 : ${orderInfo.price}원",
+                        size = size
+                    )
                     TextFormat(
                         modifier = mod,
                         text = "구매 일자 : ${orderInfo.paymentDate.slice(0..9)}",
@@ -2395,7 +2401,9 @@ fun QnAList(
                     }
                 }
             },
-            modifier = Modifier.border(2.dp, Color.LightGray, RoundedCornerShape(8.dp)).clip(roundCornerShape)
+            modifier = Modifier
+                .border(2.dp, Color.LightGray, RoundedCornerShape(8.dp))
+                .clip(roundCornerShape)
         )
     } //삭제하시겠습니까?
     if (deleteMsg) { //삭제완료 팝업
@@ -2426,10 +2434,12 @@ fun deleteMsg(
                 Text(text = "확인")
             }
         },
-        modifier = Modifier.border(
-            2.dp,
-            Color.LightGray.copy(alpha = 0.7f),
-            RoundedCornerShape(8.dp)
-        ).clip(RoundedCornerShape(8.dp))
+        modifier = Modifier
+            .border(
+                2.dp,
+                Color.LightGray.copy(alpha = 0.7f),
+                RoundedCornerShape(8.dp)
+            )
+            .clip(RoundedCornerShape(8.dp))
     )
 }
