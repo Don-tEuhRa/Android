@@ -887,6 +887,7 @@ class RetrofitManager {
                                 content = data.get("content").asString,
                                 category = data.get("category").asString,
                                 createdAt = data.get("createdAt").asString,
+                                isMe = data.get("me").asBoolean,
                             )
                             completion(RESPONSE_STATE.OKAY, info, reviewContent, reviewCreateAt)
                         }
@@ -895,6 +896,28 @@ class RetrofitManager {
                         completion(RESPONSE_STATE.FAIL, null, null, null)
                     }
                 }
+            }
+        })
+    }
+
+    fun postDelete(postId: Int, completion: (RESPONSE_STATE) -> Unit){
+        val call = iRetrofit?.postDelete(postId) ?: return
+
+        call.enqueue(object : retrofit2.Callback<JsonElement> {
+            override fun onResponse(call: Call<JsonElement>, response: Response<JsonElement>) {
+
+                when (response.code()) {
+                    200 -> { // 정상 연결
+                        completion(RESPONSE_STATE.OKAY)
+                    }
+                    else -> { // 에러
+                        completion(RESPONSE_STATE.FAIL)
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
+                completion(RESPONSE_STATE.FAIL)
             }
         })
     }

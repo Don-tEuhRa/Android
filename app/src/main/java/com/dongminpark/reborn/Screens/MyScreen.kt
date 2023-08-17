@@ -1782,6 +1782,9 @@ fun MyQnADetailScreen(navController: NavController, postId: Int) {
     var reviewDate by rememberSaveable {
         mutableStateOf("")
     }
+    var isMine by rememberSaveable {
+        mutableStateOf(false)
+    }
 
     if (isLoading){
         RetrofitManager.instance.postReadID(
@@ -1795,6 +1798,7 @@ fun MyQnADetailScreen(navController: NavController, postId: Int) {
                         date = post.createdAt
                         titleInput = post.title
                         contentInput = post.content
+                        isMine = post.isMe
                         reviewContent = reContent!!
                         reviewDate = reDate!!
 
@@ -1811,8 +1815,10 @@ fun MyQnADetailScreen(navController: NavController, postId: Int) {
             QnAList(
                 navController,
                 category = category,
+                postId = postId,
                 user = user,
                 date = date,
+                isMine = isMine,
                 titleInput = titleInput,
                 contentInput = contentInput,
                 reviewContent = reviewContent,
@@ -2171,9 +2177,11 @@ fun QnAButton(modifier: Modifier, text: String, enabled: Boolean, onQnAClicked: 
 @Composable
 fun QnAList(
     navController: NavController,
+    postId: Int,
     category: String,
     user: String,
     date: String,
+    isMine: Boolean,
     titleInput: String,
     contentInput: String,
     reviewContent: String,
@@ -2259,27 +2267,28 @@ fun QnAList(
                         color = Color.LightGray
                     )
                 }
-                Row(
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    //수정 텍스트
-                    Text(
-                        text = "수정",
-                        modifier = Modifier.clickable {
-                            opened = !opened
-                        }
-                    )
-                    Text(text = "  /  ")
-                    //삭제 텍스트
-                    Text(
-                        text = "삭제",
-                        modifier = Modifier.clickable {
-                            // 삭제 API 연결
-                            deleteBtn = !deleteBtn
-                        }
-                    )
+                if (isMine) {
+                    Row(
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        //수정 텍스트
+                        Text(
+                            text = "수정",
+                            modifier = Modifier.clickable {
+                                opened = !opened
+                            }
+                        )
+                        Text(text = "  /  ")
+                        //삭제 텍스트
+                        Text(
+                            text = "삭제",
+                            modifier = Modifier.clickable {
+                                deleteBtn = !deleteBtn
+                            }
+                        )
+                    }
                 }
             }
         }//내용
@@ -2347,8 +2356,24 @@ fun QnAList(
                 ) {
                     Button(
                         onClick = {
-                            deleteMsg = true
-                            deleteBtn = false
+                            RetrofitManager.instance.postDelete(
+                                postId,
+                                completion = { responseState ->
+                                    when (responseState) {
+                                        RESPONSE_STATE.OKAY -> {
+                                            deleteMsg = true
+                                            deleteBtn = false
+                                            navController.navigate("MyQnA")
+                                        }
+                                        RESPONSE_STATE.FAIL -> {
+                                            Toast.makeText(
+                                                App.instance,
+                                                MESSAGE.ERROR,
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    }
+                                })
                         },
                         modifier = Modifier.fillMaxWidth(0.4f),
                         colors = ButtonDefaults.buttonColors(
