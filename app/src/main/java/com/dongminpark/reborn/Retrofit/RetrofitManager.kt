@@ -3,6 +3,7 @@ package com.dongminpark.reborn.Retrofit
 import android.util.Log
 import com.dongminpark.reborn.App
 import com.dongminpark.reborn.Model.*
+import com.dongminpark.reborn.Screens.QnA
 import com.dongminpark.reborn.Utils.API
 import com.dongminpark.reborn.Utils.Constants.TAG
 import com.dongminpark.reborn.Utils.RESPONSE_STATE
@@ -797,6 +798,62 @@ class RetrofitManager {
 
             override fun onFailure(call: Call<JsonElement>, t: Throwable) {
                 completion(RESPONSE_STATE.FAIL)
+            }
+        })
+    }
+
+    fun postList(completion: (RESPONSE_STATE, ArrayList<QnAList>?, ArrayList<QnAList>?) -> Unit) {
+        val call = iRetrofit?.postList() ?: return
+
+        call.enqueue(object : retrofit2.Callback<JsonElement> {
+            override fun onResponse(call: Call<JsonElement>, response: Response<JsonElement>) {
+
+                when (response.code()) {
+                    200 -> { // 정상 연결
+                        response.body()?.let {
+                            val DonatePosts = arrayListOf<QnAList>()
+                            val OrderPosts = arrayListOf<QnAList>()
+                            val body = it.asJsonObject
+                            val data = body.get("data").asJsonObject
+                            val DonatePostList = data.getAsJsonArray("donation")
+                            val OrderPostList = data.getAsJsonArray("order")
+
+                            DonatePostList.forEach {
+                                val item = it.asJsonObject
+                                val post = QnAList(
+                                    postid = item.get("postId").asInt,
+                                    name = item.get("name").asString,
+                                    title = item.get("title").asString,
+                                    content = item.get("content").asString,
+                                    category = item.get("category").asString,
+                                    createdAt = item.get("createdAt").asString,
+                                )
+                                DonatePosts.add(post)
+                            }
+                            OrderPostList.forEach {
+                                val item = it.asJsonObject
+                                val post = QnAList(
+                                    postid = item.get("postId").asInt,
+                                    name = item.get("name").asString,
+                                    title = item.get("title").asString,
+                                    content = item.get("content").asString,
+                                    category = item.get("category").asString,
+                                    createdAt = item.get("createdAt").asString,
+                                )
+                                OrderPosts.add(post)
+                            }
+
+                            completion(RESPONSE_STATE.OKAY, DonatePosts, OrderPosts)
+                        }
+                    }
+                    else -> { // 에러
+                        completion(RESPONSE_STATE.FAIL, null, null)
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
+                completion(RESPONSE_STATE.FAIL, null, null)
             }
         })
     }

@@ -77,6 +77,9 @@ interface IRetrofit {
     @POST(API.POST_CREATE)
     fun postCreate(@Body post: JsonObject): Call<JsonElement>
 
+    @GET(API.POST_LIST)
+    fun postList(): Call<JsonElement>
+
     // user controller
     @GET(API.USER_INFO)
     fun userInfo(): Call<JsonElement>

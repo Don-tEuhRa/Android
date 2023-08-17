@@ -60,10 +60,6 @@ import com.dongminpark.reborn.Utils.Constants.TAG
 import com.dongminpark.reborn.Utils.GetAddress.searchAddress
 import com.dongminpark.reborn.ui.theme.Point
 
-
-val AskDonateList = SnapshotStateList<QnAList>()
-val AskItemList = SnapshotStateList<QnAList>()
-
 @Composable
 fun myAppBar(navController: NavController, userName: String, userPoint: String) {
     var showProfile by remember { mutableStateOf(false) }
@@ -1664,29 +1660,13 @@ fun QnATopAppBar(navController: NavController, isAsk: Boolean = true) {
 @Composable
 fun QnAContent(navController: NavController, currentPage: String) {
     var DonatItemsBool by rememberSaveable {
-        mutableStateOf(MutableList(1) {
-            QnAList(
-                false,
-                true,
-                "박동민",
-                1,
-                "기부문의",
-                true,
-                "2021-09-01"
-            )
+        mutableStateOf(MutableList(0) {
+            QnAList()
         })
     }
     var AskItemsBool by rememberSaveable {
-        mutableStateOf(MutableList(1) {
-            QnAList(
-                true,
-                true,
-                "최수인",
-                2,
-                "구매문의",
-                true,
-                "2021-09-02"
-            )
+        mutableStateOf(MutableList(0) {
+            QnAList()
         })
     }
 
@@ -1696,18 +1676,31 @@ fun QnAContent(navController: NavController, currentPage: String) {
     var currentPageTemp by rememberSaveable { mutableStateOf(currentPage) }
 
     var isLoading2 by rememberSaveable {
-        mutableStateOf(false)
+        mutableStateOf(true)
     }
 
-    Log.e(TAG, "QnAContent: xxxxxxxxx")
     if (isLoading2) {
-        //LoadingCircle()
-        // api 호출 후 값 채워 넣기
-        //AskDonateList.clear()
-        //AskItemList.clear()
-        isLoading2 = false
+        LoadingCircle()
+        RetrofitManager.instance.postList(
+            completion = {  responseState, donateList, orderList ->
+                when (responseState) {
+                    RESPONSE_STATE.OKAY -> {
+                        DonatItemsBool.clear()
+                        DonatItemsBool.addAll(donateList!!)
+                        AskItemsBool.clear()
+                        AskItemsBool.addAll(orderList!!)
+                        isLoading2 = false
+                    }
+                    RESPONSE_STATE.FAIL -> {
+                        Toast.makeText(
+                            App.instance,
+                            MESSAGE.ERROR,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            })
     } else {
-        Log.e(TAG, "QnAContent:22222222222222")
         Column(modifier = Modifier.fillMaxSize()) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -1808,7 +1801,7 @@ fun ListContent(navController: NavController, content: QnAList) {
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(text = content.name)
-                Text(text = content.createdAt)
+                Text(text = content.createdAt.slice(0..9))
             }
         }
     }
@@ -2040,7 +2033,6 @@ fun QnA(
                         text = "문의하기",
                         enabled = titleInput.isNotEmpty() && contentInput.isNotEmpty() && selectText.isNotEmpty(),
                         onQnAClicked = {
-                            // 등록 API 연결결
                             RetrofitManager.instance.postCreate(
                                 title = titleInput,
                                 content = contentInput,

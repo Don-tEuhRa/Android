@@ -45,6 +45,7 @@ object API{
 
     // post controller
     const val POST_CREATE = "/post/create"
+    const val POST_LIST = "/post/list"
 
     // user controller
     const val FIREBASE_CONNECT = "/user/firebase/{uid}"
