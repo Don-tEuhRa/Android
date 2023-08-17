@@ -120,9 +120,9 @@ fun LoginScreen(navController: NavHostController) {
                     contentDescription = "Google Login",
                     modifier = Modifier
                         .clickable {
-                            //isLoginLoading = true
-                            //googleLogin()
-                            OAuthData.nav?.navigate(Screen.Once.route)
+                            isLoginLoading = true
+                            googleLogin()
+                            //OAuthData.nav?.navigate(Screen.Once.route)
                         }
                         .padding(10.dp)
                         .width(240.dp),

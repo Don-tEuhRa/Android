@@ -1793,6 +1793,7 @@ fun MyQnADetailScreen(navController: NavController, postId: Int) {
     }
 
     if (isLoading){
+        LoadingCircle()
         RetrofitManager.instance.postReadID(
             postId,
             completion = { responseState, post, reContent, reDate->
@@ -1916,6 +1917,8 @@ fun QnA(
     titleInput: String = "",
     contentInput: String = "",
     category: String = "",
+    postId: Int = -1,
+    isFix: Boolean = false,
     onCloseRequest: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -1925,7 +1928,7 @@ fun QnA(
     var contentEnabled by remember { mutableStateOf(false) }
     val submitPopup = rememberSaveable { mutableStateOf(false) }
     val category2 = listOf("기부문의", "구매문의")
-    var selectText by remember { mutableStateOf(category) }
+    var selectText by remember { mutableStateOf("") }
     var mTextFieldSize by remember { mutableStateOf(androidx.compose.ui.geometry.Size.Zero) }
     val maxChar = 100
     AlertDialog(
@@ -2091,24 +2094,51 @@ fun QnA(
                 Row(modifier = Modifier.fillMaxWidth()) {
                     QnAButton(
                         modifier = Modifier.weight(1f),
-                        text = "문의하기",
+                        text = if(isFix) "수정하기" else "문의하기",
                         enabled = titleInput.isNotEmpty() && contentInput.isNotEmpty() && selectText.isNotEmpty(),
                         onQnAClicked = {
-                            RetrofitManager.instance.postCreate(
-                                title = titleInput,
-                                content = contentInput,
-                                category = selectText,
-                                secret = contentEnabled,
-                                completion = { responseState ->
-                                    when (responseState) {
-                                        RESPONSE_STATE.OKAY -> {
-                                            submitPopup.value = true
+                            if (isFix){ // 수정 api 연결
+                                RetrofitManager.instance.postUpdate(
+                                    postId = postId,
+                                    title = titleInput,
+                                    content = contentInput,
+                                    category = selectText,
+                                    secret = contentEnabled,
+                                    completion = { responseState ->
+                                        when (responseState) {
+                                            RESPONSE_STATE.OKAY -> {
+                                                submitPopup.value = true
+                                            }
+                                            RESPONSE_STATE.FAIL -> {
+                                                Toast.makeText(
+                                                    App.instance,
+                                                    MESSAGE.ERROR,
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            }
                                         }
-                                        RESPONSE_STATE.FAIL -> {
-                                            Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
+                                    })
+                            }else {
+                                RetrofitManager.instance.postCreate(
+                                    title = titleInput,
+                                    content = contentInput,
+                                    category = selectText,
+                                    secret = contentEnabled,
+                                    completion = { responseState ->
+                                        when (responseState) {
+                                            RESPONSE_STATE.OKAY -> {
+                                                submitPopup.value = true
+                                            }
+                                            RESPONSE_STATE.FAIL -> {
+                                                Toast.makeText(
+                                                    App.instance,
+                                                    MESSAGE.ERROR,
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            }
                                         }
-                                    }
-                                })
+                                    })
+                            }
                         }
                     )
                     QnAButton(
@@ -2205,6 +2235,8 @@ fun QnAList(
             category = category,
             titleInput = titleInput,
             contentInput = contentInput,
+            postId = postId,
+            isFix = true,
             onCloseRequest = { opened = false })
     } //수정팝업
 

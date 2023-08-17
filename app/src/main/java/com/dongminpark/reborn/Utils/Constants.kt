@@ -48,6 +48,7 @@ object API{
     const val POST_LIST = "/post/list"
     const val POST_READ_ID = "/post/read/{postId}"
     const val POST_DELETE = "/post/delete/{postId}"
+    const val POST_UPDATE = "/post/update/{postId}"
 
     // user controller
     const val FIREBASE_CONNECT = "/user/firebase/{uid}"

@@ -86,6 +86,9 @@ interface IRetrofit {
     @DELETE(API.POST_DELETE)
     fun postDelete(@Path("postId") id: Int): Call<JsonElement>
 
+    @PUT(API.POST_UPDATE)
+    fun postUpdate(@Path("postId") id: Int, @Body post: JsonObject): Call<JsonElement>
+
     // user controller
     @GET(API.USER_INFO)
     fun userInfo(): Call<JsonElement>
