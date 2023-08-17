@@ -524,7 +524,6 @@ fun donateInput(
                 Button(
                     onClick = {
                         isSearchAddress = false
-                        // api 호출  -> 호출 결과 성공하면 searchAddress = false
                         searchAddress(SearchAddressInput.value.text, postInput, placeInput)
                     },
                     colors = ButtonDefaults.buttonColors(

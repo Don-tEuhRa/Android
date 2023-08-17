@@ -168,6 +168,9 @@ fun MainScreenView(startDestination: String) {
                 composable(MyNavigationScreens.MyDonate.route) {
                     myDonatePage()
                 }
+                composable(MyNavigationScreens.MyQnA.route) {
+                    MyQnAScreen(navController = navController)
+                }
             }
         }
     }

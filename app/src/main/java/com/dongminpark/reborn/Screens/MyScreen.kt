@@ -52,6 +52,7 @@ import com.dongminpark.reborn.Utils.*
 import com.dongminpark.reborn.Utils.Constants.TAG
 import com.dongminpark.reborn.Utils.GetAddress.searchAddress
 import com.dongminpark.reborn.ui.theme.Point
+import com.dongminpark.reborn.ui.theme.ProgressBGColor
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -623,250 +624,6 @@ fun myProfile(
     }
 }
 
-
-
-
-
-
-
-            /*
-            (
-    name: String,
-    phoneNumber: String,
-    address: String,
-    detialAddress: String,
-    zipcode: String,
-    onCloseRequest: () -> Unit,
-    onEditButtonClick: () -> Unit
-) {
-    var newName by remember { mutableStateOf("") }
-    var newPhoneNumber by remember { mutableStateOf("") }
-    var newAddress by remember { mutableStateOf("") }
-    var newDetailAddress by remember { mutableStateOf("") }
-    var newZipcode by remember { mutableStateOf("") }
-    var newhouseNum by remember { mutableStateOf("") }
-    var isHouseNumEnabled by remember { mutableStateOf(true) }
-    val shouldShowHouseNum = remember { mutableStateOf(false) }
-    val houseNumResource: (Boolean) -> Int = {
-        if (it) {
-            R.drawable.baseline_visibility_24
-        } else {
-            R.drawable.baseline_visibility_off_24
-        }
-    }
-
-
-    AlertDialog(
-        shape = RoundedCornerShape(24.dp),
-        onDismissRequest = { onCloseRequest() },
-        title = { Text("회원정보수정") },
-        text = {
-            LazyColumn(modifier = Modifier.padding(vertical = 12.dp)) {
-                item {
-                    Text(text = "이름")
-                    OutlinedTextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        placeholder = { Text(text = name) },
-                        value = newName,
-                        singleLine = true,
-                        onValueChange = { newValue -> newName = newValue },
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            imeAction = ImeAction.Next
-                        ),
-                        colors = TextFieldDefaults.textFieldColors(
-                            backgroundColor = Color.White,
-                            focusedIndicatorColor = Color(0xff78C1F3),
-                            unfocusedIndicatorColor = Color.LightGray,
-                            cursorColor = Color.LightGray
-                        )
-                    )
-                    Spacer(modifier = Modifier.padding(8.dp))
-                }//이름
-                item {
-                    Text(text = "연락처")
-                    OutlinedTextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        placeholder = { Text(text = phoneNumber) },
-                        value = newPhoneNumber,
-                        singleLine = true,
-                        onValueChange = { newValue -> newPhoneNumber = newValue },
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            keyboardType = KeyboardType.Number,
-                            imeAction = ImeAction.Next
-                        ),
-                        colors = TextFieldDefaults.textFieldColors(
-                            backgroundColor = Color.White,
-                            focusedIndicatorColor = Color(0xff78C1F3),
-                            unfocusedIndicatorColor = Color.LightGray,
-                            cursorColor = Color.LightGray
-                        )
-                    )
-                    Spacer(modifier = Modifier.padding(8.dp))
-                }//연락처
-                item {
-                    Text(text = "주소")
-                    OutlinedTextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        placeholder = { Text(text = address) },
-                        value = newAddress,
-                        onValueChange = { newValue -> newAddress = newValue },
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            imeAction = ImeAction.Next
-                        ),
-                        colors = TextFieldDefaults.textFieldColors(
-                            backgroundColor = Color.White,
-                            focusedIndicatorColor = Color(0xff78C1F3),
-                            unfocusedIndicatorColor = Color.LightGray,
-                            cursorColor = Color.LightGray
-                        )
-                    )
-                    Spacer(modifier = Modifier.padding(8.dp))
-                }//주소
-                item {
-                    Text(text = "상세주소")
-                    OutlinedTextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        placeholder = { Text(text = detialAddress) },
-                        value = newDetailAddress,
-                        onValueChange = { newValue -> newDetailAddress = newValue },
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            imeAction = ImeAction.Next
-                        ),
-                        colors = TextFieldDefaults.textFieldColors(
-                            backgroundColor = Color.White,
-                            focusedIndicatorColor = Color(0xff78C1F3),
-                            unfocusedIndicatorColor = Color.LightGray,
-                            cursorColor = Color.LightGray
-                        ),
-                        singleLine = true,
-                    )
-                    Spacer(modifier = Modifier.padding(8.dp))
-                }//상세주소
-                item {
-                    Text(text = "우편번호")
-                    OutlinedTextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        placeholder = { Text(text = zipcode) },
-                        value = newZipcode,
-                        onValueChange = { newValue -> newZipcode = newValue },
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            keyboardType = KeyboardType.Number,
-                            imeAction = ImeAction.Next
-                        ),
-                        colors = TextFieldDefaults.textFieldColors(
-                            backgroundColor = Color.White,
-                            focusedIndicatorColor = Color(0xff78C1F3),
-                            unfocusedIndicatorColor = Color.LightGray,
-                            cursorColor = Color.LightGray
-                        ),
-                        singleLine = true,
-                    )
-                    Spacer(modifier = Modifier.padding(8.dp))
-                }//우편번호
-                item {
-                    Row(
-                        horizontalArrangement = Arrangement.Start,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(text = "현관 비밀번호")
-                        Checkbox(
-                            checked = isHouseNumEnabled,
-                            onCheckedChange = {
-                                isHouseNumEnabled = it
-                            },
-                            modifier = Modifier.align(Alignment.Bottom)
-                        )
-                        Text(text = "없음")
-                    }
-                    OutlinedTextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        placeholder = { Text(text = zipcode) },
-                        value = newhouseNum,
-                        onValueChange = { newValue -> newhouseNum = newValue },
-                        enabled = !isHouseNumEnabled,
-                        trailingIcon = {
-                            IconButton(onClick = {
-                                Log.d("TAG", "Housenum:클릭")
-                                shouldShowHouseNum.value = !shouldShowHouseNum.value
-                            }) {
-                                Icon(
-                                    painter = painterResource(
-                                        id = houseNumResource(
-                                            shouldShowHouseNum.value
-                                        )
-                                    ),
-                                    contentDescription = null
-                                )
-                            }
-                        },
-                        visualTransformation = if (shouldShowHouseNum.value) VisualTransformation.None else PasswordVisualTransformation(),
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.NumberPassword
-                        ),
-                        colors = TextFieldDefaults.textFieldColors(
-                            backgroundColor = Color.White,
-                            focusedIndicatorColor = Color(0xff78C1F3),
-                            unfocusedIndicatorColor = Color.LightGray,
-                            cursorColor = Color.LightGray
-                        ),
-                        singleLine = true,
-                    )
-                }//현관비밀번호
-            }
-        },
-        confirmButton = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                Button(
-                    enabled = (newName.isNotEmpty() ||
-                            (newPhoneNumber.isNotEmpty() && newPhoneNumber.length == 11) ||
-                            newAddress.isNotEmpty() ||
-                            newDetailAddress.isNotEmpty() ||
-                            (newZipcode.isNotEmpty() && newZipcode.length == 5) ||
-                            newhouseNum.isNotEmpty()),
-                    onClick = {
-                        onCloseRequest()
-                        // api 호출
-                        val nameAPI = if (newName.isEmpty()) name else newName
-                        val phoneNumberAPI =
-                            if (newPhoneNumber.isEmpty()) phoneNumber else newPhoneNumber
-                        val addressAPI = if (newAddress.isEmpty()) address else newAddress
-
-                        if (newName.isNotEmpty() ||
-                            (newPhoneNumber.isNotEmpty() && newPhoneNumber.length == 11) ||
-                            newAddress.isNotEmpty() ||
-                            newDetailAddress.isNotEmpty() ||
-                            (newZipcode.isNotEmpty() && newZipcode.length == 5) ||
-                            newhouseNum.isNotEmpty()
-                        ) {
-                            onEditButtonClick()
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth(0.4f),
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = Color(0xff78C1F3)
-                    )
-                ) {
-                    Text("등록")
-                }
-                Button(
-                    onClick = { onCloseRequest() },
-                    modifier = Modifier.fillMaxWidth(0.7f),
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = Color(0xff78C1F3)
-                    )
-                ) {
-                    Text("취소")
-                }
-            }
-        }
-    )
-}
-
-             */
-
 @Composable
 fun myEditMsg(
     message: String,
@@ -956,7 +713,7 @@ fun myView(
 ) {
     LazyColumn(
         modifier = Modifier
-            .padding(12.dp)
+            .padding(horizontal = 12.dp)
             .fillMaxWidth(),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -967,9 +724,7 @@ fun myView(
             myDonate(R.drawable.t_shirt, "횟수", "${userDonationCount}회")
             Spacer(modifier = Modifier.height(20.dp))
             myDonateOrder(navController)
-            Spacer(modifier = Modifier.height(80.dp))
-            myInquiry()
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(20.dp))
             rebornAppBarDetailBottom(customerServiceCenter = MainContents.customerServiceCenter)
         }
     }
@@ -994,7 +749,7 @@ fun myDonate(icon: Int, text: String, count: String) {
         modifier = Modifier
             .fillMaxSize()
             .clip(RoundedCornerShape(10.dp))
-            .background(Color(0xff9BE8D8))
+            .background(Color(0xffD5FFD0))
             .padding(16.dp),
         contentAlignment = Alignment.CenterStart,
     ) {
@@ -1036,6 +791,19 @@ fun myDonate(icon: Int, text: String, count: String) {
 
 @Composable
 fun myDonateOrder(navController: NavController) {
+    val heigth = 90
+    val width = 110
+    Box(
+        modifier = Modifier
+            .fillMaxWidth(),
+        contentAlignment = Alignment.CenterStart
+    ) {
+        Text(
+            text = "고객 서비스",
+            fontWeight = FontWeight.Bold
+        )
+    }
+    Spacer(modifier = Modifier.height(8.dp))
     Row(
         modifier = Modifier
             .fillMaxWidth(),
@@ -1045,9 +813,9 @@ fun myDonateOrder(navController: NavController) {
         // 기부현황 버튼
         Button(
             shape = RoundedCornerShape(8.dp),
-            contentPadding = PaddingValues(top = 35.dp, bottom = 35.dp, start = 55.dp, end = 55.dp),
+            modifier = Modifier.size(height = heigth.dp, width = width.dp),
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = Color(0xFFE7E7E7),
+                backgroundColor = Color(0xff9AC5F4),
                 contentColor = Color.Black
             ),
             onClick = {
@@ -1060,9 +828,9 @@ fun myDonateOrder(navController: NavController) {
         // 주문현황 버튼
         Button(
             shape = RoundedCornerShape(8.dp),
-            contentPadding = PaddingValues(top = 35.dp, bottom = 35.dp, start = 55.dp, end = 55.dp),
+            modifier = Modifier.size(height = heigth.dp, width = width.dp),
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = Color(0xFFE7E7E7),
+                backgroundColor = Color(0xff99DBF5),
                 contentColor = Color.Black
             ),
             onClick = {
@@ -1071,27 +839,29 @@ fun myDonateOrder(navController: NavController) {
         ) {
             Text(text = "주문현황")
         }
+
+        // Q&A
+        Button(
+            shape = RoundedCornerShape(8.dp),
+            modifier = Modifier.size(height = heigth.dp, width = width.dp),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = Color(0xffA7ECEE),
+                contentColor = Color.Black
+            ),
+            onClick = {
+                navController.navigate("MyQnA")
+            }
+        ) {
+            Text(text = " Q&A ")
+        }
     }
 }
 
+@Preview
 @Composable
-fun myInquiry() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            //Spacer(modifier = Modifier.width(16.dp))
-            Image(
-                painter = painterResource(id = R.drawable.baseline_email_24),
-                contentDescription = null
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Column() {
-                Text(text = "Re:Born 문의하기")
-            }
-        }
-    }
+fun previeww(){
+    var navController = rememberNavController()
+    myDonateOrder(navController = navController)
 }
 
 @Composable
@@ -1106,19 +876,36 @@ fun rebornAppBarDetailBottom(customerServiceCenter: List<customerServiceCenter>)
             Row(verticalAlignment = Alignment.Top) {
                 //Spacer(modifier = Modifier.width(16.dp))
                 Image(
+                    modifier = Modifier.size(48.dp),
                     painter = painterResource(id = R.drawable.baseline_call_24),
                     contentDescription = null
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 Column() {
-                    Text(
-                        text = serviceContent.title,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Row() {
+                        Text(
+                            text = serviceContent.title,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = " (010-2245-3683)",
+                            color = Color.Gray,
+                            fontWeight = FontWeight.Light
+                        )
+                    }
                     Text(text = serviceContent.date)
                     Text(text = serviceContent.time)
                 }
             }
+        }
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ){
+            Spacer(modifier = Modifier.height(52.dp))
+            TextFormat(text = "COPYRIGHT (c) 2023. Re:Born. All rights reserved.", size = 12, color = Color.LightGray)
+            TextFormat(text = "Andrid : 박동민, 최수인 / Backend : 이영학, 이한음", size = 12, color = Color.LightGray)
         }
     }
 }
@@ -1767,3 +1554,7 @@ fun OrderInfoFormat(orderInfo: OrderInfo) {
     }
 }
 
+@Composable
+fun MyQnAScreen(navController: NavController){
+
+}

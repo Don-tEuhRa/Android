@@ -44,8 +44,9 @@ sealed class StoreNavigationScreens(val route: String) {
     object StorePayAfter : StoreNavigationScreens("storePayAfter")
 }
 
-sealed class MyNavigationScreens(val route: String = "my") {
+sealed class MyNavigationScreens(val route: String) {
     object My : MyNavigationScreens("my")
     object MyDonate : MyNavigationScreens("myDonate")
     object MyOrder : MyNavigationScreens("myOrder")
+    object MyQnA : MyNavigationScreens("myQnA")
 }
