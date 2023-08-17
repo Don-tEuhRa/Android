@@ -2,6 +2,8 @@ package com.dongminpark.reborn.Screens
 
 import android.annotation.SuppressLint
 import android.widget.Toast
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -23,6 +26,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.dongminpark.reborn.App
 import com.dongminpark.reborn.Model.ProgressBar
+import com.dongminpark.reborn.Model.Review
 import com.dongminpark.reborn.R
 import com.dongminpark.reborn.Retrofit.RetrofitManager
 import com.dongminpark.reborn.Utils.*
@@ -47,6 +51,7 @@ fun rebornAppBar() {
 }
 
 var progressBar = mutableListOf<ProgressBar>()
+var reviewObj = Review()
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -63,6 +68,18 @@ fun MainScreen(
 
     if (isLoading) {
         LoadingCircle()
+        RetrofitManager.instance.reviewRandom(
+            completion = { responseState, review ->
+                when (responseState) {
+                    RESPONSE_STATE.OKAY -> {
+                        reviewObj = review!!
+                    }
+                    RESPONSE_STATE.FAIL -> {
+                        Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        )
         RetrofitManager.instance.progressList(
             completion = { responseState, progress ->
 
@@ -88,6 +105,8 @@ fun MainScreen(
                 ) {
                     Spacer(modifier = Modifier.height(12.dp))
                     ProgressBarPager(progressBar)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    reviewBar(reviewObj, navController)
                     Spacer(modifier = Modifier.height(8.dp))
                     introductions.forEach { introduction ->
                         introductionView(
@@ -146,6 +165,93 @@ fun introductionView(aIntro: Introduction, navController: NavHostController) {
     }
 }
 
+@Composable
+fun reviewBar(
+    review: Review,
+    navController: NavController
+) {
+    Column(
+        modifier = Modifier
+            .padding(8.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 4.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(text = "Re:Born의 리뷰모음")
+            Text(
+                text = "더보기>",
+                modifier = Modifier.clickable {
+                    // 네비게이션 이동 -> 더보기 페이지
+                },
+                color = Color.Gray
+            )
+        }
+        SatisfactionBar(
+            review.userName,
+            review.star,
+            review.createdAt,
+            review.content
+        )
+    }
+}
+
+@Composable
+fun SatisfactionBar(
+    name: String,
+    star: Int,
+    date:String,
+    content:String
+){
+    val roundCornerShape = RoundedCornerShape(24.dp)
+    //리뷰박스
+    Button(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(roundCornerShape),
+        shape = roundCornerShape,
+        onClick = {},
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = Color(0xff78C1F3),
+            contentColor = Color.White
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column() {
+                    Text(text = name)
+                    Text(text = date.slice(0..9))
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                ) {
+                    repeat(star){
+                        Image(painter = painterResource(id = R.drawable.baseline_star_24),
+                            contentDescription = "star")
+                    }
+                    repeat(5-star){
+                        Image(painter = painterResource(id = R.drawable.baseline_star_border_24),
+                            contentDescription = "star_border")
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = content)
+        }
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
