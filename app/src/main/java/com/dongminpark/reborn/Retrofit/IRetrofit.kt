@@ -73,6 +73,16 @@ interface IRetrofit {
     @POST(API.RECEIPT_CREATE)
     fun receiptCreate(@Body receipt: JsonObject): Call<JsonElement>
 
+    // review controller
+    @POST(API.REVIEW_USERID)
+    fun reviewUserId(@Path("userId") userId: Int, @Body review: JsonObject): Call<JsonElement>
+
+    @GET(API.REVIEW_LIST)
+    fun reviewList(): Call<JsonElement>
+
+    @GET(API.REVIEW_RANDOM)
+    fun reviewRandom(): Call<JsonElement>
+
     // post controller
     @POST(API.POST_CREATE)
     fun postCreate(@Body post: JsonObject): Call<JsonElement>

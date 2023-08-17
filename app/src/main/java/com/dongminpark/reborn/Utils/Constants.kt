@@ -43,6 +43,11 @@ object API{
     // receipt controller
     const val RECEIPT_CREATE = "/receipt/create"
 
+    // review controller
+    const val REVIEW_USERID = "/Review/{userId}"
+    const val REVIEW_LIST = "/Review/list/"
+    const val REVIEW_RANDOM = "/Review/random"
+
     // post controller
     const val POST_CREATE = "/post/create"
     const val POST_LIST = "/post/list"

@@ -62,7 +62,7 @@ class RetrofitManager {
     }
 
     // cart controller
-    fun cartCreate(productId: Int, completion: (RESPONSE_STATE) -> Unit){
+    fun cartCreate(productId: Int, completion: (RESPONSE_STATE) -> Unit) {
         val call = iRetrofit?.cartCreate(productId) ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
@@ -133,7 +133,7 @@ class RetrofitManager {
         })
     }
 
-    fun cartDelete(productId: Int, completion: (RESPONSE_STATE) -> Unit){
+    fun cartDelete(productId: Int, completion: (RESPONSE_STATE) -> Unit) {
         val call = iRetrofit?.cartDeleteAll(productId) ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
@@ -209,7 +209,7 @@ class RetrofitManager {
         })
     }
 
-    fun interestedSave(productId: Int, completion: (RESPONSE_STATE) -> Unit){
+    fun interestedSave(productId: Int, completion: (RESPONSE_STATE) -> Unit) {
         val call = iRetrofit?.interestSave(productId) ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
@@ -235,7 +235,7 @@ class RetrofitManager {
         })
     }
 
-    fun interestedDelete(productId: Int, completion: (RESPONSE_STATE) -> Unit){
+    fun interestedDelete(productId: Int, completion: (RESPONSE_STATE) -> Unit) {
         val call = iRetrofit?.interestDelete(productId) ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
@@ -301,7 +301,7 @@ class RetrofitManager {
         })
     }
 
-    fun mypageDonation(completion: (RESPONSE_STATE, DonationCount?, ArrayList<DonationInfo>?) -> Unit){
+    fun mypageDonation(completion: (RESPONSE_STATE, DonationCount?, ArrayList<DonationInfo>?) -> Unit) {
         val call = iRetrofit?.mypageDonation() ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
@@ -358,7 +358,7 @@ class RetrofitManager {
         })
     }
 
-    fun mypageOrder(completion: (RESPONSE_STATE, OrderCount?, ArrayList<OrderInfo>?) -> Unit){
+    fun mypageOrder(completion: (RESPONSE_STATE, OrderCount?, ArrayList<OrderInfo>?) -> Unit) {
         val call = iRetrofit?.mypageOrder() ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
@@ -427,7 +427,7 @@ class RetrofitManager {
         doorPassword: String,
         phoneNumber: String,
         completion: (RESPONSE_STATE) -> Unit
-    ){
+    ) {
         val jsonObject = JsonObject()
         jsonObject.addProperty("name", name)
         jsonObject.addProperty("address", address)
@@ -770,6 +770,108 @@ class RetrofitManager {
         })
     }
 
+    // review controller
+    /*
+    fun reviewUserId(
+        userId: Int,
+        completion: (RESPONSE_STATE) -> Unit
+    ) {
+        val call = iRetrofit?.reviewUserId(userId) ?: return
+
+        call.enqueue(object : retrofit2.Callback<JsonElement> {
+            override fun onResponse(call: Call<JsonElement>, response: Response<JsonElement>) {
+
+                when (response.code()) {
+                    200 -> { // 정상 연결
+                        completion(RESPONSE_STATE.OKAY)
+                    }
+                    else -> { // 에러
+                        completion(RESPONSE_STATE.FAIL)
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
+                completion(RESPONSE_STATE.FAIL)
+            }
+        })
+    }
+
+     */
+
+    fun reviewList(completion: (RESPONSE_STATE, ArrayList<Review>?) -> Unit) {
+        val call = iRetrofit?.reviewList() ?: return
+
+        call.enqueue(object : retrofit2.Callback<JsonElement> {
+            override fun onResponse(call: Call<JsonElement>, response: Response<JsonElement>) {
+                when (response.code()) {
+                    200 -> { // 정상 연결
+                        response.body()?.let {
+                            val reviews = arrayListOf<Review>()
+                            val body = it.asJsonObject
+                            val data = body.get("data").asJsonObject
+                            val productList = data.getAsJsonArray("reviewList")
+
+                            productList.forEach {
+                                val item = it.asJsonObject
+                                val review = Review(
+                                    userName = item.get("userName").asString,
+                                    content = item.get("content").asString,
+                                    star = item.get("star").asInt,
+                                    createdAt = item.get("createdAt").asString
+                                )
+                                reviews.add(review)
+                            }
+                            completion(RESPONSE_STATE.OKAY, reviews)
+                        }
+                    }
+                    else -> {
+                        completion(RESPONSE_STATE.FAIL, null)
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
+                completion(RESPONSE_STATE.FAIL, null)
+            }
+        })
+    }
+
+    // review Random
+    fun reviewRandom(completion: (RESPONSE_STATE, Review?) -> Unit) {
+        val call = iRetrofit?.reviewRandom() ?: return
+
+        call.enqueue(object : retrofit2.Callback<JsonElement> {
+            override fun onResponse(call: Call<JsonElement>, response: Response<JsonElement>) {
+                when (response.code()) {
+                    200 -> { // 정상 연결
+                        response.body()?.let {
+                            val body = it.asJsonObject
+                            val data = body.get("data").asJsonObject.get("review").asJsonObject
+
+                            val review = Review(
+                                userName = data.get("userName").asString,
+                                content = data.get("content").asString,
+                                star = data.get("star").asInt,
+                                createdAt = data.get("createdAt").asString
+                            )
+
+                            completion(RESPONSE_STATE.OKAY, review)
+                        }
+                    }
+                    else -> {
+                        completion(RESPONSE_STATE.FAIL, null)
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
+                completion(RESPONSE_STATE.FAIL, null)
+            }
+        })
+    }
+
+
     // post controller
     fun postCreate(
         title: String,
@@ -903,7 +1005,7 @@ class RetrofitManager {
         })
     }
 
-    fun postDelete(postId: Int, completion: (RESPONSE_STATE) -> Unit){
+    fun postDelete(postId: Int, completion: (RESPONSE_STATE) -> Unit) {
         val call = iRetrofit?.postDelete(postId) ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {

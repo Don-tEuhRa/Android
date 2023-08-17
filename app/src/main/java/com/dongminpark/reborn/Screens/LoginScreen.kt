@@ -120,9 +120,9 @@ fun LoginScreen(navController: NavHostController) {
                     contentDescription = "Google Login",
                     modifier = Modifier
                         .clickable {
-                            isLoginLoading = true
-                            googleLogin()
-                            //OAuthData.nav?.navigate(Screen.Once.route)
+                            //isLoginLoading = true
+                            //googleLogin()
+                            OAuthData.nav?.navigate(Screen.Once.route)
                         }
                         .padding(10.dp)
                         .width(240.dp),
@@ -141,8 +141,6 @@ fun firebaseAuthWithGoogle(account: GoogleSignInAccount?) {
         ?.addOnCompleteListener { task ->
             if (task.isSuccessful){
                 var uid = OAuthData.auth?.currentUser?.uid.toString()
-
-                Log.e("Firebase Success", "네 성공했습니다.")
 
                 RetrofitManager.instance.firebaseConnect(uid, completion = {
                         responseState ->
