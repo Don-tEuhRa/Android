@@ -43,6 +43,9 @@ object API{
     // receipt controller
     const val RECEIPT_CREATE = "/receipt/create"
 
+    // post controller
+    const val POST_CREATE = "/post/create"
+
     // user controller
     const val FIREBASE_CONNECT = "/user/firebase/{uid}"
     const val USER_INFO = "/user/info"

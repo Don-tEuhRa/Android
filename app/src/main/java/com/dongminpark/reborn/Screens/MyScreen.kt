@@ -1870,7 +1870,7 @@ fun QnA(
     var contentInput by remember { mutableStateOf(contentInput) }
     var contentEnabled by remember { mutableStateOf(false) }
     val submitPopup = rememberSaveable { mutableStateOf(false) }
-    val category2 = listOf("기부문의", "상품문의")
+    val category2 = listOf("기부문의", "구매문의")
     var selectText by remember { mutableStateOf(category) }
     var mTextFieldSize by remember { mutableStateOf(androidx.compose.ui.geometry.Size.Zero) }
     val maxChar = 100
@@ -2040,8 +2040,22 @@ fun QnA(
                         text = "문의하기",
                         enabled = titleInput.isNotEmpty() && contentInput.isNotEmpty() && selectText.isNotEmpty(),
                         onQnAClicked = {
-                            // 등록 API 연결
-                            submitPopup.value = true
+                            // 등록 API 연결결
+                            RetrofitManager.instance.postCreate(
+                                title = titleInput,
+                                content = contentInput,
+                                category = selectText,
+                                secret = contentEnabled,
+                                completion = { responseState ->
+                                    when (responseState) {
+                                        RESPONSE_STATE.OKAY -> {
+                                            submitPopup.value = true
+                                        }
+                                        RESPONSE_STATE.FAIL -> {
+                                            Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                })
                         }
                     )
                     QnAButton(

@@ -766,6 +766,41 @@ class RetrofitManager {
         })
     }
 
+    // post controller
+    fun postCreate(
+        title: String,
+        content: String,
+        category: String,
+        secret: Boolean,
+        completion: (RESPONSE_STATE) -> Unit
+    ) {
+        val jsonObject = JsonObject()
+        jsonObject.addProperty("title", title)
+        jsonObject.addProperty("content", content)
+        jsonObject.addProperty("category", category)
+        jsonObject.addProperty("secrete", secret)
+
+        val call = iRetrofit?.postCreate(jsonObject) ?: return
+
+        call.enqueue(object : retrofit2.Callback<JsonElement> {
+            override fun onResponse(call: Call<JsonElement>, response: Response<JsonElement>) {
+
+                when (response.code()) {
+                    200 -> { // 정상 연결
+                        completion(RESPONSE_STATE.OKAY)
+                    }
+                    else -> { // 에러
+                        completion(RESPONSE_STATE.FAIL)
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
+                completion(RESPONSE_STATE.FAIL)
+            }
+        })
+    }
+
     // user controller
     fun userInfo(completion: (RESPONSE_STATE, info: User?) -> Unit) {
         val call = iRetrofit?.userInfo() ?: return
