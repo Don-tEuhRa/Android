@@ -2,6 +2,7 @@ package com.dongminpark.reborn.Screens
 
 import android.annotation.SuppressLint
 import android.util.Log
+import android.util.Size
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -14,6 +15,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -21,6 +25,9 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -33,6 +40,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.toSize
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.dongminpark.reborn.App
@@ -217,219 +225,234 @@ fun myProfile(
         title = { Text("회원정보수정") },
         text = {
 
-    // 수거날짜, 이름, 연락처, 주소, 상세주소, 우편번호, 현관비밀번호
-    LazyColumn( // LazyColumn으로 수정 -> 방문수거 장소 => 마이페이지에 있는것 처럶 주소, 상세주소, 우편번호
-        Modifier
-            .padding(horizontal = 16.dp)
-            .fillMaxWidth()
-    ) {
-        item {
-            Row() {
-                Text(text = "이름")
-                if (userName.isEmpty()) {
-                    Text(
-                        text = "(이름을 입력해주세요.)",
-                        color = Color.Red,
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(start = 4.dp)
-                    )
-                }
-            }
-            OutlinedTextField(
-                modifier = Modifier
+            // 수거날짜, 이름, 연락처, 주소, 상세주소, 우편번호, 현관비밀번호
+            LazyColumn( // LazyColumn으로 수정 -> 방문수거 장소 => 마이페이지에 있는것 처럶 주소, 상세주소, 우편번호
+                Modifier
+                    .padding(horizontal = 16.dp)
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(8.dp)),
-                value = userName,
-                onValueChange = { newValue -> userName = newValue },
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Next
-                ),
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.White,
-                    focusedIndicatorColor = Color.LightGray,
-                    unfocusedIndicatorColor = Color.LightGray,
-                    cursorColor = if (showDialog.value) Color.Transparent else Color(0xff78C1F3)
-                )
-            )
-            Spacer(modifier = Modifier.height(20.dp))
-
-        }//이름
-        item {
-            Row() {
-                Text(text = "연락처")
-                if (userPhone.isEmpty()) {
-                    Text(
-                        text = "( '-' 빼고 입력해주세요. )",
-                        color = Color.Red,
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(start = 4.dp)
-                    )
-                }
-            }
-            OutlinedTextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(8.dp)),
-                value = userPhone,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.NumberPassword,
-                    imeAction = ImeAction.Next
-                ),
-                onValueChange = { newValue ->
-                    if (newValue.all { it.isDigit() } && newValue.length <= 11) {
-                        userPhone = newValue
+            ) {
+                item {
+                    Row() {
+                        Text(text = "이름")
+                        if (userName.isEmpty()) {
+                            Text(
+                                text = "(이름을 입력해주세요.)",
+                                color = Color.Red,
+                                fontSize = 12.sp,
+                                modifier = Modifier.padding(start = 4.dp)
+                            )
+                        }
                     }
-                },
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.White,
-                    focusedIndicatorColor = Color.LightGray,
-                    unfocusedIndicatorColor = Color.LightGray,
-                    cursorColor = if (showDialog.value) Color.Transparent else Color(0xff78C1F3)
-                )
-            )
-            Spacer(modifier = Modifier.height(20.dp))
-        }//연락처
-        item {
-            Row() {
-                Text(text = "방문수거 장소")
-                if (userPlace.value.isEmpty()) {
-                    Text(
-                        text = "(장소를 입력해주세요.)",
-                        color = Color.Red,
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(start = 4.dp)
-                    )
-                }
-            }
-            TextButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp)),
-                onClick = { isSearchAddress = true }
-            ) {
-                Text(text = userPlace.value, color = Color.Black)
-            }
-            Spacer(modifier = Modifier.height(20.dp))
-        }//방문수거
-        item {
-            Row() {
-                Text(text = "상세 주소")
-                if (userPlaceDetail.isEmpty()) {
-                    Text(
-                        text = "(상세주소를 입력해주세요.)",
-                        color = Color.Red,
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(start = 4.dp)
-                    )
-                }
-            }
-            OutlinedTextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(8.dp)),
-                value = userPlaceDetail,
-                onValueChange = { newValue -> userPlaceDetail = newValue },
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Next
-                ),
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.White,
-                    focusedIndicatorColor = Color.LightGray,
-                    unfocusedIndicatorColor = Color.LightGray,
-                    cursorColor = if (showDialog.value) Color.Transparent else Color(0xff78C1F3)
-                )
-            )
-            Spacer(modifier = Modifier.height(20.dp))
-
-        }//상세주소
-        item {
-            Row() {
-                Text(text = "우편번호") // -> readOnly로 수정
-                if (userPost.value.isEmpty()) {
-                    Text(
-                        text = "(우편번호를 입력해주세요)",
-                        color = Color.Red,
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(start = 4.dp)
-                    )
-                }
-            }
-            OutlinedTextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(8.dp)),
-                value = userPost.value,
-                readOnly = true,
-                onValueChange = {},
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.White,
-                    focusedIndicatorColor = Color.LightGray,
-                    unfocusedIndicatorColor = Color.LightGray,
-                    cursorColor = if (showDialog.value) Color.Transparent else Color(0xff78C1F3)
-                )
-            )
-            Spacer(modifier = Modifier.height(20.dp))
-        }//우편번호
-        item {
-            Row(
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(text = "현관비밀번호")
-                if (!isHouseNumEnabled && userHouseNum.isEmpty()) {
-                    Text(
-                        text = "(비밀번호를 입력해주세요.)",
-                        color = Color.Red,
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(start = 4.dp)
-                    )
-                }
-                Checkbox(
-                    checked = isHouseNumEnabled,
-                    onCheckedChange = {
-                        isHouseNumEnabled = it
-                    },
-                    modifier = Modifier.align(Alignment.Bottom)
-                )
-                Text(text = "없음")
-            }
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = userHouseNum,
-                enabled = !isHouseNumEnabled,
-                trailingIcon = {
-                    IconButton(onClick = {
-                        Log.d("TAG", "Housenum:클릭")
-                        shouldShowHouseNum.value = !shouldShowHouseNum.value
-                    }) {
-                        Icon(
-                            painter = painterResource(id = houseNumResource(shouldShowHouseNum.value)),
-                            contentDescription = null
+                    OutlinedTextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(8.dp)),
+                        value = userName,
+                        onValueChange = { newValue -> userName = newValue },
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            imeAction = ImeAction.Next
+                        ),
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = Color.White,
+                            focusedIndicatorColor = Color.LightGray,
+                            unfocusedIndicatorColor = Color.LightGray,
+                            cursorColor = if (showDialog.value) Color.Transparent else Color(
+                                0xff78C1F3
+                            )
                         )
+                    )
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                }//이름
+                item {
+                    Row() {
+                        Text(text = "연락처")
+                        if (userPhone.isEmpty()) {
+                            Text(
+                                text = "( '-' 빼고 입력해주세요. )",
+                                color = Color.Red,
+                                fontSize = 12.sp,
+                                modifier = Modifier.padding(start = 4.dp)
+                            )
+                        }
                     }
-                },
-                visualTransformation = if (shouldShowHouseNum.value) VisualTransformation.None else PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.NumberPassword,
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        focusManager.clearFocus()
-                        keyboardController?.hide()
+                    OutlinedTextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(8.dp)),
+                        value = userPhone,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.NumberPassword,
+                            imeAction = ImeAction.Next
+                        ),
+                        onValueChange = { newValue ->
+                            if (newValue.all { it.isDigit() } && newValue.length <= 11) {
+                                userPhone = newValue
+                            }
+                        },
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = Color.White,
+                            focusedIndicatorColor = Color.LightGray,
+                            unfocusedIndicatorColor = Color.LightGray,
+                            cursorColor = if (showDialog.value) Color.Transparent else Color(
+                                0xff78C1F3
+                            )
+                        )
+                    )
+                    Spacer(modifier = Modifier.height(20.dp))
+                }//연락처
+                item {
+                    Row() {
+                        Text(text = "방문수거 장소")
+                        if (userPlace.value.isEmpty()) {
+                            Text(
+                                text = "(장소를 입력해주세요.)",
+                                color = Color.Red,
+                                fontSize = 12.sp,
+                                modifier = Modifier.padding(start = 4.dp)
+                            )
+                        }
                     }
-                ),
-                onValueChange = { newValue -> userHouseNum = newValue },
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.White,
-                    focusedIndicatorColor = Color.LightGray,
-                    unfocusedIndicatorColor = Color.LightGray,
-                    cursorColor = if (showDialog.value) Color.Transparent else Color(0xff78C1F3)
-                )
-            )
-            Spacer(modifier = Modifier.height(20.dp))
-        }//현관비밀번호
-    } },
+                    TextButton(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp)),
+                        onClick = { isSearchAddress = true }
+                    ) {
+                        Text(text = userPlace.value, color = Color.Black)
+                    }
+                    Spacer(modifier = Modifier.height(20.dp))
+                }//방문수거
+                item {
+                    Row() {
+                        Text(text = "상세 주소")
+                        if (userPlaceDetail.isEmpty()) {
+                            Text(
+                                text = "(상세주소를 입력해주세요.)",
+                                color = Color.Red,
+                                fontSize = 12.sp,
+                                modifier = Modifier.padding(start = 4.dp)
+                            )
+                        }
+                    }
+                    OutlinedTextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(8.dp)),
+                        value = userPlaceDetail,
+                        onValueChange = { newValue -> userPlaceDetail = newValue },
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            imeAction = ImeAction.Next
+                        ),
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = Color.White,
+                            focusedIndicatorColor = Color.LightGray,
+                            unfocusedIndicatorColor = Color.LightGray,
+                            cursorColor = if (showDialog.value) Color.Transparent else Color(
+                                0xff78C1F3
+                            )
+                        )
+                    )
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                }//상세주소
+                item {
+                    Row() {
+                        Text(text = "우편번호") // -> readOnly로 수정
+                        if (userPost.value.isEmpty()) {
+                            Text(
+                                text = "(우편번호를 입력해주세요)",
+                                color = Color.Red,
+                                fontSize = 12.sp,
+                                modifier = Modifier.padding(start = 4.dp)
+                            )
+                        }
+                    }
+                    OutlinedTextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(8.dp)),
+                        value = userPost.value,
+                        readOnly = true,
+                        onValueChange = {},
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = Color.White,
+                            focusedIndicatorColor = Color.LightGray,
+                            unfocusedIndicatorColor = Color.LightGray,
+                            cursorColor = if (showDialog.value) Color.Transparent else Color(
+                                0xff78C1F3
+                            )
+                        )
+                    )
+                    Spacer(modifier = Modifier.height(20.dp))
+                }//우편번호
+                item {
+                    Row(
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(text = "현관비밀번호")
+                        if (!isHouseNumEnabled && userHouseNum.isEmpty()) {
+                            Text(
+                                text = "(비밀번호를 입력해주세요.)",
+                                color = Color.Red,
+                                fontSize = 12.sp,
+                                modifier = Modifier.padding(start = 4.dp)
+                            )
+                        }
+                        Checkbox(
+                            checked = isHouseNumEnabled,
+                            onCheckedChange = {
+                                isHouseNumEnabled = it
+                            },
+                            modifier = Modifier.align(Alignment.Bottom)
+                        )
+                        Text(text = "없음")
+                    }
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = userHouseNum,
+                        enabled = !isHouseNumEnabled,
+                        trailingIcon = {
+                            IconButton(onClick = {
+                                Log.d("TAG", "Housenum:클릭")
+                                shouldShowHouseNum.value = !shouldShowHouseNum.value
+                            }) {
+                                Icon(
+                                    painter = painterResource(
+                                        id = houseNumResource(
+                                            shouldShowHouseNum.value
+                                        )
+                                    ),
+                                    contentDescription = null
+                                )
+                            }
+                        },
+                        visualTransformation = if (shouldShowHouseNum.value) VisualTransformation.None else PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.NumberPassword,
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                focusManager.clearFocus()
+                                keyboardController?.hide()
+                            }
+                        ),
+                        onValueChange = { newValue -> userHouseNum = newValue },
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = Color.White,
+                            focusedIndicatorColor = Color.LightGray,
+                            unfocusedIndicatorColor = Color.LightGray,
+                            cursorColor = if (showDialog.value) Color.Transparent else Color(
+                                0xff78C1F3
+                            )
+                        )
+                    )
+                    Spacer(modifier = Modifier.height(20.dp))
+                }//현관비밀번호
+            }
+        },
         confirmButton = {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -441,8 +464,9 @@ fun myProfile(
                             ),
                     onClick = {
                         if (!(userPlace.value.isEmpty() || userName.isEmpty() || userPlaceDetail.isEmpty() || userPost.value.isEmpty()
-                            || userPhone.length != 11 || (!isHouseNumEnabled && userHouseNum.isEmpty())
-                        )) {
+                                    || userPhone.length != 11 || (!isHouseNumEnabled && userHouseNum.isEmpty())
+                                    )
+                        ) {
                             RetrofitManager.instance.mypageUserUpdate(
                                 name = userName,
                                 phoneNumber = userPhone,
@@ -450,14 +474,18 @@ fun myProfile(
                                 addressDetail = userPlaceDetail,
                                 zipCode = userPost.value.toInt(),
                                 doorPassword = if (isHouseNumEnabled) "" else userHouseNum,
-                                completion = { responseState->
+                                completion = { responseState ->
                                     when (responseState) {
                                         RESPONSE_STATE.OKAY -> {
                                             onCloseRequest()
                                             onEditButtonClick()
                                         }
                                         RESPONSE_STATE.FAIL -> {
-                                            Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
+                                            Toast.makeText(
+                                                App.instance,
+                                                MESSAGE.ERROR,
+                                                Toast.LENGTH_SHORT
+                                            ).show()
                                         }
                                     }
                                 })
@@ -859,7 +887,7 @@ fun myDonateOrder(navController: NavController) {
 
 @Preview
 @Composable
-fun previeww(){
+fun previeww() {
     var navController = rememberNavController()
     myDonateOrder(navController = navController)
 }
@@ -902,10 +930,18 @@ fun rebornAppBarDetailBottom(customerServiceCenter: List<customerServiceCenter>)
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
-        ){
+        ) {
             Spacer(modifier = Modifier.height(52.dp))
-            TextFormat(text = "COPYRIGHT (c) 2023. Re:Born. All rights reserved.", size = 12, color = Color.LightGray)
-            TextFormat(text = "Andrid : 박동민, 최수인 / Backend : 이영학, 이한음", size = 12, color = Color.LightGray)
+            TextFormat(
+                text = "COPYRIGHT (c) 2023. Re:Born. All rights reserved.",
+                size = 12,
+                color = Color.LightGray
+            )
+            TextFormat(
+                text = "Andrid : 박동민, 최수인 / Backend : 이영학, 이한음",
+                size = 12,
+                color = Color.LightGray
+            )
         }
     }
 }
@@ -1555,6 +1591,401 @@ fun OrderInfoFormat(orderInfo: OrderInfo) {
 }
 
 @Composable
-fun MyQnAScreen(navController: NavController){
+fun MyQnAScreen(navController: NavController) {
+    Column {
+        QnATopAppBar(navController)
+        QnAContent(navController = navController, currentPage = "기부 문의")
 
+    }
+
+}
+
+@Composable
+fun QnATopAppBar(navController: NavController) {
+    var opened by remember {
+        mutableStateOf(false)
+    }
+    if (opened){
+        QnA(navController = navController,"","", onCloseRequest = {opened=false})
+    }
+
+
+    TopAppBar(
+        elevation = 10.dp,
+        backgroundColor = Color(0xff78C1F3),
+        modifier = Modifier.height(60.dp)
+    ) {
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = 8.dp),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Text(
+                    text = stringResource(id = R.string.app_name),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Black,
+                    color = Color.White
+                )
+            }
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Q&A",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Black,
+                    color = Color.White
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(end = 8.dp),
+                contentAlignment = Alignment.CenterEnd
+            ) {
+                Text(
+                    text = "접수",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Black,
+                    color = Color.White,
+                    modifier = Modifier.clickable{
+                        opened=!opened
+                    }
+                )
+            }
+        }
+    }
+}
+
+
+@Composable
+fun QnAContent(navController: NavController, currentPage: String) {
+    val DONATE = "기부 문의"
+    val ITEM = "상품 문의"
+
+    var currentPageTemp by rememberSaveable { mutableStateOf(currentPage) }
+    Column(modifier = Modifier.fillMaxSize()) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            QnATypeButton(modifier = Modifier.weight(1f), currentPage = currentPageTemp, checkingPage = DONATE) {
+                currentPageTemp = DONATE
+            }
+            QnATypeButton(modifier = Modifier.weight(1f), currentPage = currentPageTemp, checkingPage = ITEM) {
+                currentPageTemp = ITEM
+            }
+        }
+
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
+        ) {
+            items(100) {
+                Text(text = "hi")
+                /*
+                when (currentPageTemp) {
+                    FOLLOWING -> AddFollowing(navController, route)
+                    FOLLOWER -> AddFollower(navController, route)
+                }
+
+                 */
+            }
+        }
+    }
+}
+
+@Composable
+fun QnATypeButton(modifier: Modifier,currentPage: String, checkingPage: String, onClick: () -> Unit) {
+    Column(
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Button(
+            onClick = {
+                onClick()
+                //currentPageTemp = "FOLLOWING"
+            },
+            shape = RectangleShape,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = Color.White
+            )
+        ) {
+            Text(
+                text = checkingPage,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 14.sp,
+                color = if (currentPage == checkingPage)
+                    Color.Black
+                else Color.Gray
+            )
+        }
+        Divider(
+            color = if (currentPage == checkingPage)
+                Color.Black
+            else Color.Gray,
+            thickness = 1.dp,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Composable
+fun QnA(
+    navController: NavController,
+    titleInput: String,
+    contentInput: String,
+    onCloseRequest: () -> Unit
+){
+    var expanded by remember { mutableStateOf(false) }
+    val roundCornerShape = RoundedCornerShape(8.dp)
+    var titleInput by remember { mutableStateOf(titleInput) }
+    var contentInput by remember { mutableStateOf(contentInput) }
+    var contentEnabled by remember { mutableStateOf(false) }
+    val submitPopup = rememberSaveable{ mutableStateOf(false) }
+    val category = listOf("기부문의","상품문의")
+    var selectText by remember { mutableStateOf("") }
+    var mTextFieldSize by remember { mutableStateOf(androidx.compose.ui.geometry.Size.Zero)}
+    val maxChar = 100
+    AlertDialog(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(0.9f),
+        shape = roundCornerShape,
+        onDismissRequest = { onCloseRequest() },
+        title = { Text(text = "문의접수")},
+        text = {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.SpaceEvenly
+            ){
+                item {
+                    Column(
+                        Modifier.fillMaxWidth()
+                    ) {
+                        TextButton(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .onGloballyPositioned { coordinates ->
+                                    mTextFieldSize = coordinates.size.toSize()
+                                }
+                                .border(1.dp, Color.LightGray, roundCornerShape),
+                            onClick = { expanded = !expanded }
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                if (selectText.isEmpty()){
+                                    Text(text = "문의 유형", color = Color.LightGray)
+                                    if(expanded){
+                                        Image(
+                                            painter = painterResource(R.drawable.baseline_keyboard_arrow_up_24),
+                                            contentDescription = "Your Image",
+                                            modifier = Modifier.size(32.dp)
+                                        )
+                                    }else{
+                                        Image(
+                                            painter = painterResource(R.drawable.baseline_keyboard_arrow_down_24),
+                                            contentDescription = "Your Image",
+                                            modifier = Modifier.size(32.dp)
+                                        )
+                                    }
+                                }else{
+                                    Text(text = selectText, color = Color.Black)
+                                    if(expanded){
+                                        Image(
+                                            painter = painterResource(R.drawable.baseline_keyboard_arrow_up_24),
+                                            contentDescription = "Your Image",
+                                            modifier = Modifier.size(32.dp)
+                                        )
+                                    }else{
+                                        Image(
+                                            painter = painterResource(R.drawable.baseline_keyboard_arrow_down_24),
+                                            contentDescription = "Your Image",
+                                            modifier = Modifier.size(32.dp)
+                                        )
+                                    }
+                                }
+
+                            }
+                        }
+
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false },
+                            modifier = Modifier
+                                .width(with(LocalDensity.current){mTextFieldSize.width.toDp()})
+                        ) {
+                            category.forEach { label ->
+                                DropdownMenuItem(onClick = {
+                                    selectText = label
+                                    expanded = false
+                                }) {
+                                    Text(text = label)
+                                }
+                            }
+                        }
+                    }
+
+                }//카테고리
+
+                item {
+                    OutlinedTextField(
+                        value = titleInput,
+                        onValueChange = { newValue -> titleInput = newValue },
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            imeAction = ImeAction.Next
+                        ),
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = Color.White,
+                            focusedIndicatorColor = Color.LightGray,
+                            unfocusedIndicatorColor = Color.LightGray,
+                            cursorColor = Color(0xff78C1F3)
+                        ),
+                        placeholder = { Text(text = "제목")},
+                        singleLine = true,
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        shape = roundCornerShape
+                    )
+                }//제목
+
+                item() {
+                    Column() {
+                        Box(contentAlignment = Alignment.BottomEnd) {
+                            OutlinedTextField(
+                                value = contentInput,
+                                onValueChange = {
+                                    if (it.length <= maxChar){
+                                        contentInput = it
+                                    } },
+                                keyboardOptions = KeyboardOptions.Default.copy(
+                                    imeAction = ImeAction.Next
+                                ),
+                                colors = TextFieldDefaults.textFieldColors(
+                                    backgroundColor = Color.White,
+                                    focusedIndicatorColor = Color.LightGray,
+                                    unfocusedIndicatorColor = Color.LightGray,
+                                    cursorColor = Color(0xff78C1F3)
+                                ),
+                                placeholder = { Text(text = "내용을 작성해주세요.")},
+                                maxLines = 5,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(200.dp),
+                                shape = roundCornerShape
+                            )
+                            Text(modifier = Modifier.padding(8.dp),text = "${contentInput.length} / 100", color = Color.LightGray)
+                        }
+
+                        Row(
+                            horizontalArrangement = Arrangement.End,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(text = "비밀글")
+                            Checkbox(
+                                checked = contentEnabled,
+                                onCheckedChange = {
+                                    contentEnabled = it
+                                }
+                            )
+                        }
+                    }
+                }//내용
+
+            }
+        },
+        confirmButton = {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    QnAButton(
+                        modifier = Modifier.weight(1f),
+                        text = "문의하기",
+                        enabled = titleInput.isNotEmpty() && contentInput.isNotEmpty() && selectText.isNotEmpty(),
+                        onQnAClicked = {
+                            submitPopup.value = true
+                        }
+                    )
+                    QnAButton(
+                        modifier = Modifier.weight(1f),
+                        text = "취소",
+                        enabled = true,
+                        onQnAClicked = {
+                            onCloseRequest()
+                        }
+                    )
+                }
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+        }
+    )
+    if(submitPopup.value){
+        AlertDialog(
+            onDismissRequest = {
+                submitPopup.value = false
+            },
+            title = {
+                //Text("성공!")
+            },
+            text = {
+                Text("문의가 정상적으로 접수되었습니다.")
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        onCloseRequest()
+                        submitPopup.value = false
+                        navController.navigate("MyQnA")
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color(0xff78C1F3)
+                    )
+                ) {
+                    Text("확인")
+                }
+            },
+            modifier = Modifier
+                .border(2.dp, Color(0xff78C1F3), roundCornerShape)
+                .clip(roundCornerShape)
+        )
+    }
+}
+
+@Composable
+fun QnAButton(modifier: Modifier, text: String, enabled: Boolean, onQnAClicked: () -> Unit) {
+    Button(
+        modifier = modifier
+            .fillMaxWidth(),
+        enabled = enabled,
+        shape = RoundedCornerShape(8.dp),
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = Color(0xff78C1F3),
+            contentColor = Color.White
+        ),
+        onClick = {
+            onQnAClicked()
+        }) {
+        Column(
+            verticalArrangement = Arrangement.Center,
+        ) {
+            Text(
+                text = text,
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp
+            )
+        }
+    }
 }
