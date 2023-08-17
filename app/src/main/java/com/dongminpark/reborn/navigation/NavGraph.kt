@@ -171,6 +171,9 @@ fun MainScreenView(startDestination: String) {
                 composable(MyNavigationScreens.MyQnA.route) {
                     MyQnAScreen(navController = navController)
                 }
+                composable(MyNavigationScreens.MyQnADetail.route) {
+                    MyQnADetailScreen(navController = navController)
+                }
             }
         }
     }

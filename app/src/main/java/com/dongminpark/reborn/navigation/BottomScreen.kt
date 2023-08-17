@@ -49,4 +49,5 @@ sealed class MyNavigationScreens(val route: String) {
     object MyDonate : MyNavigationScreens("myDonate")
     object MyOrder : MyNavigationScreens("myOrder")
     object MyQnA : MyNavigationScreens("myQnA")
+    object MyQnADetail : MyNavigationScreens("myQnADetail")
 }

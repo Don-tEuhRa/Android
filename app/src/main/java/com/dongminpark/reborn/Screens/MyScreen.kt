@@ -16,10 +16,13 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -45,27 +48,21 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.dongminpark.reborn.App
 import com.dongminpark.reborn.Frames.TextFormat
-import com.dongminpark.reborn.Model.DonationInfo
-import com.dongminpark.reborn.Model.MypageUser
-import com.dongminpark.reborn.Model.OrderInfo
-import com.dongminpark.reborn.Model.User
+import com.dongminpark.reborn.Model.*
 import com.dongminpark.reborn.R
 import com.dongminpark.reborn.Utils.BackOnPressed
 import com.dongminpark.reborn.Utils.IntroductionDetail
 import com.dongminpark.reborn.Utils.MainContents
 import com.dongminpark.reborn.Utils.customerServiceCenter
 import com.dongminpark.reborn.Retrofit.RetrofitManager
-import com.dongminpark.reborn.Screens.Store.CartItemList
 import com.dongminpark.reborn.Utils.*
 import com.dongminpark.reborn.Utils.Constants.TAG
 import com.dongminpark.reborn.Utils.GetAddress.searchAddress
 import com.dongminpark.reborn.ui.theme.Point
-import com.dongminpark.reborn.ui.theme.ProgressBGColor
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
-//화면전환(기부,주문내역), 회원정보수정
-//사용자이름, 기부금액, 마일리지금액,기부현황진행사항 갯수, 진행현황 임시텍스트로 대체해둠
+
+val AskDonateList = SnapshotStateList<QnAList>()
+val AskItemList = SnapshotStateList<QnAList>()
 
 @Composable
 fun myAppBar(navController: NavController, userName: String, userPoint: String) {
@@ -1601,14 +1598,13 @@ fun MyQnAScreen(navController: NavController) {
 }
 
 @Composable
-fun QnATopAppBar(navController: NavController) {
+fun QnATopAppBar(navController: NavController, isAsk: Boolean = true) {
     var opened by remember {
         mutableStateOf(false)
     }
-    if (opened){
-        QnA(navController = navController,"","", onCloseRequest = {opened=false})
+    if (opened) {
+        QnA(navController = navController, onCloseRequest = { opened = false })
     }
-
 
     TopAppBar(
         elevation = 10.dp,
@@ -1642,67 +1638,189 @@ fun QnATopAppBar(navController: NavController) {
                     color = Color.White
                 )
             }
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(end = 8.dp),
-                contentAlignment = Alignment.CenterEnd
-            ) {
-                Text(
-                    text = "접수",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Black,
-                    color = Color.White,
-                    modifier = Modifier.clickable{
-                        opened=!opened
-                    }
-                )
+
+            if(isAsk) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(end = 8.dp),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    Text(
+                        text = "접수",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Black,
+                        color = Color.White,
+                        modifier = Modifier.clickable {
+                            opened = !opened
+                        }
+                    )
+                }
             }
         }
     }
 }
 
-
 @Composable
 fun QnAContent(navController: NavController, currentPage: String) {
+    var DonatItemsBool by rememberSaveable {
+        mutableStateOf(MutableList(1) {
+            QnAList(
+                false,
+                true,
+                "박동민",
+                1,
+                "기부문의",
+                true,
+                "2021-09-01"
+            )
+        })
+    }
+    var AskItemsBool by rememberSaveable {
+        mutableStateOf(MutableList(1) {
+            QnAList(
+                true,
+                true,
+                "최수인",
+                2,
+                "구매문의",
+                true,
+                "2021-09-02"
+            )
+        })
+    }
+
     val DONATE = "기부 문의"
     val ITEM = "상품 문의"
 
     var currentPageTemp by rememberSaveable { mutableStateOf(currentPage) }
-    Column(modifier = Modifier.fillMaxSize()) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            QnATypeButton(modifier = Modifier.weight(1f), currentPage = currentPageTemp, checkingPage = DONATE) {
-                currentPageTemp = DONATE
-            }
-            QnATypeButton(modifier = Modifier.weight(1f), currentPage = currentPageTemp, checkingPage = ITEM) {
-                currentPageTemp = ITEM
-            }
-        }
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp)
-        ) {
-            items(100) {
-                Text(text = "hi")
-                /*
-                when (currentPageTemp) {
-                    FOLLOWING -> AddFollowing(navController, route)
-                    FOLLOWER -> AddFollower(navController, route)
+    var isLoading2 by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    Log.e(TAG, "QnAContent: xxxxxxxxx")
+    if (isLoading2) {
+        //LoadingCircle()
+        // api 호출 후 값 채워 넣기
+        //AskDonateList.clear()
+        //AskItemList.clear()
+        isLoading2 = false
+    } else {
+        Log.e(TAG, "QnAContent:22222222222222")
+        Column(modifier = Modifier.fillMaxSize()) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                QnATypeButton(
+                    modifier = Modifier.weight(1f),
+                    currentPage = currentPageTemp,
+                    checkingPage = DONATE
+                ) {
+                    currentPageTemp = DONATE
                 }
+                QnATypeButton(
+                    modifier = Modifier.weight(1f),
+                    currentPage = currentPageTemp,
+                    checkingPage = ITEM
+                ) {
+                    currentPageTemp = ITEM
+                }
+            }
 
-                 */
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp)
+            ) {
+                item{
+                    when (currentPageTemp) {
+                        DONATE -> AskDonateListShow(navController, DonatItemsBool)
+                        ITEM -> AskItemListShow(navController, AskItemsBool)
+                    }
+                }
             }
         }
     }
 }
 
 @Composable
-fun QnATypeButton(modifier: Modifier,currentPage: String, checkingPage: String, onClick: () -> Unit) {
+fun AskDonateListShow(navController: NavController, list: MutableList<QnAList>) {
+    list.forEach {
+        ListContent(navController, content = it)
+    }
+}
+
+@Composable
+fun AskItemListShow(navController: NavController, list: MutableList<QnAList>) {
+    list.forEach {
+        ListContent(navController, content = it)
+    }
+}
+
+
+
+@Composable
+fun MyQnADetailScreen(navController: NavController) {
+    Column {
+        QnATopAppBar(navController, false)
+        QnAList(
+            navController,
+            category = "카테고리",
+            user = "유저",
+            date = "날짜",
+            titleInput = "타이틀",
+            contentInput = "컨텐트",
+            reviewContent = "리뷰",
+            reviewDate = "리뷰일"
+        )
+    }
+}
+
+@Composable
+fun ListContent(navController: NavController, content: QnAList) {
+    Button(
+        shape = RoundedCornerShape(8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = Color(0xff9AC5F4),
+            contentColor = Color.Black
+        ),
+        onClick = {
+            //content.postid를 활용해서 nav 이동
+            //navController.navigate("myDonate")
+            navController.navigate("myQnADetail")
+        }
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = content.title
+            )
+            Column(
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(text = content.name)
+                Text(text = content.createdAt)
+            }
+        }
+    }
+}
+
+@Composable
+fun QnATypeButton(
+    modifier: Modifier,
+    currentPage: String,
+    checkingPage: String,
+    onClick: () -> Unit
+) {
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
@@ -1741,19 +1859,20 @@ fun QnATypeButton(modifier: Modifier,currentPage: String, checkingPage: String, 
 @Composable
 fun QnA(
     navController: NavController,
-    titleInput: String,
-    contentInput: String,
+    titleInput: String = "",
+    contentInput: String = "",
+    category: String = "",
     onCloseRequest: () -> Unit
-){
+) {
     var expanded by remember { mutableStateOf(false) }
     val roundCornerShape = RoundedCornerShape(8.dp)
     var titleInput by remember { mutableStateOf(titleInput) }
     var contentInput by remember { mutableStateOf(contentInput) }
     var contentEnabled by remember { mutableStateOf(false) }
-    val submitPopup = rememberSaveable{ mutableStateOf(false) }
-    val category = listOf("기부문의","상품문의")
-    var selectText by remember { mutableStateOf("") }
-    var mTextFieldSize by remember { mutableStateOf(androidx.compose.ui.geometry.Size.Zero)}
+    val submitPopup = rememberSaveable { mutableStateOf(false) }
+    val category2 = listOf("기부문의", "상품문의")
+    var selectText by remember { mutableStateOf(category) }
+    var mTextFieldSize by remember { mutableStateOf(androidx.compose.ui.geometry.Size.Zero) }
     val maxChar = 100
     AlertDialog(
         modifier = Modifier
@@ -1761,13 +1880,13 @@ fun QnA(
             .fillMaxHeight(0.9f),
         shape = roundCornerShape,
         onDismissRequest = { onCloseRequest() },
-        title = { Text(text = "문의접수")},
+        title = { Text(text = "문의접수") },
         text = {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize(),
                 verticalArrangement = Arrangement.SpaceEvenly
-            ){
+            ) {
                 item {
                     Column(
                         Modifier.fillMaxWidth()
@@ -1784,30 +1903,30 @@ fun QnA(
                             Row(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                if (selectText.isEmpty()){
+                                if (selectText.isEmpty()) {
                                     Text(text = "문의 유형", color = Color.LightGray)
-                                    if(expanded){
+                                    if (expanded) {
                                         Image(
                                             painter = painterResource(R.drawable.baseline_keyboard_arrow_up_24),
                                             contentDescription = "Your Image",
                                             modifier = Modifier.size(32.dp)
                                         )
-                                    }else{
+                                    } else {
                                         Image(
                                             painter = painterResource(R.drawable.baseline_keyboard_arrow_down_24),
                                             contentDescription = "Your Image",
                                             modifier = Modifier.size(32.dp)
                                         )
                                     }
-                                }else{
+                                } else {
                                     Text(text = selectText, color = Color.Black)
-                                    if(expanded){
+                                    if (expanded) {
                                         Image(
                                             painter = painterResource(R.drawable.baseline_keyboard_arrow_up_24),
                                             contentDescription = "Your Image",
                                             modifier = Modifier.size(32.dp)
                                         )
-                                    }else{
+                                    } else {
                                         Image(
                                             painter = painterResource(R.drawable.baseline_keyboard_arrow_down_24),
                                             contentDescription = "Your Image",
@@ -1823,9 +1942,9 @@ fun QnA(
                             expanded = expanded,
                             onDismissRequest = { expanded = false },
                             modifier = Modifier
-                                .width(with(LocalDensity.current){mTextFieldSize.width.toDp()})
+                                .width(with(LocalDensity.current) { mTextFieldSize.width.toDp() })
                         ) {
-                            category.forEach { label ->
+                            category2.forEach { label ->
                                 DropdownMenuItem(onClick = {
                                     selectText = label
                                     expanded = false
@@ -1851,7 +1970,7 @@ fun QnA(
                             unfocusedIndicatorColor = Color.LightGray,
                             cursorColor = Color(0xff78C1F3)
                         ),
-                        placeholder = { Text(text = "제목")},
+                        placeholder = { Text(text = "제목") },
                         singleLine = true,
                         modifier = Modifier
                             .fillMaxWidth(),
@@ -1865,9 +1984,10 @@ fun QnA(
                             OutlinedTextField(
                                 value = contentInput,
                                 onValueChange = {
-                                    if (it.length <= maxChar){
+                                    if (it.length <= maxChar) {
                                         contentInput = it
-                                    } },
+                                    }
+                                },
                                 keyboardOptions = KeyboardOptions.Default.copy(
                                     imeAction = ImeAction.Next
                                 ),
@@ -1877,14 +1997,18 @@ fun QnA(
                                     unfocusedIndicatorColor = Color.LightGray,
                                     cursorColor = Color(0xff78C1F3)
                                 ),
-                                placeholder = { Text(text = "내용을 작성해주세요.")},
+                                placeholder = { Text(text = "내용을 작성해주세요.") },
                                 maxLines = 5,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(200.dp),
                                 shape = roundCornerShape
                             )
-                            Text(modifier = Modifier.padding(8.dp),text = "${contentInput.length} / 100", color = Color.LightGray)
+                            Text(
+                                modifier = Modifier.padding(8.dp),
+                                text = "${contentInput.length} / 100",
+                                color = Color.LightGray
+                            )
                         }
 
                         Row(
@@ -1916,6 +2040,7 @@ fun QnA(
                         text = "문의하기",
                         enabled = titleInput.isNotEmpty() && contentInput.isNotEmpty() && selectText.isNotEmpty(),
                         onQnAClicked = {
+                            // 등록 API 연결
                             submitPopup.value = true
                         }
                     )
@@ -1932,14 +2057,12 @@ fun QnA(
             }
         }
     )
-    if(submitPopup.value){
+    if (submitPopup.value) {
         AlertDialog(
             onDismissRequest = {
                 submitPopup.value = false
             },
-            title = {
-                //Text("성공!")
-            },
+            title = {},
             text = {
                 Text("문의가 정상적으로 접수되었습니다.")
             },
@@ -1988,4 +2111,241 @@ fun QnAButton(modifier: Modifier, text: String, enabled: Boolean, onQnAClicked: 
             )
         }
     }
+}
+
+@Composable
+fun QnAList(
+    navController: NavController,
+    category: String,
+    user: String,
+    date: String,
+    titleInput: String,
+    contentInput: String,
+    reviewContent: String,
+    reviewDate: String
+) {
+    val roundCornerShape = RoundedCornerShape(8.dp)
+
+    var opened by remember { mutableStateOf(false) }
+    var deleteBtn by remember { mutableStateOf(false) }
+    var deleteMsg by remember { mutableStateOf(false) }
+    val maxChar = 100
+
+    if (opened) {
+        QnA(
+            navController = navController,
+            category = category,
+            titleInput = titleInput,
+            contentInput = contentInput,
+            onCloseRequest = { opened = false })
+    } //수정팝업
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.SpaceEvenly
+    ) {
+        item {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(roundCornerShape)
+                    .border(1.dp, Color.LightGray, roundCornerShape)
+                    .padding(vertical = 16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = category)
+            }
+        }//카테고리
+
+        item {
+            Column() {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 4.dp)
+                ) {
+                    Text(text = user)
+                    Text(text = date)
+                }
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(roundCornerShape)
+                        .border(1.dp, Color.LightGray, roundCornerShape)
+                        .padding(vertical = 16.dp, horizontal = 8.dp),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    Text(text = titleInput)
+                }
+            }
+        }//제목
+
+        item {
+            Column() {
+                Box(contentAlignment = Alignment.BottomEnd) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp)
+                            .clip(roundCornerShape)
+                            .border(1.dp, Color.LightGray, roundCornerShape)
+                            .padding(horizontal = 8.dp, vertical = 8.dp),
+                        contentAlignment = Alignment.TopStart
+                    ) {
+                        Text(text = contentInput)
+                    }
+
+                    Text(
+                        modifier = Modifier.padding(8.dp),
+                        text = "${contentInput.length} / 100",
+                        color = Color.LightGray
+                    )
+                }
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    //수정 텍스트
+                    Text(
+                        text = "수정",
+                        modifier = Modifier.clickable {
+                            opened = !opened
+                        }
+                    )
+                    Text(text = "  /  ")
+                    //삭제 텍스트
+                    Text(
+                        text = "삭제",
+                        modifier = Modifier.clickable {
+                            // 삭제 API 연결
+                            deleteBtn = !deleteBtn
+                        }
+                    )
+                }
+            }
+        }//내용
+
+        item {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Divider(
+                    color = Color.Gray,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .width(1.dp)
+                )
+            }
+        }// ㅡㅡ
+
+        item {
+            Column() {
+                Text("답변")
+                Box(contentAlignment = Alignment.BottomEnd) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(70.dp)
+                            .clip(roundCornerShape)
+                            .border(1.dp, Color.LightGray, roundCornerShape)
+                            .padding(horizontal = 8.dp, vertical = 8.dp),
+                        contentAlignment = Alignment.TopStart
+                    ) {
+                        Text(text = reviewContent)
+                    }
+                    Text(
+                        modifier = Modifier.padding(8.dp),
+                        text = reviewDate,
+                        color = Color.LightGray
+                    )
+                }
+            }
+        }//답변
+    }
+
+    if (deleteBtn) {
+        AlertDialog(
+            onDismissRequest = {
+                deleteMsg = true
+                deleteBtn = false
+            },
+            title = {
+                Text("문의삭제")
+            },
+            text = {
+                Text("문의를 삭제하시겠습니까?")
+            },
+            confirmButton = {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Button(
+                        onClick = {
+                            deleteMsg = true
+                            deleteBtn = false
+                        },
+                        modifier = Modifier.fillMaxWidth(0.4f),
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = Color(0xff78C1F3)
+                        )
+                    ) {
+                        Text("삭제")
+                    }
+                    Button(
+                        onClick = {
+                            deleteBtn = false
+                        },
+                        modifier = Modifier.fillMaxWidth(0.7f),
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = Color.LightGray
+                        )
+                    ) {
+                        Text("취소")
+                    }
+                }
+            },
+            modifier = Modifier.border(2.dp, Color.LightGray, RoundedCornerShape(8.dp)).clip(roundCornerShape)
+        )
+    } //삭제하시겠습니까?
+    if (deleteMsg) { //삭제완료 팝업
+        deleteMsg(
+            "삭제가 완료되었습니다.",
+            onCloseRequest = { deleteMsg = false }
+        )
+    }
+}
+
+@Composable
+fun deleteMsg(
+    message: String,
+    onCloseRequest: () -> Unit
+) {
+    AlertDialog(
+        shape = RoundedCornerShape(8.dp),
+        onDismissRequest = { onCloseRequest() },
+        title = { Text("삭제완료") },
+        text = { Text(message) },
+        confirmButton = {
+            Button(
+                onClick = { onCloseRequest() },
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = Color(0xff78C1F3)
+                )
+            ) {
+                Text(text = "확인")
+            }
+        },
+        modifier = Modifier.border(
+            2.dp,
+            Color.LightGray.copy(alpha = 0.7f),
+            RoundedCornerShape(8.dp)
+        ).clip(RoundedCornerShape(8.dp))
+    )
 }
