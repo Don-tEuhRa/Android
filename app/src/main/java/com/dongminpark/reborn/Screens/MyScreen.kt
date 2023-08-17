@@ -55,6 +55,7 @@ import com.dongminpark.reborn.Utils.IntroductionDetail
 import com.dongminpark.reborn.Utils.MainContents
 import com.dongminpark.reborn.Utils.customerServiceCenter
 import com.dongminpark.reborn.Retrofit.RetrofitManager
+import com.dongminpark.reborn.Screens.Store.LikedItemList
 import com.dongminpark.reborn.Utils.*
 import com.dongminpark.reborn.Utils.Constants.TAG
 import com.dongminpark.reborn.Utils.GetAddress.searchAddress
@@ -1755,19 +1756,69 @@ fun AskItemListShow(navController: NavController, list: MutableList<QnAList>) {
 
 
 @Composable
-fun MyQnADetailScreen(navController: NavController) {
-    Column {
-        QnATopAppBar(navController, false)
-        QnAList(
-            navController,
-            category = "카테고리",
-            user = "유저",
-            date = "날짜",
-            titleInput = "타이틀",
-            contentInput = "컨텐트",
-            reviewContent = "리뷰",
-            reviewDate = "리뷰일"
-        )
+fun MyQnADetailScreen(navController: NavController, postId: Int) {
+    var isLoading by rememberSaveable {
+        mutableStateOf(true)
+    }
+
+    var category by rememberSaveable {
+        mutableStateOf("")
+    }
+    var user by rememberSaveable {
+        mutableStateOf("")
+    }
+    var date by rememberSaveable {
+        mutableStateOf("")
+    }
+    var titleInput by rememberSaveable {
+        mutableStateOf("")
+    }
+    var contentInput by rememberSaveable {
+        mutableStateOf("")
+    }
+    var reviewContent by rememberSaveable {
+        mutableStateOf("")
+    }
+    var reviewDate by rememberSaveable {
+        mutableStateOf("")
+    }
+
+    if (isLoading){
+        RetrofitManager.instance.postReadID(
+            postId,
+            completion = { responseState, post, reContent, reDate->
+
+                when (responseState) {
+                    RESPONSE_STATE.OKAY -> {
+                        category = post!!.category
+                        user = post.name
+                        date = post.createdAt
+                        titleInput = post.title
+                        contentInput = post.content
+                        reviewContent = reContent!!
+                        reviewDate = reDate!!
+
+                        isLoading = false
+                    }
+                    RESPONSE_STATE.FAIL -> {
+                        Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            })
+    }else{
+        Column {
+            QnATopAppBar(navController, false)
+            QnAList(
+                navController,
+                category = category,
+                user = user,
+                date = date,
+                titleInput = titleInput,
+                contentInput = contentInput,
+                reviewContent = reviewContent,
+                reviewDate = reviewDate
+            )
+        }
     }
 }
 
@@ -1783,9 +1834,7 @@ fun ListContent(navController: NavController, content: QnAList) {
             contentColor = Color.Black
         ),
         onClick = {
-            //content.postid를 활용해서 nav 이동
-            //navController.navigate("myDonate")
-            navController.navigate("myQnADetail")
+            navController.navigate("myQnADetail/${content.postid}")
         }
     ) {
         Row(
@@ -2135,7 +2184,6 @@ fun QnAList(
     var opened by remember { mutableStateOf(false) }
     var deleteBtn by remember { mutableStateOf(false) }
     var deleteMsg by remember { mutableStateOf(false) }
-    val maxChar = 100
 
     if (opened) {
         QnA(
@@ -2175,7 +2223,7 @@ fun QnAList(
                         .padding(horizontal = 4.dp)
                 ) {
                     Text(text = user)
-                    Text(text = date)
+                    Text(text = date.slice(0..9))
                 }
                 Box(
                     modifier = Modifier
@@ -2236,40 +2284,45 @@ fun QnAList(
             }
         }//내용
 
+
         item {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Divider(
-                    color = Color.Gray,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .width(1.dp)
-                )
+            if (reviewContent.isNotEmpty()) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Divider(
+                        color = Color.Gray,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .width(1.dp)
+                    )
+                }
             }
         }// ㅡㅡ
 
         item {
-            Column() {
-                Text("답변")
-                Box(contentAlignment = Alignment.BottomEnd) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(70.dp)
-                            .clip(roundCornerShape)
-                            .border(1.dp, Color.LightGray, roundCornerShape)
-                            .padding(horizontal = 8.dp, vertical = 8.dp),
-                        contentAlignment = Alignment.TopStart
-                    ) {
-                        Text(text = reviewContent)
+            if (reviewContent.isNotEmpty()) {
+                Column() {
+                    Text("답변")
+                    Box(contentAlignment = Alignment.BottomEnd) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(70.dp)
+                                .clip(roundCornerShape)
+                                .border(1.dp, Color.LightGray, roundCornerShape)
+                                .padding(horizontal = 8.dp, vertical = 8.dp),
+                            contentAlignment = Alignment.TopStart
+                        ) {
+                            Text(text = reviewContent)
+                        }
+                        Text(
+                            modifier = Modifier.padding(8.dp),
+                            text = reviewDate,
+                            color = Color.LightGray
+                        )
                     }
-                    Text(
-                        modifier = Modifier.padding(8.dp),
-                        text = reviewDate,
-                        color = Color.LightGray
-                    )
                 }
             }
         }//답변

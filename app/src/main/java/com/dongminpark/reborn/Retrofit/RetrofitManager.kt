@@ -858,6 +858,47 @@ class RetrofitManager {
         })
     }
 
+    fun postReadID(postId: Int, completion: (RESPONSE_STATE, QnAList?, String?, String?) -> Unit) {
+        val call = iRetrofit?.postReadId(postId) ?: return
+
+        call.enqueue(object : retrofit2.Callback<JsonElement> {
+            // 응답 실패시
+            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
+                completion(RESPONSE_STATE.FAIL, null, null, null)
+            }
+
+            // 응답 성공시
+            override fun onResponse(
+                call: Call<JsonElement>,
+                response: Response<JsonElement>
+            ) {
+                when (response.code()) {
+                    200 -> { // 정상 연결
+                        response.body()?.let {
+                            val body = it.asJsonObject
+                            val data = body.get("data").asJsonObject.get("post").asJsonObject
+                            val comment = body.get("data").asJsonObject.get("comment").asJsonObject
+                            val reviewContent = comment.get("reviewContent").asString
+                            val reviewCreateAt = comment.get("reviewDate").asString
+                            val info = QnAList(
+                                postid = data.get("postId").asInt,
+                                name = data.get("name").asString,
+                                title = data.get("title").asString,
+                                content = data.get("content").asString,
+                                category = data.get("category").asString,
+                                createdAt = data.get("createdAt").asString,
+                            )
+                            completion(RESPONSE_STATE.OKAY, info, reviewContent, reviewCreateAt)
+                        }
+                    }
+                    else -> { // 에러
+                        completion(RESPONSE_STATE.FAIL, null, null, null)
+                    }
+                }
+            }
+        })
+    }
+
     // user controller
     fun userInfo(completion: (RESPONSE_STATE, info: User?) -> Unit) {
         val call = iRetrofit?.userInfo() ?: return

@@ -80,6 +80,9 @@ interface IRetrofit {
     @GET(API.POST_LIST)
     fun postList(): Call<JsonElement>
 
+    @GET(API.POST_READ_ID)
+    fun postReadId(@Path("postId") id: Int): Call<JsonElement>
+
     // user controller
     @GET(API.USER_INFO)
     fun userInfo(): Call<JsonElement>

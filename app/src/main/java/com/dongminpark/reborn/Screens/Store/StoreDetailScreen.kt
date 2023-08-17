@@ -81,7 +81,6 @@ fun StoreDetailScreen(navController: NavController, productId: Int) {
 
                 when (responseState) {
                     RESPONSE_STATE.OKAY -> {
-                        //productTemp = product!!
                         productImageUrl = product!!.imageUrl
                         productTitle = product.title
                         productPrice = product.price.toString()

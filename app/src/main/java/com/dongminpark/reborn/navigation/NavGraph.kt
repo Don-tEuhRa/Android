@@ -171,8 +171,15 @@ fun MainScreenView(startDestination: String) {
                 composable(MyNavigationScreens.MyQnA.route) {
                     MyQnAScreen(navController = navController)
                 }
-                composable(MyNavigationScreens.MyQnADetail.route) {
-                    MyQnADetailScreen(navController = navController)
+                composable(
+                    route = "${MyNavigationScreens.MyQnADetail.route}/{variable}",
+                    arguments = listOf(navArgument("variable") { type = NavType.StringType })
+                ) { entry ->
+                    val variable = entry.arguments?.getString("variable")
+                    MyQnADetailScreen(
+                        navController = navController,
+                        postId = variable!!.toInt()
+                    )
                 }
             }
         }
