@@ -20,7 +20,7 @@ interface IRetrofit {
     fun cartDelete(@Path("cartId") cartId: Int, @Body productIdList: JsonObject): Call<JsonElement>
 
     @DELETE(API.CART_DELETE_ALL)
-    fun cartDeleteAll(@Path("cartId") cartId: Int): Call<JsonElement>
+    fun cartDeleteAll(@Path("productId") cartId: Int): Call<JsonElement>
 
     @GET(API.CART_FINDALL) // 500 에러
     fun cartFindAll(): Call<JsonElement>

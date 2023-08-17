@@ -36,20 +36,28 @@ var PayCartItemList = SnapshotStateList<Product>()
 @SuppressLint("MutableCollectionMutableState")
 @Composable
 fun StoreShoppingCartScreen(navController: NavController) {
-    //val itemList by remember { mutableStateOf(mutableListOf(1, 2, 3)) }
     var isLoading by rememberSaveable {
         mutableStateOf(true)
     }
 
     var checkDelete by remember { mutableStateOf(false) }
+    var deleteItems by rememberSaveable { mutableStateOf(List(0) {Product()}) }
+    var deleteItemsBool by rememberSaveable { mutableStateOf(MutableList(0) { true }) }
 
     if (checkDelete) {
+        var isDelete by remember { mutableStateOf(false) }
         AlertDialog(
             shape = RoundedCornerShape(24.dp),
             onDismissRequest = { },
             title = { TextFormat(text = "알림", size = 20, fontWeight = FontWeight.Bold)},
             text = {
-                    TextFormat(text = "선택한 상품을 삭제하시겠습니까?", size = 16, fontWeight = FontWeight.Light)
+                var text  by remember { mutableStateOf("선택한 상품을 삭제하시겠습니까?") }
+                if (isDelete) {
+                    text = "삭제하는 중입니다."
+                }
+
+                TextFormat(text = text, size = 16, fontWeight = FontWeight.Light)
+
             },
             confirmButton = {
                 Column(
@@ -61,11 +69,35 @@ fun StoreShoppingCartScreen(navController: NavController) {
                     Button(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = {
+                            isDelete = true
                             // api 호출
-                            checkDelete = false
-                            navController.popBackStack()
-                            navController.navigate("storeShoppingCart")
+                            for (i in deleteItems.indices){
+                                    RetrofitManager.instance.cartDelete(
+                                        productId = deleteItems[i].productId,
+                                        completion = { responseState ->
+                                            when (responseState) {
+                                                RESPONSE_STATE.OKAY -> {
+                                                    deleteItemsBool[i] = true
+                                                    if (deleteItemsBool.all { it }){
+                                                        checkDelete = false
+                                                        navController.popBackStack()
+                                                        navController.navigate("storeShoppingCart")
+                                                    }
+                                                }
+                                                RESPONSE_STATE.FAIL -> {
+                                                    Toast.makeText(
+                                                        App.instance,
+                                                        MESSAGE.ERROR,
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                    Log.d(Constants.TAG, "api 호출 에러")
+                                                }
+                                            }
+                                        })
+                                }
+
                         },
+                        enabled = !isDelete,
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = Point,
                             contentColor = Color.White
@@ -76,6 +108,7 @@ fun StoreShoppingCartScreen(navController: NavController) {
                     Button(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = { checkDelete = false },
+                        enabled = !isDelete,
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = Color.LightGray,
                             contentColor = Color.Black
@@ -156,6 +189,8 @@ fun StoreShoppingCartScreen(navController: NavController) {
                             TextFormat(
                                 modifier = Modifier.clickable { // 체크된 리스트 삭제 api 호출
                                     checkDelete = true
+                                    deleteItems = CartItemList.filterIndexed { index, _ -> selectedItems[index] }
+                                    deleteItemsBool = MutableList(deleteItems.size) { false }
                                 },
                                 text = "선택삭제",
                                 size = 16,
@@ -184,10 +219,9 @@ fun StoreShoppingCartScreen(navController: NavController) {
                             }
                             // x버튼
                             ClearTextButton {
-                                // itemList.remove(item)
-                                // api로 삭제 요청
-                                navController.popBackStack()
-                                navController.navigate("storeShoppingCart")
+                                checkDelete = true
+                                deleteItems = CartItemList.filterIndexed { index, _ -> selectedItems[index] }
+                                deleteItemsBool = MutableList(deleteItems.size) { false }
                             }
                         }
                     }

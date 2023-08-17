@@ -134,6 +134,32 @@ class RetrofitManager {
         })
     }
 
+    fun cartDelete(productId: Int, completion: (RESPONSE_STATE) -> Unit){
+        val call = iRetrofit?.cartDeleteAll(productId) ?: return
+
+        call.enqueue(object : retrofit2.Callback<JsonElement> {
+            // 응답 실패시
+            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
+                completion(RESPONSE_STATE.FAIL)
+            }
+
+            // 응답 성공시
+            override fun onResponse(
+                call: Call<JsonElement>,
+                response: Response<JsonElement>
+            ) {
+                when (response.code()) {
+                    200 -> { // 정상 연결
+                        completion(RESPONSE_STATE.OKAY)
+                    }
+                    else -> { // 에러
+                        completion(RESPONSE_STATE.FAIL)
+                    }
+                }
+            }
+        })
+    }
+
     // interest controller
     fun interestList(completion: (RESPONSE_STATE, ArrayList<Product>?) -> Unit) {
         val call = iRetrofit?.interestList() ?: return
