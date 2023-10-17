@@ -258,11 +258,15 @@ fun SearchBar(onSearch: (String) -> Unit) {
                 .padding(end = 8.dp)
         )
 
+        if (searchText.length == 0){
+            Box(modifier = Modifier.fillMaxWidth(0.4f)){
+                Text(text = "반팔티")
+            }
+        }
         BasicTextField(
             value = searchText,
             onValueChange = { newText ->
                 searchText = newText
-                onSearch(newText)
             },
             textStyle = TextStyle(color = Color.Black, fontSize = 16.sp),
             singleLine = true,
@@ -271,6 +275,7 @@ fun SearchBar(onSearch: (String) -> Unit) {
                 .padding(start = 8.dp, end = 8.dp),
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(onSearch = {
+                onSearch(searchText)
                 keyboardController?.hide()
                 search(searchText, onSearch, focusManager, keyboardController)
             })

@@ -1,5 +1,6 @@
 package com.dongminpark.reborn.Retrofit
 
+import android.util.Log
 import com.dongminpark.reborn.App
 import com.dongminpark.reborn.Model.*
 import com.dongminpark.reborn.Utils.API
@@ -44,6 +45,7 @@ class RetrofitManager {
                             val data = body.get("data").asJsonObject
                             val accessToken = data.get("jwt").asString
                             App.token_prefs.accessToken = accessToken
+                            Log.e("toke", "onResponse: $accessToken", )
 
                             completion(RESPONSE_STATE.OKAY)
                         }
@@ -375,7 +377,7 @@ class RetrofitManager {
                                     addressDetail = addressTemp.get("addressDetail").asString,
                                     zipCode = addressTemp.get("zipCode").asString,
                                     paymentDate = item.get("paymentDate").asString,
-                                    thumbnailUrl = item.get("thumbnailUrl").asString,
+                                    thumbnailUrl = API.BASE_URL + "/resources/files/" + item.get("thumbnailUrl").asString,
                                     title = item.get("title").asString,
                                     price = item.get("price").asInt,
                                 )
@@ -546,7 +548,7 @@ class RetrofitManager {
                                     content = item.get("content").asString,
                                     thumbnailUrl = API.BASE_URL + "/resources/files/" + item.get("thumbnailUrl").asString,
                                     categoryName = item.get("categoryName").asString,
-                                    imageUrl = item.get("imageUrl").asJsonArray.map { API.BASE_URL + "/resources/files/" + it.asString },
+                                    //imageUrl = item.get("imageUrl").asJsonArray.map { API.BASE_URL + "/resources/files/" + it.asString },
                                     isInterested = item.get("isInterested").asBoolean
                                 )
                                 products.add(product)

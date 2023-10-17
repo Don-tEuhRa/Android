@@ -185,7 +185,9 @@ fun ProgressBarPager(progressBar: MutableList<ProgressBar>) {
 
     var indexIcons: List<Painter> = listOf()
 
-    repeat(progressBar.size) {
+    repeat(
+        progressBar.size
+    ) {
         indexIcons = indexIcons.plus(circle)
     }
 

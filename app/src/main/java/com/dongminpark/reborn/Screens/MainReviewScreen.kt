@@ -74,6 +74,7 @@ fun ReviewTopAppBar() {
     }
     if (opened) {
         // dialog 띄우기
+        reviewBar()
     }
 
     TopAppBar(

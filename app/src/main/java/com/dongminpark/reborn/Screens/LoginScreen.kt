@@ -120,6 +120,7 @@ fun firebaseAuthWithGoogle(account: GoogleSignInAccount?) {
                     when (responseState) {
                         RESPONSE_STATE.OKAY -> {
                             OAuthData.nav?.navigate(Screen.Once.route)
+                            Log.e("TAG", "firebaseAuthWithGoogle: ${uid}", )
                             isLoginLoading = false
                         }
                         RESPONSE_STATE.FAIL -> {

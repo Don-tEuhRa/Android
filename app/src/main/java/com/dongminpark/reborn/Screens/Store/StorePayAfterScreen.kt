@@ -26,7 +26,7 @@ fun StorePayAfterScreen(
     BackToStore(navController)
 
     Column() {
-        SingleTitleTopAppBarFormat("장바구니")
+        SingleTitleTopAppBarFormat("결제 완료")
 
         LazyColumn(
             modifier = Modifier
